@@ -1,0 +1,26 @@
+{
+  "name": "rest_api_jwt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhasan004/Basic_REST_API_JWT_Authentication.git"
+  },
+  "author": "Mahmudul Hasan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mhasan004/Basic_REST_API_JWT_Authentication/issues"
+  },
+  "homepage": "https://github.com/mhasan004/Basic_REST_API_JWT_Authentication#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.0",
+    "nodemon": "^2.0.4"
+  }
+}
