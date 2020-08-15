@@ -1,9 +1,10 @@
 require('dotenv/config') 
-const express = require('express')
-const mongoose = require('mongoose')
+const express    = require('express')
+const mongoose   = require('mongoose')
 const authRoutes = require('./routes/auth')
 const app = express()
 
+app.use(express.json())                                                             
 app.use('/api/user', authRoutes)
 
 
@@ -18,3 +19,8 @@ mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlPa
 
 
 
+
+// password needs top be hashed or it will be shown in plain text in the DB
+// there is no validation of the schema yet so ppl can write passwords thats only one char instead of 6
+
+// npm install @hapi/joi

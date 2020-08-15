@@ -1,9 +1,14 @@
 const express = require('express')
-const router = express.Router()
+const router  = express.Router()
+const registerController = require('../controller/auth')
 
-router.post('/register', (req,res,next) => {
-    res.send("dsfds")
-    console.log('sdff')
-})
+router.post('/register', registerController.registerNewUser)
+
+// router.post('/login', registerController)
+
+
+
+
+
 
 module.exports = router
