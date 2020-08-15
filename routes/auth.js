@@ -4,11 +4,6 @@ const registerController = require('../controller/auth')
 
 router.post('/register', registerController.registerNewUser)
 
-// router.post('/login', registerController)
-
-
-
-
-
+router.post('/login', registerController.login)
 
 module.exports = router

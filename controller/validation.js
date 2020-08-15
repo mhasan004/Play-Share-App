@@ -7,10 +7,8 @@ function registerValidation(data){
         email: Joi.string().min(6).required().email(),
         password: Joi.string().min(6).required()
     })
-
     return validationSchema.validate(data)                                                  // VALIDATE Data of Post req before we add to DB
 }
-
 
 // Login validation
 function loginValidation(data){
@@ -18,11 +16,8 @@ function loginValidation(data){
         email: Joi.string().min(6).required().email(),
         password: Joi.string().min(6).required()
     })
-
     return validationSchema.validate(data)                                                  // VALIDATE Data of Post req before we add to DB
 }
-
-
 
 module.exports.registerValidation = registerValidation
 module.exports.loginValidation = loginValidation
