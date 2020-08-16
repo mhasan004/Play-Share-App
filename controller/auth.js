@@ -64,6 +64,6 @@ exports.login = async (req,res,next) => {
         token = jwt.sign({id: user._id}, process.env.USER_SECRET_TOKEN)                                             // Make a new JWT Tocken. Pass in user's db _id and ur made up token    
     }
     res.header('auth-token', token)                                                                                 // Send the token with the response
-    res.json( {status: 1, message: "Logged In! "+ token} ) 
+    res.json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
 }
    

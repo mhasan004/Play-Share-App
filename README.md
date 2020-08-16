@@ -11,7 +11,7 @@
 
 2) Need to create a **.env** file and create 5 variables: 
    * `DB_CONNECT` - stores your MongoDB Connection URL
-   * `ADMIN_EMAIL` - register an admin account. This value will be set to the admin email address. 
+   * `ADMIN_EMAIL` - register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
    * `ADMIN_DB_ID` - after adding the admin account to the DB, store the admin document's MongoDB *_id*
    * `ADMIN_SECRET_TOKEN` - make up a string to be used to make the admin's JSON Web Token
    * `USER_SECRET_TOKEN` - make up a string to be used to make the users's JSON Web Token
