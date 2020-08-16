@@ -58,7 +58,7 @@ exports.login = async (req,res,next) => {
     // 2) CREATE + ASSIGN TOKEN So User Can Access Private Routes
     let token = null
     if (user.email === process.env.ADMIN_EMAIL){
-        token = jwt.sign({id: process.env.DB_ADMIN_ID}, process.env.ADMIN_SECRET_TOKEN)                             // Admin Token
+        token = jwt.sign({id: process.env.ADMIN_DB_ID}, process.env.ADMIN_SECRET_TOKEN)                             // Admin Token
     }
     else{
         token = jwt.sign({id: user._id}, process.env.USER_SECRET_TOKEN)                                             // Make a new JWT Tocken. Pass in user's db _id and ur made up token    
