@@ -2,10 +2,14 @@ require('dotenv/config')
 const express    = require('express')
 const mongoose   = require('mongoose')
 const authRoutes = require('./routes/auth')
+const postRoutes = require('./routes/admin')
+const {verifyAdmin, verifyUser} = require('./routes/verifyUser')                       // 1) PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
+
 const app = express()
 
 app.use(express.json())                                                             
-app.use('/api/user', authRoutes)
+app.use('/api/signin', authRoutes)                                                   // Register new user, login user
+app.use('/api/admin', verifyAdmin, postRoutes)                           // 2) PRIATE ROUTE: Add the Private middle ware to the middle of the router
 
 
 const port = 8080
@@ -15,12 +19,3 @@ mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlPa
     }))
     .catch((err) => {console.log("Connection Failed! err = " + err)})
     
-
-
-
-
-
-// password needs top be hashed or it will be shown in plain text in the DB
-// there is no validation of the schema yet so ppl can write passwords thats only one char instead of 6
-
-// npm install @hapi/joi

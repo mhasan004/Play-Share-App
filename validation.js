@@ -19,5 +19,7 @@ function loginValidation(data){
     return validationSchema.validate(data)                                                  // VALIDATE Data of Post req before we add to DB
 }
 
+
 module.exports.registerValidation = registerValidation
 module.exports.loginValidation = loginValidation
+
