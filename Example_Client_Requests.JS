@@ -1,11 +1,11 @@
-// ADD A NEW USER TO DB:    http://localhost:8080/api/signin/register   POST
+// ADD A NEW USER TO DB:    http://localhost:8080/api/auth/register     POST
     {
         "user": "name",
         "email": "name@gmaill.com",
         "password": "123456789"
     }
     
-// LOGIN:                   http://localhost:8080/api/signin/login      POST
+// LOGIN:                   http://localhost:8080/api/auth/login        POST
     {
         "email": "name@aim.com",
         "password": "123456789"

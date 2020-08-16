@@ -34,10 +34,12 @@ exports.registerNewUser = async (req,res,next) =>
     catch(err){
         res.status(400).json({status: -1, message:"Error: " + err})
     }
+  
 }   
 
 
-exports.login = async (req,res,next) => {       
+exports.login = async (req,res,next) => {    
+   
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidation(req.body)                                       
     if(error){ return res.status(400).json({status:-1, message: error.details[0].message}) }
@@ -58,10 +60,10 @@ exports.login = async (req,res,next) => {
     // 2) CREATE + ASSIGN TOKEN So User Can Access Private Routes
     let token = null
     if (user.email === process.env.ADMIN_EMAIL){
-        token = jwt.sign({id: process.env.ADMIN_DB_ID}, process.env.ADMIN_SECRET_TOKEN)                             // Admin Token
+        token = jwt.sign({id: process.env.ADMIN_DB_ID}, process.env.ADMIN_SECRET_TOKEN, {expiresIn: '3000'})          // Admin Token
     }
     else{
-        token = jwt.sign({id: user._id}, process.env.USER_SECRET_TOKEN)                                             // Make a new JWT Tocken. Pass in user's db _id and ur made up token    
+        token = jwt.sign({id: user._id}, process.env.USER_SECRET_TOKEN, {expiresIn: '3000'})                                             // Make a new JWT Token. Pass in user's db _id and ur made up token    
     }
     res.header('auth-token', token)                                                                                 // Send the token with the response
     res.json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
