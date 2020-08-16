@@ -1,10 +1,10 @@
 # Basic_REST_API_JWT_Authentication
+*Example Client requests to the REST API Server is shown in Example_Client_Requests.js*
 * **This REST API is built using Node, Express, and Mongoose** 
 * **bcrypt is used to store the hashed passwords into the database**
 * **JWT is used to authenticate a user**
 * **Joi is used to validate the POST requests**
 
-*Example Client requests to the REST API Server is shown in Example_Client_Requests.js*
 
 **To start the server locally, go to the Server folder:**
 1) npm install
