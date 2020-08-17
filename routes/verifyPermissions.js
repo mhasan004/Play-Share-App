@@ -11,13 +11,14 @@ exports.verifyPermissions = (req,res,next) => {                                 
         if (userType === "admin") 
             verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_TOKEN)               // 3) (returns _id of verified user in DB) Verify the user by checkign to see if the tokens in header with otu secret token
         else{
-            verified = jwt.verify(recieved_token, process.env.USER_SECRET_TOKEN)  
+            try{ verified = jwt.verify(recieved_token, process.env.USER_SECRET_TOKEN) }
+            catch{ verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_TOKEN)}           // I could be trying to access user url when im logged in as admin
         }
-        req.user = verified                                                                     // settign user to the _id of doc in DB
+        req.user = verified                                                                     // 4) setting user to the _id of doc in DB
         next()
     }
     catch(err){
-        return res.status(400).json({status: -1, message: "Invalid Token Error: " +err})
+        return res.status(400).json({status: -1, message: "Invalid Token Error: " +err}) 
     }
 }
 
