@@ -3,7 +3,7 @@
 * **This REST API is built using Node, Express, and Mongoose** 
 * **bcrypt is used to store hashed passwords and hashed user JWT secret keys into the database**
 * **JWT is used to authenticate a user**
-* **Joi is used to validate the POST requests**
+* **Joi is used to validate POST requests**
 
 
 **To start the server locally, go to the Server folder:**
