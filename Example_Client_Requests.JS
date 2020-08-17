@@ -12,7 +12,8 @@
             "password": "123456789"
         }
         // Will set header to the JWT token
-        // Will set req.user to the _id of tyhe user's doc in DB
+        // Will store a encrypted unique user secret token in the DB for the user
+        // req.user = _id of tyhe user's doc in DB
     
 //___________________________ PRIVATE ADMIN ROUTES ______________________________________________________________________
     // Need to set the 'auth-token' header with the admin's JWT token or will be denied!
@@ -34,7 +35,7 @@
 //___________________________ PRIVATE USER ROUTES ______________________________________________________________________
     // need to set the 'auth-token' header with the users's JWT token or will be denied!
 
-    // GET ALL POSTS                                http://localhost:8080/api/user/posts                   GET     d
+    // GET ALL POSTS                                http://localhost:8080/api/user/:username                   GET     d
 
 
 
