@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     secret_key:{
         type: String,
-        default: "None"
+        default: "None Yet"
     }
 })
 

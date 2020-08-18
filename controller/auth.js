@@ -70,9 +70,9 @@ exports.login = async (req,res,next) =>
         const salt = await bcrypt.genSalt(10)
         const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
         try{ await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})}                                                  // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
-        catch{ return res.json({status:-1, message: "Failed to add hashed user token to DB so login failed"})}
+        catch{ return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})}
     }
-    
+    console.log('dffds')
     res.header('auth-token', token)                                                                                                     // Send the token with the response
     res.json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
 }

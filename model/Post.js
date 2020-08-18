@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
-const User = require('../model/User')
+
 const postSchema = new mongoose.Schema({
+    author:{
+        type: String,                           // User's _id
+        required: true, 
+    },
     title:{
         type: String,
         required: true,
@@ -17,10 +21,6 @@ const postSchema = new mongoose.Schema({
     likes:{
         type: Number,
         default: 0
-    },
-    author:{
-        type: String,                           // User's _id
-        required: true, 
     }
 })
 

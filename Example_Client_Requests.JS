@@ -12,8 +12,13 @@
             "password": "123456789"
         }
         // Will set header to the JWT token
-        // Will store a encrypted unique user secret token in the DB for the user
-        // req.user = _id of tyhe user's doc in DB
+        // FOR USER: 
+            // Will create a hashed User JWT Secret Key, which will be used to create JWT. This secret key is hashed using user profile data and USER_SECRET_KEY stored in .env
+            // User JWT Secret Key is hashed once again using salt and is then stored in db
+        // FOR ADMIN:
+            // JWT is created using ADMIN_SECRET_KEY, which is stored in .env
+            // Unlike user, no JWT Secret Key is stored in db for admin
+        // req.user = _id of the user's doc in DB
     
 //___________________________ PRIVATE ADMIN ROUTES ______________________________________________________________________
     // Need to set the 'auth-token' header with the admin's JWT token or will be denied!
@@ -35,7 +40,15 @@
 //___________________________ PRIVATE USER ROUTES ______________________________________________________________________
     // need to set the 'auth-token' header with the users's JWT token or will be denied!
 
-    // GET ALL POSTS                                http://localhost:8080/api/user/:username                   GET     d
+    // GET ALL POSTS                                http://localhost:8080/api/user/:username                GET     d
+    // ADD A POST                                   http://localhost:8080/api/user/:username                POST    d
+        {
+            "author": "name2",
+            "title": "This is my first post",
+            "content": "blablabla"
+        }
+    // GET A POSTS                                  http://localhost:8080/api/user/:username/:post_id       GET     d
+    // EDIT A POSTS                                 http://localhost:8080/api/user/:username/:post_id       PATCH    d
 
 
 
@@ -67,6 +80,11 @@
     "email": "admin@gmail.com",
     "password": "123456789"
 }
+{
+    "username": "name1",
+    "email": "name@gmail.com",
+    "password": "123456789"
+}
 // LOGIN:                   http://localhost:8080/api/auth/login        post        
 {
     "email": "admin@gmail.com",
@@ -76,3 +94,8 @@
 
 
 http://localhost:8080/api/admin/users       get
+
+
+
+
+http://localhost:8080/api/user/name1   get
