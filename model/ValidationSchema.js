@@ -16,7 +16,7 @@ function loginValidation(data)
 {
     const validationSchema = Joi.object({                                                   // MAKE VALIDATION SCHEMA to login a user
         email: Joi.string().min(6).required().email(),
-        password: Joi.string().min(6).required()
+        password: Joi.string().min(6).required()                                            // *** client posts an encrypted password!     
     })
     return validationSchema.validate(data)                                                  // VALIDATE Data of Post req before we add to DB
 }

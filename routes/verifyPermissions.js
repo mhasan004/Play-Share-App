@@ -4,13 +4,12 @@ const User = require('../model/User')
 
 exports.verifyApp = (req,res,next) => {                                                                 // MiddleWare: App Register/login Access
     const recieved_access_key = req.header('auth-header')
-    if (recieved_access_key != process.env.AUTH_KEY) return res.status(401).json({status: -1, message: "This app does not have the correct access code"})   
+    if (recieved_access_key != process.env.APP_AUTH_KEY) return res.status(401).json({status: -1, message: "This app does not have the correct access code"})   
     next()
 }
 
 exports.verifyAdmin = (req,res,next) => {                                                               // MiddleWare: Private Admin Route
     const userType = req.baseUrl.split('/')[2]                                                          // Get the user type: admin or user
-
     const recieved_token = req.header('auth-token')                                                     // 1) Get the token from the header  of the request
     if(!recieved_token) 
         return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header"})   
@@ -41,12 +40,13 @@ exports.verifyUser = async (req,res,next) => {                                  
         }                       
         catch(err){
             try{
-                // Get User's Secret Key for JWT
-                const user_secret_key_recieved = await bcrypt.hash(user._id+user.email+user.username+user.password, process.env.USER_SECRET_KEY)                
-                const verify_user_secret_key = await bcrypt.compare(user_secret_key_recieved, user.secret_key)
+                // Recreate what the User's Secret Key should be and verify. Then calculate the JWT hash and verify:
+                const user_secret_key = await bcrypt.hash(user._id+user.email+user.username+user.password, process.env.USER_SECRET_KEY) // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
+                const verify_user_secret_key = await bcrypt.compare(user_secret_key, user.secret_key)
                 if (!verify_user_secret_key)
                     return res.status(401).json({status: -1, message: "Access Denied! Invalid Secret Token"}) 
-                verified = jwt.verify(recieved_token, user_secret_key_recieved)                         // See if a right user is trying to access this router
+                
+                verified = jwt.verify(recieved_token, user_secret_key)                                  // See if a right user is trying to access this router
             }            
             catch{throw err}                                                                            // If neither the admin or the right user, throw error        
         }
@@ -54,6 +54,6 @@ exports.verifyUser = async (req,res,next) => {                                  
         next()
     }
     catch(err){
-        return res.status(400).json({status: -1, message: "Invalid Token Error: " +err}) 
+        return res.status(400).json({status: -1, message: "Access Denied! Invalid Token: " + err}) 
     }
 }

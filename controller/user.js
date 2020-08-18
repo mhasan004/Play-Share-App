@@ -6,8 +6,13 @@ const {postValidation} = require('../model/ValidationSchema')
 exports.getAllPosts = async (req,res,next) => 
 {
     const username = req.baseUrl.split('/')[3]
-    const user_posts = await Post.find({author: username})
-    res.status(200).json({status: 1, user_posts})                                                       
+    try{
+         const user_posts = await Post.find({author: username})
+         res.status(200).json({status: 1, user_posts})                                                       
+    }
+    catch{
+        res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
+    }
 }
 exports.addPost = async (req,res,next) => 
 {
@@ -59,10 +64,10 @@ exports.deleteAPost = async (req,res,next) =>
     if (!post_to_del)
         return res.status(401).json({status: -1, message: "This Post Doesn't Exist!"})   
     try{
-        const deleted_post = await Post.deleteOne({ _id: post_to_del })
+        const deleted_post = await Post.deleteOne({ _id: post_to_del._id })
         res.status(200).json({status: 1, deleted_post: deleted_post})
     }
-    catch(er){
+    catch(err){
         res.status(400).json({status: -1, message: "Failed to delete post: "+err})
     }
 }
