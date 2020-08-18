@@ -1,5 +1,8 @@
 # Basic_REST_API_JWT_Authentication
 *Example Client requests to the REST API Server is shown in Example_Client_Requests.js*
+
+----------------------
+
 * **This REST API is built using Node, Express, and Mongoose** 
 * **bcrypt is used to store hashed passwords and hashed user JWT secret keys into the database**
 * **JWT is used to authenticate a user**
