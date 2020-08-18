@@ -10,10 +10,14 @@
 1) npm install
 
 2) Need to create a **.env** file and create 4 variables: 
-   * `DB_CONNECT` - stores your MongoDB Connection URL
-   * `ADMIN_EMAIL` - register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
-   * `ADMIN_SECRET_TOKEN` - make up a string to be used to make the admin's JSON Web Token
-   * `USER_SECRET_TOKEN`  - make up a string to be used to make unique users JSON Web Tokens
+   * `DB_CONNECT` - Store your MongoDB Connection URL
+   * `ADMIN_EMAIL` - Register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
+   
+   * `APP_AUTH_KEY` -   Make up a string. Need this key to give an application permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database..
+
+   * `ADMIN_SECRET_TOKEN` - Make up a string. This will be used to make the admin's JSON Web Token
+   * `USER_SECRET_TOKEN`  - Make up a string. This will be used to make unique users JSON Web Tokens
+   * `ENCRYPTION_KEY`     - Make up a string. This key will help the server decrypt the password that was sent via POST request by the client to login and register. 
 
 3) npm start
 
