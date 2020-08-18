@@ -1,4 +1,4 @@
-# Basic_REST_API_JWT_Authentication
+# Social_Media_REST_API
 *Example Client requests to the REST API Server is shown in Example_Client_Requests.js*
 
 ----------------------
