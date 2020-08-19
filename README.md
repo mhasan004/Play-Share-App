@@ -11,7 +11,7 @@
 
 ----------------------
 
-**To start the server locally:**
+### To start the server locally:
 1) npm install
 
 2) Need to create a **.env** file and create 6 variables: 
@@ -23,4 +23,25 @@
    * `ENCRYPTION_KEY`     - Make up a string. This key will help the server decrypt the password that was sent via POST request by the client to login and register. 
 
 3) npm start
+
+----------------------
+### Security:
+**Logging In**
+* Client
+  * s
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
