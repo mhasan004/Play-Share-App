@@ -11,7 +11,7 @@
 
 ----------------------
 
-# 🏡 HOW TO START SERVER LOCALLY:
+# 🏡 HOW TO RUN SERVER LOCALLY:
 1) `npm install`
 2) Need to make an **.env** file and create these seven variables: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
