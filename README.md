@@ -11,7 +11,7 @@
 
 ----------------------
 
-# 🏡 To start the server locally:
+# 🏡 HOW TO START SERVER LOCALLY:
 1) `npm install`
 2) Need to create a **.env** file and create 7 variables: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
@@ -23,15 +23,15 @@
    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can chnage this number every year to change future hashed algorithm
 3) `npm start`
 
-# 🛡️ Security:
-### 🔑 Registering New User Security
+# 🛡️ APP SECURITY:
+### 🔑 REGISTRATION SECURITY
 * **CLIENT:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER:** 
   * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
   * The request is validated using **Joi**
 
-### 🔒 Login Security
+### 🔒 LOGIN SECURITY
 * **CLIENT**
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER**
