@@ -47,7 +47,7 @@
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the User Secret Key and `ADMIN_SECRET_KEY`
 * **Sending JWT Tokens**
-  * The JWT token is encrypted with different keys when sending from client and server.
+  * The JWT token is encrypted with two keys when sending from client and server.
   * In the server, the JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted both ways.
 
