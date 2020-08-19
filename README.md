@@ -11,7 +11,7 @@
 
 ----------------------
 
-### To start the server locally:
+## To start the server locally:
 1) npm install
 
 2) Need to create a **.env** file and create 6 variables: 
@@ -26,7 +26,7 @@
 
 ----------------------
 ## Security:
-###Logging In
+### Logging In
 * **Client**
   * s
 
