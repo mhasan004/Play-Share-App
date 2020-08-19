@@ -20,7 +20,7 @@
    * `ADMIN_SECRET_KEY` - Make up a value. This will be used to make the admin's JSON Web Token
    * `USER_SECRET_KEY`  - Make up a value. This will be used to make unique users JSON Web Tokens
    * `ENCRYPTION_KEY`   - Make up a value. This key will help the server decrypt the password that was sent via POST request by the client to login and register. 
-   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and user secret token to store in the database. Can chnage this number every year to change future hashed algorithm
+   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can chnage this number every year to change future hashed algorithm
 3) `npm start`
 
 # 🛡️ Security:
