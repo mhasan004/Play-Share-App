@@ -13,14 +13,14 @@
 
 # 🏡 HOW TO RUN SERVER LOCALLY:
 1) `npm install`
-2) Need to make an **.env** file and create these eight variables: 
+2) Need to make an **.env** file and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - Register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
-   * `APP_AUTH_KEY` - Make up a value. Need this key to give an application permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database..
-   * `ADMIN_SECRET_KEY` - Make up a value. This will be used to make the admin's JWT
-   * `USER_SECRET_KEY`  - Make up a value. This will be used to make the user's JWT
-   * `SERVER_ENCRYPTION_KEY`   - Make up a value. This key will help the client decrypt the JWT token that is sent from the server durign login.
-   * `CLIENT_ENCRYPTION_KEY`   - Make up a value. This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
+   * `APP_AUTH_KEY` - Need this key to give an application permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database..
+   * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
+   * `USER_SECRET_KEY`  - This will be used to make the user's JWT
+   * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
+   * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can chnage this number every year to change future hashed algorithm
 3) `npm start`
 
