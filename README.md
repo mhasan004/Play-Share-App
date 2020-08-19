@@ -24,7 +24,7 @@
 3) `npm start`
 
 # 🛡️ Security:
-### 🔐 Registering New User Security
+### 🔑 Registering New User Security
 * **CLIENT:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER:** 
@@ -48,8 +48,7 @@
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the User Secret Key and `ADMIN_SECRET_KEY`
     * The JWT token is encrypted using the `ENCRYPTION_KEY` and is stored in the 'auth-token' header. 
 
-# 🏡 Usability:
-
+# Usability:
 
 
 
