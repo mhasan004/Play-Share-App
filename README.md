@@ -24,7 +24,7 @@
 3) `npm start`
 
 # 🛡️ Security:
-### 🔑 Registering New User Security
+### 🔐 Registering New User Security
 * **CLIENT:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER:** 
