@@ -1,5 +1,5 @@
 # Social_Media_REST_API
-*Example Client requests to the REST API Server is shown in Example_Client_Requests.js*
+*Example Client requests that can be made to this REST API are shown in Example_Client_Requests.js*
 
 ----------------------
 
