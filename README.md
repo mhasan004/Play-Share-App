@@ -25,20 +25,24 @@
 
 ## Security:
 ### Registering New User Security
-* **Client:** The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **Server:** 
+* **CLIENT:** 
+  * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+* **SERVER:** 
   * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using *bcrypt* and stored in the database
   * The request is validated using *Joi*
 
 ### Login Security
-* **Client**
+* **CLIENT**
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **REST API Server**
+* **REST API SERVER**
   * The encrypted password is decoded using the `ENCRYPTION_KEY`.
   * User is verified by using *bcrypt* to calculate a hash and comparing it to the hashed password that is stored in the database. 
-  **JWT Token Creation Process for Users**
-    * s
-
+  * **JWT Token Creation Process for Users**
+    * Will create and store a hashed User JWT Secret Key, which will be used to create JWT.
+    * This secret key is encrypted by generating a unique hash (with bycrypt) using `USER_SECRET_KEY` (stored in .env) and the user's profile data as the salt. this creates a unique encryption key for each user.
+    * This ensures that each user has a unique secret key and therefore a unique JWT
+    * To verify that user, we just recreate that unique User JWT Secret Key by hashing the USER_SECRET_KEY using the user's data, store din the db, as the salt
+    * User JWT Secret Key is hashed with *bcrypt* and is then stored in db.
 
 
 
