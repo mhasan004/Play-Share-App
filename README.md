@@ -13,7 +13,7 @@
 
 # 🏡 HOW TO START SERVER LOCALLY:
 1) `npm install`
-2) Need to make an **.env** file and create 7 variables: 
+2) Need to make an **.env** file and create these seven variables: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - Register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
    * `APP_AUTH_KEY` - Make up a value. Need this key to give an application permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database..
