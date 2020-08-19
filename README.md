@@ -28,17 +28,17 @@
 * **CLIENT:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER:** 
-  * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using *bcrypt* and stored in the database
-  * The request is validated using *Joi*
+  * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
+  * The request is validated using **Joi**
 
 ### 🔒 Login Security
 * **CLIENT**
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER**
   * The encrypted password is decoded using the `ENCRYPTION_KEY`.
-  * User is verified by using *bcrypt* to calculate a hash and comparing it to the hashed password that is stored in the database. 
+  * User is verified by using **bcrypt** to calculate a hash and comparing it to the hashed password that is stored in the database. 
   * **JWT Token Creation Process for Users:**
-    * JSON Web Tokens (JWT) need a secret key to create a JWT token hash. Need a unique JWT secret key for each user to that users can't access another user's route.
+    * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. Need a unique JWT secret key for each user to that users can't access another user's route.
     * A unique JWT User Secret Key hash is created by hashing `USER_SECRET_KEY` and it salting it using a unique string created by append different fields of the user's profile that is stored in the database (such as the username, email, hashed password,and ObjectID). 
     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
     * We need to store this User Secret Key so that we can validate a JWT. The User JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
