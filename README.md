@@ -48,6 +48,7 @@
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the User Secret Key and `ADMIN_SECRET_KEY`
     * The JWT token is encrypted using the `ENCRYPTION_KEY` and is stored in the 'auth-token' header. 
 
+# 🏡 Usability:
 
 
 
