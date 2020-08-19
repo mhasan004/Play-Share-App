@@ -31,7 +31,7 @@
   * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
   * The request is validated using **Joi**
 
-### 🔒 Login Security🪚
+### 🔒 Login Security
 * **CLIENT**
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **REST API SERVER**
