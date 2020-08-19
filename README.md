@@ -13,7 +13,7 @@
 
 # 🏡 HOW TO RUN SERVER LOCALLY:
 1) `npm install`
-2) Need to make an **.env** file and create these seven variables: 
+2) Need to make an **.env** file and create these eight variables: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - Register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
    * `APP_AUTH_KEY` - Make up a value. Need this key to give an application permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database..
@@ -27,16 +27,16 @@
 # 🛡️ APP SECURITY:
 ### 🔑 REGISTRATION SECURITY
 * **Client:** 
-  * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+  * The password is encrypted with the `SERVER_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **Server:** 
-  * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
+  * The password is decrypted using the `SERVER_ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
   * The request is validated using **Joi**
 
 ### 🔒 LOGIN SECURITY
 * **Client**
-  * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+  * The password is encrypted with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **Server**
-  * The encrypted password is decoded using the `ENCRYPTION_KEY`.
+  * The password is decrypted using the `CLIENT_ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash and comparing it to the hashed password that is stored in the database. 
   * **JWT Token Creation Process for Users:**
     * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. Need a unique JWT secret key for each user to that users can't access another user's route.
@@ -44,10 +44,11 @@
     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
     * We need to store this User Secret Key so that we can validate a JWT. The User JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
     * The JWT is created using the concatenation of all the user's profile data and the User Secret Key.
-    * The JWT token is encrypted using the `ENCRYPTION_KEY` and is stored in the 'auth-token' header. 
+    * The JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. 
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the User Secret Key and `ADMIN_SECRET_KEY`
-    * The JWT token is encrypted using the `ENCRYPTION_KEY` and is stored in the 'auth-token' header. 
+    * The JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client.
+  * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted both ways.
 
 # 📐 Usability:
 
