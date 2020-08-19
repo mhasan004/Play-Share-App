@@ -11,7 +11,7 @@
 
 ----------------------
 
-# To start the server locally:
+# 🏡 To start the server locally:
 1) `npm install`
 2) Need to create a **.env** file and create 7 variables: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
@@ -23,7 +23,7 @@
    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and user secret token to store in the database. Can chnage this number every year to change future hashed algorithm
 3) `npm start`
 
-# Security:
+# 🛡️ Security:
 ### Registering New User Security
 * **CLIENT:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
