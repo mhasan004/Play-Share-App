@@ -25,16 +25,16 @@
 
 # 🛡️ APP SECURITY:
 ### 🔑 REGISTRATION SECURITY
-* **CLIENT:** 
+* **Client:** 
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **REST API SERVER:** 
+* **Server:** 
   * The encrypted password is decoded using the `ENCRYPTION_KEY` and is then hashed using **bcrypt** and stored in the database
   * The request is validated using **Joi**
 
 ### 🔒 LOGIN SECURITY
-* **CLIENT**
+* **Client**
   * The password is encrypted with the `ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **REST API SERVER**
+* **Server**
   * The encrypted password is decoded using the `ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash and comparing it to the hashed password that is stored in the database. 
   * **JWT Token Creation Process for Users:**
