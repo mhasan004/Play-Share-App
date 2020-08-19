@@ -44,10 +44,10 @@
     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
     * We need to store this User Secret Key so that we can validate a JWT. The User JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
     * The JWT is created using the concatenation of all the user's profile data and the User Secret Key.
-    * The JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. 
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the User Secret Key and `ADMIN_SECRET_KEY`
-    * The JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client.
+* **Sending JWT Tokens**
+  * In the server, the JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client.
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted both ways.
 
 # 📐 Usability:
