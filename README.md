@@ -7,7 +7,7 @@
 * **bcrypt is used to store hashed passwords and hashed user JWT secret keys into the database**
 * **JWT is used to authenticate a user**
 * **Joi is used to validate POST requests**
-* **crypto-js is used to encrpt and decrypt a user's password**
+* **crypto-js is used to encrpt and decrypt a user's password and secret key**
 
 ----------------------
 
