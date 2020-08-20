@@ -6,9 +6,9 @@
 
 * **This REST API is built using Node, Express, and Mongoose** 
 * **bcrypt is used to store hashed passwords and hashed user JWT secret keys into the database**
+* **crypto-js is used to encrpt and decrypt username, email, password, and secret key between client and server**
 * **JWT is used to authenticate a user**
 * **Joi is used to validate POST requests**
-* **crypto-js is used to encrpt and decrypt a user's password and secret key**
 
 ----------------------
 
