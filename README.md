@@ -1,5 +1,7 @@
 # Social_Media_REST_API
+
 *Example Client requests that can be made to this REST API are shown in Example_Client_Requests.js*
+
 ----------------------
 
 * **This REST API is built using Node, Express, and Mongoose** 
