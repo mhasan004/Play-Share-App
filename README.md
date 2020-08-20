@@ -1,5 +1,7 @@
 # Social_Media_REST_API
 
+*This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
+
 *Example Client requests that can be made to this REST API are shown in Example_Client_Requests.js*
 
 ----------------------
