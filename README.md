@@ -46,12 +46,18 @@
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the JWT User Secret Key and `ADMIN_SECRET_KEY`
 * **Sending JWT Tokens**
-  * The JWT token is encrypted with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
-  * In the server, the JWT token is encrypted using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
-  * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted both ways.
+  * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
+  * In the server, the JWT token is encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
+  * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted (with AES) both ways.
 
 # 📐 USABILITY:
 * **Client to Server Requests:**
-  * To make login/register requests to the server, the application needs to have the right access. Make a header called **'auth-app'**. The auth-app key will be `APP_AUTH_KEY`, but we need to encrypt it before sending it to the server. So encrypt the `APP_AUTH_KEY` using the `CLIENT_ENCRYPTION_KEY` and set **'auth-app'** to this encrypted key
+  * **Client Headers**
+  * To make login/register requests to the server, the application needs to have the right access. 
+  * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`
+  * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`
+  * Header **'Content-Type'** = `application/json`
+  
+  
 
 
