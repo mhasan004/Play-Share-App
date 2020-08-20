@@ -1,34 +1,26 @@
 //___________________________ Login/Register ROUTES ______________________________________________________________________
+    // Set 'auth-app' header to APP_AUTH_KEY encrypted with CLIENT_ENCRYPTION_KEY
     // ADD A NEW USER TO DB:                        http://localhost:8080/api/auth/register                 POST    d
         {
             "username": "name",
             "email": "name@gmail.com",
             "password": "123456789"
         }
-        // Client: The password is encrypted with a common ENCRYPTION_KEY (stored in .env) and is sent to the REST API. 
-        // Server: The REST API decodes the encrypted password using the ENCRYPTION_KEY and bcrypt hashes the password and stores it in the DB
+        // Client (before sending): 
+            // Encrypt (with AES) the Password with the CLIENT_ENCRYPTION_KEY
 
     // LOGIN:                                       http://localhost:8080/api/auth/login                    POST    d
         {
-            "email": "name@gmail.com",
+            "username": "name", // OR USE EMAIL
             "password": "123456789"
         }        
-        // Client: 
-            // The password is encrypted with a common ENCRYPTION_KEY, stored in .env, and is sent to the REST API. 
-            // Will set header to the JWT token
-        // Server: 
-            // The REST API decrypts the hashed password using the common key and verifies the password stored in db
-            // JWT CREATION PROCESS FOR USER: 
-                // Will create and store a hashed User JWT Secret Key, which will be used to create JWT.
-                // This secret key is encrypted by generating a unique hash (with bycrypt) using the user's profile data and USER_SECRET_KEY (stored in .env) as a unique the encryption key. 
-                // This ensures that each user has a unique secret key and therefore a unique JWT
-                // User JWT Secret Key is hashed with bcrypt and is then stored in db.
-            // JWT CREATION PROCESS FOR ADMIN:
-                // JWT is created using the ADMIN_SECRET_KEY, which is stored in .env
-            // req.user = _id of the user's doc in DB
+        // Client (before sending): 
+            // Encrypt (with AES) the Password with the CLIENT_ENCRYPTION_KEY
+            // Set 'auth-token' header to the encrypted (with AES) JWT token (encrypted with CLIENT_ENCRYPTION_KEY)
     
 //___________________________ PRIVATE ADMIN ROUTES ______________________________________________________________________
-    // Need to set the 'auth-token' header with the admin's JWT token or will be denied!
+    // Set 'auth-token' header to the encrypted (with AES) JWT token that was generated and passed during login
+
     // GET ALL USERS                                http://localhost:8080/api/admin/users                   GET     d
     // GET ALL POSTS                                http://localhost:8080/api/admin/posts                   GET     d
 
@@ -45,7 +37,7 @@
 
 
 //___________________________ PRIVATE USER ROUTES ______________________________________________________________________
-    // need to set the 'auth-token' header with the users's JWT token or will be denied!
+    // Set 'auth-token' header to the encrypted (with AES) JWT token that was generated and passed during login
 
     // GET ALL POSTS                                http://localhost:8080/api/user/:username                GET     d
     // POST/ADD A POST                              http://localhost:8080/api/user/:username                POST    d
