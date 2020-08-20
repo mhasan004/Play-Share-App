@@ -16,7 +16,7 @@
 1) `npm install` on the *CLIENT* and *SERVER* directories
 2) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
-   * `ADMIN_EMAIL` - Register/add your admin account to the database and store the email address here. Can generate JWT token and login to the admin account using this email.
+   * `ADMIN_EMAIL` - This is the email address of the admin account.
    * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
    * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
    * `USER_SECRET_KEY`  - This will be used to make the user's JWT
