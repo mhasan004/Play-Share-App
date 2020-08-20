@@ -55,8 +55,8 @@
 # 📐 USABILITY (Client to Server Requests):
 * **Client Headers**
   * To make login/register requests to the server, the application needs to have the right access. 
-  * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`
-  * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`
+  * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
+  * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
   
   
