@@ -41,7 +41,7 @@
 * **Server**
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
-  * **JWT Token Creation Process for Users:**
+  * **Unique JWT Token Creation Process for Users:**
     * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. We need a unique JWT secret key for each user to that an user can't access another user's routes.
     * A unique JWT User Secret Key hash is created by hashing `USER_SECRET_KEY` and salting it using a unique string created by append different fields of the user's profile data that is stored in the database (such as the username, email, hashed password,and ObjectID). 
     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
@@ -49,13 +49,13 @@
     * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data and the concatenation of the JWT User Secret Key and `ADMIN_SECRET_KEY`
-* **Sending JWT Tokens**
+* **Sending Encrypted JWT Tokens**
   * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
   * In the server, the JWT token is encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted (with AES) both ways.
 
 # 📐 USABILITY (Client to Server Requests):
-* **Client Headers**
+* ** Client Headers: Send encrypted authentication code to server through the header**
   * To make login/register requests to the server, the application needs to have the right access. 
   * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
   * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`. This lets you access user routes.
