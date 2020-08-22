@@ -55,7 +55,7 @@
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted (with AES) both ways.
 
 # 📐 USABILITY (Client to Server Requests):
-* ** Client Headers: Send encrypted authentication code to server through the header**
+* **Client Headers:** Send encrypted authentication code to server through the header
   * To make login/register requests to the server, the application needs to have the right access. 
   * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
   * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`. This lets you access user routes.
