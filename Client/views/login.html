@@ -1,24 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Login </title>
-</head>
+    <!DOCTYPE html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title> Sign-in or Sign-up</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../public/style/login.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">      <!--icons for fb, google, etc-->
+    </head>
 
-<body>
-    <form action="/api/auth/login" class="login-form" method="POST">
-        <div>
-            <label for="username"> Username or Email </label>
-            <input type="text" id="username" name="username">
+
+    <body>
+        <div class="container" id="container">
+            <div class="container-form container-sign-up">
+                <form action="#">
+                    <h1>Sign Up</h1>
+                    <div class="container-social-icons">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your email for registration</span>
+                    <input type="text" placeholder="Name" />
+                    <input type="email" placeholder="Email" />
+                    <input type="password" placeholder="Password" />
+                    <button id='signUpButton'>Sign Up</button>
+                </form> 
+            </div>
+
+            <div class="container-form container-sign-in"><form action="#">
+                <h1>Sign in</h1>
+                <div class="container-social-icons">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your account</span>
+                <input type="email" placeholder="Email" />
+                <input type="password" placeholder="Password" />
+                <a href="#">Forgot your password?</a>
+                <button id='signInButton'>Sign In</button>
+            </form></div>
+
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">                                            <!-- Signin overlay (left), signup form (right)-->
+                        <h1>Welcome Back! Sign in here!</h1>
+                        <p>Already have an account? Log in :)</p>
+                        <button class="overlay-button" id="signInButtonOverlay">Sign In</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">                                           <!-- Signin form (left), Signup overlay (right)-->
+                        <h1>Hey wana sign up?</h1>
+                        <p>Don't have an account? Register one or we will find you :)</p>
+                        <button class="overlay-button" id="signUpButtonOverlay">Sign Up</button>
+                    </div>
+                </div>
+            </div>   
         </div>
-        <div>
-            <label for="pass"> Password </label>
-            <input type="text" id="pass" name="password">
-        </div>
-        
-        <button type="submit"> Sign In </button>
-    </form>   
-   
-</body>
+    </body>
+    <footer>
+        <!-- <script src="main.js"></script> -->
+    </footer>
+
 </html>

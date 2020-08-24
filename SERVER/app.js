@@ -21,12 +21,12 @@ app.use('/api/user/:username', verifyUser, userRoutes)                          
 
 
 const port = 8080
-const server_key = path.join(__dirname, '../', 'server.key')
-const server_cert = path.join(__dirname, '../', 'server.cert')
-const https_options = {
-    key: fs.readFileSync(server_key),
-    cert: fs.readFileSync(server_cert)
-}
+// const server_key = path.join(__dirname, '../', 'server.key')
+// const server_cert = path.join(__dirname, '../', 'server.cert')
+// const https_options = {
+//     key: fs.readFileSync(server_key),
+//     cert: fs.readFileSync(server_cert)
+// }
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
     .then( () => {
         // https.createServer(https_options, app).listen(port, () => {

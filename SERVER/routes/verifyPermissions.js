@@ -47,7 +47,7 @@ exports.verifyUser = async (req,res,next) => {                                  
     const recieved_encypted_token = req.header('auth-token') 
     if(!recieved_encypted_token || !user)  
         return res.status(401).json({status: -1, message: "Access Denied! Maybe Wrong auth-token Header?"}) 
-    const bytes  = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                        // DECRYPT TOKEN
+    bytes  = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                        // DECRYPT TOKEN
     const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
 
     // VERIFY the user by checking if correct JWT
