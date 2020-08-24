@@ -25,5 +25,5 @@ const port = 3005
 // })
 
 app.listen(port, ()=>{
-    console.log(`Client is running at port: http://localhost:${port}   http://localhost:${port}/api/auth/register   http://localhost:${port}/api/auth/login`)                      
+    console.log(`Client is running at port: http://localhost:${port}   http://localhost:${port}/register   http://localhost:${port}/login`)                      
 })

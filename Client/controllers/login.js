@@ -2,12 +2,14 @@ const CryptoJS = require("../node_modules/crypto-js");
 const fetch    = require('../node_modules/node-fetch/lib') 
 const path     = require('path')                                                  // Absolute path to this directory    
 
-exports.getRegister = (req,res,next) =>{
-    res.sendFile(path.join(__dirname, "../", "views", "login.html") ) 
-}
+const login_page_path = path.join(__dirname, "../", "views", "login.html") 
 
 exports.getLogin = (req,res,next) =>{
-    res.sendFile(path.join(__dirname, "../", "views", "login.html") ) 
+    res.sendFile(login_page_path) 
+}
+
+exports.getRegister = (req,res,next) =>{
+    res.sendFile(login_page_path) 
 }    
 
 /*

@@ -9,7 +9,7 @@
 }
 body{
     font-family: 'Montserrat', sans-serif;
-    background: rgb(117, 211, 230);
+    background:#ddd;/* rgb(218, 230, 236);/*rgb(117, 211, 230);*/
 
     display: flex;
     flex-direction: column;                     /* column: all in one col = each div in own row*/
@@ -23,7 +23,6 @@ body{
 h1{
     font-weight: bold;
     margin: 0;
-    color: black;
 }
 p{
     font-size: 0.8 rem;
@@ -80,6 +79,8 @@ a{
 
 /*-------------------------------------SIGN IN / UP CONTAINER ------------------------------------------*/
 .container-form{
+    color: black;
+
     position: absolute;                             /* sign in and sign up f6orm devs will be taken out of the flow and will be on top fo the overlay divs*/
     top:0;
     height: 100%;
@@ -99,6 +100,8 @@ a{
 
 /*------------------------------------- OVERLAY CONTAINER ------------------------------------------*/
 .overlay-container{
+    color: white;
+
     position: absolute;                             /* Move the overlay divs to the right side*/
     top: 0;
     left: 50%;
@@ -185,18 +188,20 @@ a{
     margin: 20px 0;                                 /* top and bottom spacing for social icons */
 }
 .container-social-icons a {                         /* Social Media Icons */
+    color: #d4748a;
     background: #ddd;
     border: 1px solid white;
     border-radius:50%;
     padding: 10px 0 10px;
+    text-decoration: none;
 
     display: inline-flex;
     justify-content: center;
     align-items: center;
 
     margin: 0 5px;
-    height: 40px;                                   /* height and width of the circles surrounding each icon*/
-    width: 40px;        
+    height: 42px;                                   /* height and width of the circles surrounding each icon*/
+    width: 42px;        
 }
 
 button{
