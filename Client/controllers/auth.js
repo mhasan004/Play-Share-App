@@ -1,5 +1,5 @@
-const CryptoJS = require("crypto-js");
-const fetch    = require('node-fetch') 
+const CryptoJS = require("../node_modules/crypto-js");
+const fetch    = require('../node_modules/node-fetch/lib') 
 const path     = require('path')                                                  // Absolute path to this directory    
 
 exports.getRegister = (req,res,next) =>{
@@ -85,8 +85,6 @@ exports.postLogin = async (req,res,next) =>{
         }
     }
     catch(err){
-        console.log("x")
-
         console.log(err)
     }
 }

@@ -1,10 +1,10 @@
 require('dotenv').config({ path: '../.env' })
-const express     = require('express')
-const mongoose    = require('mongoose')
-const fs          = require('fs')                                                       // Need this to read the files generated when running:  openssl req -nodes -new -x509 -keyout server.key -out server.cert
-const https       = require('https') 
-const path       = require('path')    
-const cors        = require('cors')
+const express  = require('express')
+const mongoose = require('mongoose')
+const fs       = require('fs')                                                       // Need this to read the files generated when running:  openssl req -nodes -new -x509 -keyout server.key -out server.cert
+const https    = require('https') 
+const path     = require('path')    
+const cors     = require('cors')
 
 const authRoutes  = require('./routes/auth')
 const adminRoutes = require('./routes/admin')
@@ -36,3 +36,5 @@ mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlPa
     })
     .catch((err) => {console.log("Connection Failed! " + err)})
     
+// chnage password need to change user secret key + pasword itself
+// replay using trees
