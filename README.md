@@ -3,18 +3,18 @@
 *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
 
 ----------------------
-### IN DEVELOPMENT:
-  * Client side with **React**.
-
-----------------------
-
 * **This REST API is built using Node, Express, and Mongoose** 
 * **bcrypt is used to store hashed passwords and user JWT secret keys into the database**
 * **crypto-js is used to encrpt and decrypt username, email, password, and JWT between client and server**
 * **JWT is used to authenticate a user**
 * **Joi is used to validate POST requests**
+----------------------
+### IN DEVELOPMENT:
+  * Client side with **React**.
 
 ----------------------
+
+
 
 # 🏡 HOW TO RUN SERVER LOCALLY:
 1) `npm install` on the *CLIENT* and *SERVER* directories
