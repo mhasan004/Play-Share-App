@@ -7,8 +7,8 @@
 ----------------------
 
 * **This REST API is built using Node, Express, and Mongoose** 
-* **bcrypt is used to store hashed passwords and hashed user JWT secret keys into the database**
-* **crypto-js is used to encrpt and decrypt username, email, password, and secret key between client and server**
+* **bcrypt is used to store hashed passwords and user JWT secret keys into the database**
+* **crypto-js is used to encrpt and decrypt username, email, password, and JWT between client and server**
 * **JWT is used to authenticate a user**
 * **Joi is used to validate POST requests**
 
@@ -28,6 +28,14 @@
 3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
 
 # 🛡️ APP SECURITY:
+  * All relevant data are encrypted using AES before being transfered from client to server or server to client.
+  * App will need to send the correct encrypted **auth-app** key to interact with the server.
+  * During registration and login, all inputs are validated with **Joi**.
+  * During registration, passwords and Unique User JWT Secret Keys are hashed and stored in the database.
+  * After successful login, the server creates an unique JWT, encrypts it with AES, and send to the client through the **auth-token** header.
+  * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
+
+  
 ### 🔑 REGISTRATION SECURITY
 * **Client:** 
   * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
