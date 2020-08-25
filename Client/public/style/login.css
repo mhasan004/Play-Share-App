@@ -1,15 +1,35 @@
 /* (signin/signup form, overlay signup/signin) -> default: (signin, signup layout) -> signup triggers animation -> move signup form to right. move signin overlay to left*/
 
-
 /* @import url('https://fonts.googleapi.com/css?family=Montserrat:400,800')*/
 @import url('https://fonts.google.com/specimen/Montserrat?selection.family=Montserrat:wght@400;800&sidebar.open=true');
+
+:root{
+    --background-color: #ddd;
+
+    --form-background-color: white;    
+    --form-text-color: black; 
+    --form-input-box-background-color:  #eee;
+    --form-social-icon-color: black;
+    --form-social-icon-background-color: #eee;
+    --form-button-color: #ff4b2b;
+    --form-button-text-color: white;
+
+    --overlay-background-color-old-machines: #ff416c;
+    --overlay-background-color-gradient: linear-gradient(to right, #ff4b2b, #ff416c) no-repeat 0 0 /cover;
+    --overlay-text-color: white;
+    --overlay-button-border-color: white;
+
+    --timing: 0.3s;
+}
+
+
 
 *{
     box-sizing: border-box; 
 }
 body{
     font-family: 'Montserrat', sans-serif;
-    background:#ddd;/* rgb(218, 230, 236);/*rgb(117, 211, 230);*/
+    background: var(--background-color);/* rgb(218, 230, 236);/*rgb(117, 211, 230);*/
 
     display: flex;
     flex-direction: column;                     /* column: all in one col = each div in own row*/
@@ -35,7 +55,7 @@ span{
     font-size: 0.8rem;
 }
 a{
-    color: rgb(0, 0, 0);
+    color: var(--form-social-icon-color);
     font-size: 0.8rem;
     margin: 15px 0;
 }
@@ -43,7 +63,7 @@ a{
 
 
 .container{
-    background: white;
+    background: var(--form-background-color);
     border-radius: 20px;                            /* round the corners*/
     box-shadow: 0 14px 28px rgb(0, 0, 0, .25), 0 10px 10px rgb(0, 0, 0, 0.2);   /* TIP: MULTI SHADOWS */
 
@@ -67,7 +87,7 @@ a{
     margin: 15% 20px 0px 20px;
 }
 .container-form input{                              /* Targetting input boxes of sign in and sign up forms*/
-    background: #eee;
+    background: var(--form-input-box-background-color);
     border:none;
     outline: none;
     border-radius: 20px;
@@ -79,12 +99,12 @@ a{
 
 /*-------------------------------------SIGN IN / UP CONTAINER ------------------------------------------*/
 .container-form{
-    color: black;
+    color: var(--form-text-color);
 
     position: absolute;                             /* sign in and sign up f6orm devs will be taken out of the flow and will be on top fo the overlay divs*/
     top:0;
     height: 100%;
-    transition: transform 0.6s ease-in-out;         /* TRANSFORM ANIMATION*/
+    transition: transform var(--timing) ease-in-out;         /* TRANSFORM ANIMATION*/
 }
 .container-sign-in{
     left: 0;
@@ -100,7 +120,7 @@ a{
 
 /*------------------------------------- OVERLAY CONTAINER ------------------------------------------*/
 .overlay-container{
-    color: white;
+    color: var(--overlay-text-color);
 
     position: absolute;                             /* Move the overlay divs to the right side*/
     top: 0;
@@ -110,12 +130,12 @@ a{
     z-index: 100;                                   /* overlay has the highest layer, so it can hide sign in sign up divs*/
 
     overflow: hidden;
-    transition: transform 0.6s ease-in-out;         /* TRANSFORM ANIMATION*/
+    transition: transform var(--timing) ease-in-out;         /* TRANSFORM ANIMATION*/
 }
 .overlay{
-    background: #ff416c;
-    background: linear-gradient(to right, #ff4b2b, #ff416c) no-repeat 0 0 /cover;
-    color: white;
+    background: var(--overlay-background-color-old-machines);
+    background: var(--overlay-background-color-gradient);
+    color:      var(--overlay-text-color);
 
     position: relative;
     left: -100%;
@@ -123,7 +143,7 @@ a{
     width: 200%;
 
     transform: translateX(0);                                                               /* TRANSFORM ANIMATION **** */
-    transition: transform 0.6s ease-in-out;
+    transition: transform var(--timing) ease-in-out;
 }
 .overlay-panel{
     position: absolute;                             /* the overlay div is positioned absolute in a relative positioned div*/
@@ -139,7 +159,7 @@ a{
     width: 50%;
     text-align: center;
     transform: translateX(0);/* TRANSFORM ANIMATION **** */
-    transition: transform 0.6s ease-in-out;
+    transition: transform var(--timing) ease-in-out;
 }
 .overlay-right{
     right: 0;
@@ -188,8 +208,8 @@ a{
     margin: 20px 0;                                 /* top and bottom spacing for social icons */
 }
 .container-social-icons a {                         /* Social Media Icons */
-    color: #2c1218;
-    background: #ddd;
+    color:      var(--form-social-icon-color);
+    background: var(--form-social-icon-background-color);
     border: 1px solid white;
     border-radius:50%;
     padding: 10px 0 10px;
@@ -206,9 +226,9 @@ a{
 
 button{
     border-radius: 20px;
-    border: 1px solid #ff4b2b;
-    background: #ff4b2b;
-    color: white;
+    border: 1px solid var(--form-button-color);
+    background: var(--form-button-color);
+    color:      var(--form-button-text-color);
     font-size:  0.8rem;
 
     padding: 12px 45px;
@@ -225,5 +245,5 @@ button:focus{
 }
 button.overlay-button{                              /* TRANSITION TRANSPARENT BUTTON (of overlay div) the button's border and text are white but background is whaever the div background is. */
     background: transparent;
-    border-color: white;
+    border-color: var(--overlay-button-border-color);
 }

@@ -94,26 +94,26 @@ exports.login = async (req,res,next) =>
         console.log( 'FAILED TO MAKE UNIQUE KEY!')
         return res.status(400).json({status:-1, message: "Failed to to hash secret key:" + err})
     }
-        if (user.email === process.env.ADMIN_EMAIL)
-        token = jwt.sign({id: encryption_input}, unique_user_secret_key+process.env.ADMIN_SECRET_KEY, {expiresIn: '1h'})        // Admin Token
+    if (user.email === process.env.ADMIN_EMAIL)
+        token = jwt.sign({id: encryption_input}, (unique_user_secret_key+process.env.ADMIN_SECRET_KEY).toString(), {expiresIn: '1h'})        // Admin Token
     else{
         token = jwt.sign({id: encryption_input}, unique_user_secret_key, {expiresIn: '1h'})                  // Make a new JWT Token. Pass in user's db _id and ur made up token    
     }
 
     // 3) Hash the unique user secret token and store in DB so one user cant peek at another user's page
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)
-    if (user.username != "admin"){
-        try{ 
-            const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
-            await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
-        }                                                  
-        catch{ 
-            return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})
-        }
+    // if (user.username != "admin"){
+    try{ 
+        const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
+        await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
+    }                                                  
+    catch{ 
+        return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})
     }
-    else{
-        console.log("\nNEED TO WRITE CODE TO LOG IN ADMIN!\n")
-    }
+    // }
+    // else{
+    //     console.log("\nNEED TO WRITE CODE TO LOG IN ADMIN!\n")
+    // }
 
     // 4) Encrypt the JWT token and set it in the header
     const server_token_enc = CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 

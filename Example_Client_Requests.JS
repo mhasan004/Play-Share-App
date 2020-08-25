@@ -2,7 +2,7 @@
     // Set 'auth-app' header to APP_AUTH_KEY encrypted with CLIENT_ENCRYPTION_KEY
     // ADD A NEW USER TO DB:                        http://localhost:8080/api/auth/register                 POST    d
         {
-            "username": "name",
+            "username": "name",       
             "email": "name@gmail.com",
             "password": "123456789"
         }

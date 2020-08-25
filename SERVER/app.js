@@ -16,8 +16,8 @@ app.use(cors())
 app.use(express.json())    
 
 app.use('/api/auth',  verifyApp, authRoutes)                                            // Register new user, login user (only apps with access key can register or login)
-app.use('/api/admin', verifyUser, adminRoutes)                                         // PRIVATE ADMIN ROUTES
-app.use('/api/user/:username', verifyUser, userRoutes)                                  // PRIVATE USER ROUTES   
+app.use('/api/admin', verifyApp, verifyUser, adminRoutes)                                         // PRIVATE ADMIN ROUTES
+app.use('/api/user/:username', verifyApp, verifyUser, userRoutes)                                  // PRIVATE USER ROUTES   
 
 const port = 8080
 // const server_key = path.join(__dirname, '../', 'server.key')

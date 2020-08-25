@@ -23,33 +23,33 @@ exports.verifyApp = (req,res,next) => {                                         
     next()
 }
 
-exports.verifyAdmin = async (req,res,next) => {                                                                             // MiddleWare: Private Admin Route
-    const userType = req.baseUrl.split('/')[2]                                                                              // Get the user type: admin or user
-    const user = await User.findOne({username: "admin"})
-    const encryption_input = (user._id+user.email+user.username+user.password).toString()
+// exports.verifyAdmin = async (req,res,next) => {                                                                             // MiddleWare: Private Admin Route
+//     const userType = req.baseUrl.split('/')[2]                                                                              // Get the user type: admin or user
+//     const user = await User.findOne({username: "admin"})
+//     const encryption_input = (user._id+user.email+user.username+user.password).toString()
 
-    const recieved_encypted_token = req.header('auth-token')                                                                // 1) Get the token from the header  of the request
-    if(!recieved_encypted_token) 
-        return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header"})   
-    const bytes = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                         // DECRYPT TOKEN
-    const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
+//     const recieved_encypted_token = req.header('auth-token')                                                                // 1) Get the token from the header  of the request
+//     if(!recieved_encypted_token) 
+//         return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header"})   
+//     const bytes = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                         // DECRYPT TOKEN
+//     const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
     
-    const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
-    const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
+//     const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
+//     const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
 
-    const unique_user_secret_key = await bcrypt.hash(encryption_input, process.env.USER_SECRET_KEY)      
-    try{
-        let verified = null
-        if (userType === "admin") 
-            verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_KEY+unique_user_secret_key)                      // 2) (returns _id doc of verified user in DB) Verify the user by checkign to see if the tokens in header with otu secret token
-        else{throw err}
-        req.user = verified                                                                                                 // 3) req.user = JWT object
-        next()
-    }
-    catch(err){
-        return res.status(400).json({status: -1, message: "Invalid Token Error: " +err})                                    // If wrong JWT token, will throw an error
-    }
-}
+//     const unique_user_secret_key = await bcrypt.hash(encryption_input, process.env.USER_SECRET_KEY)      
+//     try{
+//         let verified = null
+//         if (userType === "admin") 
+//             verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_KEY+unique_user_secret_key)                      // 2) (returns _id doc of verified user in DB) Verify the user by checkign to see if the tokens in header with otu secret token
+//         else{throw err}
+//         req.user = verified                                                                                                 // 3) req.user = JWT object
+//         next()
+//     }
+//     catch(err){
+//         return res.status(400).json({status: -1, message: "Invalid Token Error: " +err})                                    // If wrong JWT token, will throw an error
+//     }
+// }
 
 exports.verifyUser = async (req,res,next) => {                                                                              // MiddleWare: Private Unique User Route
     const bytes = CryptoJS.AES.decrypt(req.params.username, process.env.CLIENT_ENCRYPTION_KEY);                             // DECRYPT USER
@@ -72,7 +72,7 @@ exports.verifyUser = async (req,res,next) => {                                  
 
     try{
         try{
-            verified = jwt.verify(recieved_token, user_secret_key+process.env.ADMIN_SECRET_KEY)                                             // See if if the admin is trying to access this router
+            verified = jwt.verify(recieved_token, (user_secret_key+process.env.ADMIN_SECRET_KEY).toString())                                             // See if if the admin is trying to access this router
         }                       
         catch(err){
             try{
