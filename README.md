@@ -1,7 +1,9 @@
 # Social_Media_REST_API
 
 *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
-# IN DEVELOPMENT:
+
+----------------------
+### IN DEVELOPMENT:
   * Client side with **React**.
 
 ----------------------
