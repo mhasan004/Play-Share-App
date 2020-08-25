@@ -7,8 +7,8 @@ exports.getAllPosts = async (req,res,next) =>
 {
     const username = req.baseUrl.split('/')[3]
     try{
-         const user_posts = await Post.find({author: username})
-         res.status(200).json({status: 1, user_posts})                                                       
+        const user_posts = await Post.find({author: username})
+        res.status(200).json({status: 1, user_posts})                                                       
     }
     catch{
         res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})

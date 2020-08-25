@@ -33,7 +33,15 @@ exports.postRegister = async (req,res,next) =>{
             })
         })
         const res_json = await response.json()                                                                              // see if successful 
+        if (!res_json) 
+            return "Got no response!"
         console.log(res_json)
+        if (res_json.status === 1){
+            // clear the screen and move to login
+        }
+        if (res_json.status === 0){
+            res.send("Invalid login")
+        }
     }
     catch(err){
         console.log(err)
