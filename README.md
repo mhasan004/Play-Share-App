@@ -25,7 +25,7 @@
    * `USER_SECRET_KEY`  - This will be used to make the user's JWT
    * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
    * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
-   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can chnage this number every year to change future hashed algorithm
+   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
 2) `npm install` on the *CLIENT* and *SERVER* directories
 3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
 
