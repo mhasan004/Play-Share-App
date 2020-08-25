@@ -30,9 +30,9 @@
 # 🛡️ APP SECURITY:
 ### 🔑 REGISTRATION SECURITY
 * **Client:** 
-  * The username, email address, and password are encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+  * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **Server:** 
-  * The username, email address, and password are decrypted using the `SERVER_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
+  * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
   * The request is validated using **Joi**
 
 ### 🔒 LOGIN SECURITY
