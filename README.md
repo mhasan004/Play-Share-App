@@ -1,8 +1,8 @@
 # Social_Media_REST_API
 
 *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
-
-*Example Client requests that can be made to this REST API are shown in Example_Client_Requests.js*
+# IN DEVELOPMENT:
+  * Client side with **React**.
 
 ----------------------
 
@@ -55,6 +55,7 @@
     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
     * We need to store this JWT User Secret Key so that we can validate a JWT. The JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
     * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
+    * The JWT token lasts for one hour.
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
 * **Sending Encrypted JWT Tokens**
@@ -64,7 +65,7 @@
 
 # 📐 USABILITY (Client to Server Requests):
 * **Client Headers:** Send encrypted authentication code to server through the header
-  * To make login/register requests to the server, the application needs to have the right access. 
+  * To make any requests to the server, the application needs to have the valid access rights. 
   * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
   * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
