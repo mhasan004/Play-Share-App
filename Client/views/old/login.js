@@ -8,6 +8,10 @@ exports.getLogin = (req,res,next) =>{
     res.sendFile(login_page_path) 
 }
 
+exports.getRegister = (req,res,next) =>{
+    res.sendFile(login_page_path) 
+}    
+
 exports.postRegister = async (req,res,next) =>{
     const rest_url_base = "http://localhost:8080"
     const register_path = "/api/auth/register" 
@@ -16,6 +20,7 @@ exports.postRegister = async (req,res,next) =>{
     const encrypted_email    = CryptoJS.AES.encrypt(req.body.email, process.env.CLIENT_ENCRYPTION_KEY).toString()
     const encrypted_pass     = CryptoJS.AES.encrypt(req.body.password, process.env.CLIENT_ENCRYPTION_KEY).toString()
     const encrypted_auth_app_header = CryptoJS.AES.encrypt( process.env.APP_AUTH_KEY, process.env.CLIENT_ENCRYPTION_KEY).toString()       
+
 
     try{ 
         const response = await fetch(rest_url_base+register_path, {                                                         // POST REQUEST needs a dictionary as a fetch parameter
@@ -49,7 +54,7 @@ exports.postLogin = async (req,res,next) =>{
     const encrypted_username = CryptoJS.AES.encrypt(req.body.username, process.env.CLIENT_ENCRYPTION_KEY).toString()
     const encrypted_pass = CryptoJS.AES.encrypt(req.body.password, process.env.CLIENT_ENCRYPTION_KEY).toString()
     const encrypted_auth_app_header = CryptoJS.AES.encrypt( process.env.APP_AUTH_KEY, process.env.CLIENT_ENCRYPTION_KEY).toString()       
-    
+
     try{ 
         const response = await fetch(rest_url_base+login_path, {                                                            // 1) Send login details to the server
             method: 'POST',
@@ -61,7 +66,7 @@ exports.postLogin = async (req,res,next) =>{
             },
             body: JSON.stringify({
                 "username": encrypted_username,
-                "password": encrypted_pass,
+                "password": encrypted_pass
             })
         })
         

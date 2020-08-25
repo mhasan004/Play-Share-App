@@ -8,11 +8,13 @@ const authRoutes = require('./routes/login');
 const app = express()   
 app.use(express.json())   
 app.use(express.urlencoded({ extended: true })); 
+// app.set('view engine', 'ejs');                                                           
+app.set('views', 'views');  
 app.use(express.static(path.join(__dirname, 'public')))                                 // TO LINK CSS FILES IN HTML FILES express.static(...path...) gives a folder read access (static file now) so it can be accessed from anywhere!
 
 app.use('/', authRoutes)     
 
-const port = 3005    
+const port = 3009
 // const server_key = path.join(__dirname, '../', 'server.key')
 // const server_cert = path.join(__dirname, '../', 'server.cert')
 // const https_options = {
@@ -25,5 +27,5 @@ const port = 3005
 // })
 
 app.listen(port, ()=>{
-    console.log(`Client is running at port: http://localhost:${port}   http://localhost:${port}/register   http://localhost:${port}/login`)                      
+    console.log(`Client is running at port: http://localhost:${port}   http://localhost:${port}/login`)                      
 })

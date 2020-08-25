@@ -13,7 +13,7 @@
     <body>
         <div class="container" id="container">
             <div class="container-form container-sign-up">
-                <form action="#">
+                <form action="register" method="POST">
                     <h1>Sign Up</h1>
                     <div class="container-social-icons">
                         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -21,26 +21,28 @@
                         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                     <span>or use your email for registration</span>
-                    <input type="text" placeholder="Name" />
-                    <input type="email" placeholder="Email" />
-                    <input type="password" placeholder="Password" />
-                    <button id='signUpButton'>Sign Up</button>
+                    <input type="text"     name="username" placeholder="Username" />
+                    <input type="email"    name="email"    placeholder="Email" />
+                    <input type="password" name="password" placeholder="Password" />
+                    <button type="submit" id='signUpButton'>Sign Up</button>
                 </form> 
             </div>
 
-            <div class="container-form container-sign-in"><form action="#">
-                <h1>Sign in</h1>
-                <div class="container-social-icons">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-                <span>or use your account</span>
-                <input type="email" placeholder="Email" />
-                <input type="password" placeholder="Password" />
-                <a href="#">Forgot your password?</a>
-                <button id='signInButton'>Sign In</button>
-            </form></div>
+            <div class="container-form container-sign-in">
+                <form action="login" method="POST">
+                    <h1>Sign in</h1>
+                    <div class="container-social-icons">
+                        <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                        <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                    <span>or use your account</span>
+                    <input type="text" name="username" placeholder="Username" />
+                    <input type="password" name="password" placeholder="Password" />
+                    <a href="#">Forgot your password?</a>
+                    <button type="submit" id='signInButton'>Sign In</button>
+                </form>
+            </div>
 
             <div class="overlay-container">
                 <div class="overlay">
@@ -50,7 +52,7 @@
                         <button class="overlay-button" id="signInButtonOverlay">Sign In</button>
                     </div>
                     <div class="overlay-panel overlay-right">                                           <!-- Signin form (left), Signup overlay (right)-->
-                        <h1>Hey wana sign up?</h1>
+                        <h1>Hey wanna sign up?</h1>
                         <p>Don't have an account? Register one or we will find you :)</p>
                         <button class="overlay-button" id="signUpButtonOverlay">Sign Up</button>
                     </div>
@@ -59,7 +61,7 @@
         </div>
     </body>
     <footer>
-        <script src="js/login.js"></script>
+        <script src="js/login.js"> </script>
     </footer>
 
 </html>

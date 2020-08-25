@@ -67,10 +67,16 @@
 
 
 
+//encrypt username test12
+U2FsdGVkX18uYq3/8R6H2WhZN/BG5YsdiEMCjQvfdfc=
 
-//encrypted pass of client to server: 
-U2FsdGVkX1+wi8uCT2imcEeQssGetASfn+FEI1UW9sE=
+//encrypted pass of client to server: 123456789
+// U2FsdGVkX1+wi8uCT2imcEeQssGetASfn+FEI1UW9sE=
+// U2FsdGVkX1/z4xiaKMwQI3tg7YyDGivwNzfkW+WU9b4=
+U2FsdGVkX19tUZBAJnPBgzVaMbVNwhDuXkO+57PG8+I=
 
+// encrypted app -auth of client to server: 
+U2FsdGVkX19/Di9AK7za9K9b5yHmREBNmtDItknv0rdMd/t1LwKVnI0g5w1YjYYrrxfOaQVEJbn4eMikZ/q392mvwp02+xfdtOve3Y/tR53VU30s4Xkfy0swdbbx2zzyEnde/z655rSStOJjwLT0MInZG8srw/UKmXQd6ztKJAARk28cSbrP0Q8u+pkEPSSWUzlDwlnDQuJ8PQbcGzb3lW+XCzN8TQwsYup9TONwhohbVA7BeGGgyWVk127AC0i+l1iAcNCOFjFrRh9iZMeWoYzKMaQsN1HGKtOZo14lIEkuvA4X1wZtgYi5e0EtWeEgZeRDkC30SYrGTgm/WaIo/A==
 
 
 //---------------------------------------------------------------------- test

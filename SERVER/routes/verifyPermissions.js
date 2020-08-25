@@ -6,9 +6,16 @@ const User = require('../model/User')
 exports.verifyApp = (req,res,next) => {                                                                                     // MiddleWare: App Register/login Access
     const recieved_access_key = req.header('auth-app')
     if(!recieved_access_key) 
-        return res.status(401).json({status: -1, message: "Access Denied! No auth-app Header"})   
-    const bytes = CryptoJS.AES.decrypt(recieved_access_key, process.env.CLIENT_ENCRYPTION_KEY);                             // DECRYPT KEY
-    const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
+        return res.status(401).json({status: -1, message: "Access Denied! No auth-app Header"})
+    let recieved_token = null   
+    try{
+        const bytes = CryptoJS.AES.decrypt(recieved_access_key, process.env.CLIENT_ENCRYPTION_KEY);                             // DECRYPT KEY
+        recieved_token = bytes.toString(CryptoJS.enc.Utf8);
+    }
+    catch (err){
+        console.log("Couldn't decrypt auth token!")
+        return res.status(400).json({status: -1, message: "Error: " + err})   
+    }
     if (recieved_token != process.env.APP_AUTH_KEY) {
         console.log("not verified app")
         return res.status(401).json({status: -1, message: "This app does not have the correct auth-app header"})   
@@ -18,14 +25,19 @@ exports.verifyApp = (req,res,next) => {                                         
 
 exports.verifyAdmin = async (req,res,next) => {                                                                             // MiddleWare: Private Admin Route
     const userType = req.baseUrl.split('/')[2]                                                                              // Get the user type: admin or user
+    const user = await User.findOne({username: "admin"})
+    const encryption_input = (user._id+user.email+user.username+user.password).toString()
+
     const recieved_encypted_token = req.header('auth-token')                                                                // 1) Get the token from the header  of the request
     if(!recieved_encypted_token) 
         return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header"})   
-    
     const bytes = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                         // DECRYPT TOKEN
     const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
     
-    const unique_user_secret_key = await bcrypt.hash(user._id+user.email+user.username+user.password, process.env.USER_SECRET_KEY)      
+    const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
+    const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
+
+    const unique_user_secret_key = await bcrypt.hash(encryption_input, process.env.USER_SECRET_KEY)      
     try{
         let verified = null
         if (userType === "admin") 
@@ -43,6 +55,8 @@ exports.verifyUser = async (req,res,next) => {                                  
     const bytes = CryptoJS.AES.decrypt(req.params.username, process.env.CLIENT_ENCRYPTION_KEY);                             // DECRYPT USER
     const username = bytes.toString(CryptoJS.enc.Utf8);
     const user = await User.findOne({username: username})
+    const encryption_input = (user._id+user.email+user.username+user.password).toString()
+
 
     const recieved_encypted_token = req.header('auth-token') 
     if(!recieved_encypted_token || !user)  
@@ -52,14 +66,16 @@ exports.verifyUser = async (req,res,next) => {                                  
 
     // VERIFY the user by checking if correct JWT
     let verified = null
+    // Recreate what the User's Secret Key hash should be and verify. Then calculate the JWT hash and verify:
+    const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
+    const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
+
     try{
         try{
-            verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_KEY)                                             // See if if the admin is trying to access this router
+            verified = jwt.verify(recieved_token, user_secret_key+process.env.ADMIN_SECRET_KEY)                                             // See if if the admin is trying to access this router
         }                       
         catch(err){
             try{
-                // Recreate what the User's Secret Key hash should be and verify. Then calculate the JWT hash and verify:
-                const user_secret_key = await bcrypt.hash(user._id+user.email+user.username+user.password, process.env.USER_SECRET_KEY) // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
                 const verify_user_secret_key = await bcrypt.compare(user_secret_key, user.secret_key)
                 if (!verify_user_secret_key)
                     return res.status(401).json({status: -1, message: "Access Denied! Invalid Secret Token"}) 
