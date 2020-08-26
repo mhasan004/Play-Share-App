@@ -18,13 +18,10 @@
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many post by id. 
 * Client side is currently being built with **React**. Here is a demo of the login page:
  
- ![Login & Register Page Demo](login-register-demo.gif)
- ![Login & Register Page Demo](login-register-demo_old.gif)
-
+ ![Login & Register Page Demo](login_register_demo.gif)
 
 
  
-
 
 # 🏡 HOW TO RUN SERVER LOCALLY:
 1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
