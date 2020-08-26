@@ -23,7 +23,7 @@
 
  
 
-# 🏡 🏠 HOW TO RUN SERVER LOCALLY:
+# 🏠 HOW TO RUN SERVER LOCALLY:
 1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - This is the email address of the admin account.
