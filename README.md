@@ -19,6 +19,8 @@
 * Client side is currently being built with **React**. Here is a demo of the login page:
  
  ![Login & Register Page Demo](login-register-demo.gif)
+ ![Login & Register Page Demo](login-register-demo_old.gif)
+
 
 
  
