@@ -1,6 +1,5 @@
-/* (signin/signup form, overlay signup/signin) -> default: (signin, signup layout) -> signup triggers animation -> move signup form to right. move signin overlay to left*/
-
-/* @import url('https://fonts.googleapi.com/css?family=Montserrat:400,800')*/
+/* Login-Registration Formm Design Inspiration: https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/ */
+/* Process Description: (signin/signup form, overlay signup/signin) -> default: (signin, signup layout) -> signup triggers animation -> move signup form to right. move signin overlay to left*/
 @import url('https://fonts.google.com/specimen/Montserrat?selection.family=Montserrat:wght@400;800&sidebar.open=true');
 
 :root{

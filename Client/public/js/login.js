@@ -1,5 +1,3 @@
-// https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/
-
 const button_signUp_overlay = document.querySelector('#signUpButtonOverlay')
 const button_signIn_overlay = document.querySelector('#signInButtonOverlay')
 
