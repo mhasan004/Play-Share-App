@@ -17,7 +17,7 @@
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many post by id. 
 ### LOGIN & REGISTRATION DEMO: SILL IN DEVELOPMENT
-  * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
+ * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
 
  ![Login & Register Page Demo](login_register_demo.gif)
 
