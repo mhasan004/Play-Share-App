@@ -9,11 +9,20 @@
 * **JWT is used to authenticate a user**
 * **Joi is used to validate POST requests**
 ----------------------
-### IN DEVELOPMENT:
-  * Client side with **React**.
 
-----------------------
+# APPLICATION OVERVIEW:
+ * The login and register process is explained in the **APP SECURITY** section.
+ * All server routes are protected. To make any requests to the server, the app will need to supply the valid encrypted access key in the **auth-app** header. This is the `APP_AUTH_KEY`. 
+ * To access the user or admin private routes, the client must supply the valid encrypted JWT token in the **auth-token** header. The JWT is unique for every user. JWT expire after one hour. 
+ * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. 
+ * Admin can see all user's posts, see only a specific user's posts, and delete one or many post by id. 
+ 
+ * Client side is currently being built with **React**. Here is a demo of the login page:
+ ![Login & Register Page Demo](login-register-demo.gif)
+ <img src='login-register-demo.gif' title='Login & Register Page Demo' width='' alt='Login & Register Page Demo' />
 
+
+ 
 
 
 # 🏡 HOW TO RUN SERVER LOCALLY:
@@ -67,7 +76,7 @@
 
 # 📐 USABILITY (Client to Server Requests):
 * **Client Headers:** Send encrypted authentication code to server through the header
-  * To make any requests to the server, the application needs to have the valid access rights. 
+  * To make any requests to the server, the application needs to have the valid access key. 
   * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
   * Header **'auth-token'** = encrypt (with AES) the token recieved from the server during login with the `CLIENT_ENCRYPTION_KEY`. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
