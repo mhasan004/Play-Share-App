@@ -10,7 +10,7 @@
 * **Joi is used to validate POST requests**
 ----------------------
 
-# APPLICATION OVERVIEW:
+# 📋 APPLICATION OVERVIEW:
 * The login and register process is explained in the **APP SECURITY** section.
 * All server routes are protected. To make any requests to the server, the app will need to supply the valid encrypted access key in the **auth-app** header. This is the `APP_AUTH_KEY`. 
 * To access the user or admin private routes, the client must supply the valid encrypted JWT token in the **auth-token** header. The JWT is unique for every user. JWT expire after one hour. 
@@ -23,7 +23,7 @@
 
  
 
-# 🏡 HOW TO RUN SERVER LOCALLY:
+# 🏡 🏠 HOW TO RUN SERVER LOCALLY:
 1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - This is the email address of the admin account.
