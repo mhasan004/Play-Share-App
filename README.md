@@ -18,14 +18,9 @@
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
 ### LOGIN & REGISTRATION DEMO: SILL IN DEVELOPMENT
  * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
-
  ![Login & Register Page Demo](login_register_demo.gif)
 
-
- 
-
 # 🏠 HOW TO RUN SERVER LOCALLY:
-
  1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
     <details>
     <summary> List of variables that are needed </summary>
@@ -60,18 +55,18 @@
 ### 🔒 LOGIN SECURITY
  * **CLIENT**
    * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **SERVER**
-  * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
-  * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
-  * **Unique JWT Token Creation Process for Users:**
-    * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. We need a unique JWT secret key for each user to that an user can't access another user's routes.
-    * A unique JWT User Secret Key hash is created by encrypting (with AES) the string resulted from concatenating different fields of the user's profile data that is stored in the database (such as the username, email, hashed password,and ObjectID) using the `USER_SECRET_KEY`.
-    * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
-    * We need to store this JWT User Secret Key so that we can validate a JWT. The JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
-    * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
-    * The JWT token lasts for one hour.
-  * **JWT Token Creation Process for Admin:**
-    * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
+ * **SERVER**
+   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
+   * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
+   * **Unique JWT Token Creation Process for Users:**
+     * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. We need a unique JWT secret key for each user to that an user can't access another user's routes.
+     * A unique JWT User Secret Key hash is created by encrypting (with AES) the string resulted from concatenating different fields of the user's profile data that is stored in the database (such as the username, email, hashed password,and ObjectID) using the `USER_SECRET_KEY`.
+     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
+     * We need to store this JWT User Secret Key so that we can validate a JWT. The JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
+     * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
+     * The JWT token lasts for one hour.
+   * **JWT Token Creation Process for Admin:**
+     * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
   
 * **Sending Encrypted JWT Tokens**
   * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
