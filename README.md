@@ -55,7 +55,7 @@
 
 ### 🔑 REGISTRATION SECURITY
 <details>
- <summary> Client Registration Security </summary>
+ <summary> **Client Registration Security** </summary>
  
   * **Client:** 
    * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
