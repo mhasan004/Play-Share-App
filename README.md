@@ -25,17 +25,21 @@
  
 
 # 🏠 HOW TO RUN SERVER LOCALLY:
-1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
-   * `DB_CONNECT`  - Store your MongoDB Connection URL
-   * `ADMIN_EMAIL` - This is the email address of the admin account.
-   * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
-   * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
-   * `USER_SECRET_KEY`  - This will be used to make the user's JWT
-   * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
-   * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
-   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
-2) `npm install` on the *CLIENT* and *SERVER* directories
-3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
+<details>
+ <summary> Click here to see steps to run server locally! </summary>
+ 
+ 1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
+    * `DB_CONNECT`  - Store your MongoDB Connection URL
+    * `ADMIN_EMAIL` - This is the email address of the admin account.
+    * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
+    * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
+    * `USER_SECRET_KEY`  - This will be used to make the user's JWT
+    * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
+    * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
+    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
+ 2) `npm install` on the *CLIENT* and *SERVER* directories
+ 3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
+</details>
 
 # 🛡️ APP SECURITY:
   * All relevant data are encrypted using AES before being transfered from client to server or server to client.
