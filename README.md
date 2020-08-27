@@ -53,9 +53,9 @@
    * The request is validated using **Joi**
 
 ### 🔒 LOGIN SECURITY
- * **CLIENT**
+ **CLIENT**
    * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
- * **SERVER**
+ **SERVER**
    * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
    * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
    * **Unique JWT Token Creation Process for Users:**
