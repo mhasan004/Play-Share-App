@@ -42,39 +42,24 @@
 </details>
 
 # 🛡️ APP SECURITY:
-<details>
- <summary> Security Overview </summary>
-
-   * All relevant data are encrypted using AES before being transfered from client to server or server to client.
-   * App will need to send the correct encrypted **auth-app** key to interact with the server.
-   * During registration and login, all inputs are validated with **Joi**.
-   * During registration, passwords and Unique User JWT Secret Keys are hashed and stored in the database.
-   * After successful login, the server creates an unique JWT, encrypts it with AES, and send to the client through the **auth-token** header.
-   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
-</details>
+  * All relevant data are encrypted using AES before being transfered from client to server or server to client.
+  * App will need to send the correct encrypted **auth-app** key to interact with the server.
+  * During registration and login, all inputs are validated with **Joi**.
+  * During registration, passwords and Unique User JWT Secret Keys are hashed and stored in the database.
+  * After successful login, the server creates an unique JWT, encrypts it with AES, and send to the client through the **auth-token** header.
+  * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
 ### 🔑 REGISTRATION SECURITY
-<details>
- <summary> Client Registration Security </summary>
- 
+ * **CLIENT**
   * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-</details>
-
-<details>
- <summary> Server Registration Security </summary>
- 
+ * **SERVER**
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
   * The request is validated using **Joi**
-</details>
-
 
 ### 🔒 LOGIN SECURITY
-
-<details>
- <summary> Client Login Security </summary>
- * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-</details>
-* **Server**
+ * **CLIENT**
+  * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+* **SERVER**
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
   * **Unique JWT Token Creation Process for Users:**
