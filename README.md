@@ -11,13 +11,14 @@
 ----------------------
 
 <h1 align="center" > 📋 APPLICATION OVERVIEW: </h1>
+
  * The login and register process is explained in the **APP SECURITY** section.
  * All server routes are protected. To make any requests to the server, the app will need to supply the valid encrypted access key in the **auth-app** header. This is the `APP_AUTH_KEY`. 
  * To access the user or admin private routes, the client must supply the valid encrypted JWT token in the **auth-token** header. The JWT is unique for every user. JWT expire after one hour. 
  * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
  * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
  
- <h2 align="center" > LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT</h2>
+ ### LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT
 
  * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
  ![Login & Register Page Demo](login_register_demo.gif)
