@@ -25,9 +25,12 @@
  
 
 # 🏠 HOW TO RUN SERVER LOCALLY:
-<details>
- <summary> Click here to see steps to run server locally! </summary>
- 
+
+ 1) <details>
+    <summary> Click here to see steps to run server locally! </summary>
+    
+    </details>
+
  1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
     * `DB_CONNECT`  - Store your MongoDB Connection URL
     * `ADMIN_EMAIL` - This is the email address of the admin account.
@@ -39,7 +42,6 @@
     * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
  2) `npm install` on the *CLIENT* and *SERVER* directories
  3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
-</details>
 
 # 🛡️ APP SECURITY:
   * All relevant data are encrypted using AES before being transfered from client to server or server to client.
@@ -62,18 +64,16 @@
 * **SERVER**
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
+  * **Unique JWT Token Creation Process for Users:**
+    * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. We need a unique JWT secret key for each user to that an user can't access another user's routes.
+    * A unique JWT User Secret Key hash is created by encrypting (with AES) the string resulted from concatenating different fields of the user's profile data that is stored in the database (such as the username, email, hashed password,and ObjectID) using the `USER_SECRET_KEY`.
+    * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
+    * We need to store this JWT User Secret Key so that we can validate a JWT. The JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
+    * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
+    * The JWT token lasts for one hour.
+  * **JWT Token Creation Process for Admin:**
+    * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
   
-  ~~~
-   * **Unique JWT Token Creation Process for Users:**
-     * *JSON Web Tokens (JWT)* need a secret key to create a JWT token hash. We need a unique JWT secret key for each user to that an user can't access another user's routes.
-     * A unique JWT User Secret Key hash is created by encrypting (with AES) the string resulted from concatenating different fields of the user's profile data that is stored in the database (such as the username, email, hashed password,and ObjectID) using the `USER_SECRET_KEY`.
-     * This creates a unique key for each user. This ensures that each user has a unique secret key and therefore a unique JWT
-     * We need to store this JWT User Secret Key so that we can validate a JWT. The JWT User Secret Key is hashed with *bcrypt* and is then stored in database.
-     * The JWT is created using the concatenation of all the user's profile data and the JWT User Secret Key.
-     * The JWT token lasts for one hour.
-   * **JWT Token Creation Process for Admin:**
-     * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
-     ~~~
 * **Sending Encrypted JWT Tokens**
   * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
   * In the server, the JWT token is encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
