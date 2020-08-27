@@ -10,7 +10,7 @@
 * **Joi is used to validate cLient requests**
 ----------------------
 
-# 📋 APPLICATION OVERVIEW:
+<h1 align="center" > 📋 APPLICATION OVERVIEW: </h1>
  * The login and register process is explained in the **APP SECURITY** section.
  * All server routes are protected. To make any requests to the server, the app will need to supply the valid encrypted access key in the **auth-app** header. This is the `APP_AUTH_KEY`. 
  * To access the user or admin private routes, the client must supply the valid encrypted JWT token in the **auth-token** header. The JWT is unique for every user. JWT expire after one hour. 
