@@ -18,7 +18,7 @@
  * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
  * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
  
- <h3 align="center" > LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT <h3>
+ <h3 align="center"> LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT </h3>
 
  *Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:*
  
@@ -52,9 +52,9 @@
 
 <h2 align="center" > 🔑 REGISTRATION SECURITY </h2>
 
- * **CLIENT**
+ **CLIENT**
    * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
- * **SERVER**
+ **SERVER**
    * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
    * The request is validated using **Joi**
 
