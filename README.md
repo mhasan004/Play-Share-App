@@ -10,7 +10,7 @@
 * **Joi is used to validate cLient requests**
 ----------------------
 
-<h1 align="center" > 📋 APPLICATION OVERVIEW: </h1>
+# 📋 APPLICATION OVERVIEW:
 
  * The login and register process is explained in the **APP SECURITY** section.
  * All server routes are protected. To make any requests to the server, the app will need to supply the valid encrypted access key in the **auth-app** header. This is the `APP_AUTH_KEY`. 
@@ -18,12 +18,13 @@
  * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
  * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
  
- ### LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT
+<h3 align="center" > LOGIN & REGISTRATION DEMO: STILL IN DEVELOPMENT <h3>
 
  * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
+ 
  ![Login & Register Page Demo](login_register_demo.gif)
 
-# 🏠 HOW TO RUN SERVER LOCALLY:
+# 🏠 RUNNING SERVER LOCALLY:
  1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
     <details>
     <summary> List of variables that are needed </summary>
@@ -48,14 +49,16 @@
   * After successful login, the server creates an unique JWT, encrypts it with AES, and send to the client through the **auth-token** header.
   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
-### 🔑 REGISTRATION SECURITY
+<h2 align="center" > 🔑 REGISTRATION SECURITY </h2>
+
  * **CLIENT**
    * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
  * **SERVER**
    * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
    * The request is validated using **Joi**
 
-### 🔒 LOGIN SECURITY
+<h2 align="center" > 🔒 LOGIN SECURITY </h2>
+
  * **CLIENT**
    * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
  * **SERVER**
