@@ -2,13 +2,22 @@
 
 *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
 
-----------------------
-* **The REST API Server is built using Node, Express, and Mongoose. The Client side is still in production and is being built with React** 
-* **bcrypt is used to store hashed passwords and user JWT secret keys into the database**
-* **crypto-js is used to encrpt and decrypt username, email, password, and JWT between requests and responses between client and server**
-* **JWT is used to authenticate a user**
-* **Joi is used to validate cLient requests**
-----------------------
+<br/>
+
+
+![Login & Register Page Demo](login_register_demo.gif)
+<div style="text-align:center;   font-style: italic;">
+  Login & Registration Demo: Still in Development
+</div>
+
+# 📌 TECHNOLOGIES USED:
+* The REST API Server is built using **Node**, **Express**, and **Mongoose**
+* The Client side is still in production and is being built with **React**
+* **bcrypt** - used to store hashed passwords and user JWT secret keys into the database
+* **crypto-js** - used to encrpt and decrypt username, email, password, and JWT between requests and responses between client and server
+* **JWT** - used to authenticate a user
+* **Joi** - used to validate cLient requests
+
 
 # 📋 APPLICATION OVERVIEW:
 * The login and register process is explained in the **APP SECURITY** section.
@@ -16,29 +25,27 @@
 * To access the user or admin private routes, the client must supply the valid encrypted JWT token in the **auth-token** header. The JWT is unique for every user. JWT expire after one hour. 
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
-### LOGIN & REGISTRATION DEMO: SILL IN DEVELOPMENT
- * Client side is currently being built with **React**. Here is a demo of the login page:
-
- ![Login & Register Page Demo](login_register_demo.gif)
-
 
  
 
 # 🏠 RUN SERVER LOCALLY:
-1) Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
-  <details>
-    <summary> List of variables that are needed </summary>
-   * `DB_CONNECT`  - Store your MongoDB Connection URL
-   * `ADMIN_EMAIL` - This is the email address of the admin account.
-   * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
-   * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
-   * `USER_SECRET_KEY`  - This will be used to make the user's JWT
-   * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
-   * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
-   * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
-  </details>
-2) `npm install` on the *CLIENT_REACT* and *SERVER* directories
-3) `npm start` on the *CLIENT_REACT* and *SERVER* directories to run the client and server 
+1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
+    <details>      
+      <summary> Description of the variables </summary>
+
+      * `DB_CONNECT`  - Store your MongoDB Connection URL
+      * `ADMIN_EMAIL` - This is the email address of the admin account.
+      * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
+      * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
+      * `USER_SECRET_KEY`  - This will be used to make the user's JWT
+      * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
+      * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
+      * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
+
+    </details>
+   
+2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
+3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 
 # 🛡️ APP SECURITY:
   * All relevant data are encrypted using AES before being transfered from client to server or server to client.
