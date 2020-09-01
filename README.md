@@ -37,6 +37,8 @@
      * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
      * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
    </details>
+   
+   
 2) `npm install` on the *CLIENT_REACT* and *SERVER* directories
 3) `npm start` on the *CLIENT_REACT* and *SERVER* directories to run the client and server 
 
