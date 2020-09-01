@@ -6,6 +6,8 @@ function LoginDiv () {
       <input type="text" name="username" placeholder="Username" />
       <input type="password" name="password" placeholder="Password" />
       <a href="#">Forgot your password?</a>
+      <br/>
+      <br/>
       <button type="submit" id='signInButton'>Sign In</button> 
     </div>   
   )
