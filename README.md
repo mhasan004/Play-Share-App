@@ -25,10 +25,10 @@
  
 
 # 🏠 RUN SERVER LOCALLY:
-1)     Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
-
- * <details>      
+1) Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
+<details>      
   <summary> List of variables that are needed </summary>
+ 
      * `DB_CONNECT`  - Store your MongoDB Connection URL
      * `ADMIN_EMAIL` - This is the email address of the admin account.
      * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
