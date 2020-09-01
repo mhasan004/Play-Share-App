@@ -17,15 +17,15 @@
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production.
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
 ### LOGIN & REGISTRATION DEMO: SILL IN DEVELOPMENT
- * Client side is currently being built with **React**. Here is a demo of the login page writen with Node & Express. I am currently converting it to React:
+ * Client side is currently being built with **React**. Here is a demo of the login page:
 
  ![Login & Register Page Demo](login_register_demo.gif)
 
 
  
 
-# 🏠 HOW TO RUN SERVER LOCALLY:
-1) Need to make an **.env** file in the root directory and create these eight variables. Can make up your own values for all variables except for **DB_CONNECT**: 
+# 🏠 RUN SERVER LOCALLY:
+1) Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - This is the email address of the admin account.
    * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
@@ -34,8 +34,8 @@
    * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
    * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
-2) `npm install` on the *CLIENT* and *SERVER* directories
-3) `npm start` on the *CLIENT* and *SERVER* directories to run the client and server 
+2) `npm install` on the *CLIENT_REACT* and *SERVER* directories
+3) `npm start` on the *CLIENT_REACT* and *SERVER* directories to run the client and server 
 
 # 🛡️ APP SECURITY:
   * All relevant data are encrypted using AES before being transfered from client to server or server to client.
