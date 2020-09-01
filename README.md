@@ -25,8 +25,8 @@
  
 
 # 🏠 RUN SERVER LOCALLY:
-1) Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
-  <details>
+1) <details>
+    Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
       <summary> List of variables that are needed </summary>
      * `DB_CONNECT`  - Store your MongoDB Connection URL
      * `ADMIN_EMAIL` - This is the email address of the admin account.
