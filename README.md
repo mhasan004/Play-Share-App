@@ -26,6 +26,8 @@
 
 # 🏠 RUN SERVER LOCALLY:
 1) Rename **.env.example** to **.env**. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
+  <details>
+    <summary> List of variables that are needed </summary>
    * `DB_CONNECT`  - Store your MongoDB Connection URL
    * `ADMIN_EMAIL` - This is the email address of the admin account.
    * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
@@ -34,6 +36,7 @@
    * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
    * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
    * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
+  </details>
 2) `npm install` on the *CLIENT_REACT* and *SERVER* directories
 3) `npm start` on the *CLIENT_REACT* and *SERVER* directories to run the client and server 
 

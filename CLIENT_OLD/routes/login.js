@@ -1,4 +1,4 @@
-const router = require('../node_modules/express').Router()
+const router = require('express').Router()
 const authController = require('../controllers/login')
 
 router.get('/register', authController.getLogin) 
