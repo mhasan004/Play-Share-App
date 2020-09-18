@@ -49,7 +49,7 @@
 
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
-  * Encrption keys in **.env** are concatenations of several randomly generted hashes. 
+  * Encrption keys in **.env** are concatenations of several randomly generated hashes. 
   * To interact with REST API, client will need to send the correct AES encrypted **auth-app** key.
   * During registration and login phase, all user inputs are validated using **Joi**.
   * During registration, passwords and the Unique User JWT Secret Keys are hashed and stored in the database.
