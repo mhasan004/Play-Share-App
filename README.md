@@ -48,11 +48,13 @@
 3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 
 # 🛡️ APP SECURITY:
-  * All relevant data are encrypted using AES before being transfered from client to server or server to client.
-  * App will need to send the correct encrypted **auth-app** key to interact with the server.
-  * During registration and login, all inputs are validated with **Joi**.
-  * During registration, passwords and Unique User JWT Secret Keys are hashed and stored in the database.
-  * After successful login, the server creates an unique JWT, encrypts it with AES, and send to the client through the **auth-token** header.
+  * All data in requests and responses are AES encrypted.
+  * Encrption keys in **.env** are concatenations of several randomly generted hashes. 
+  * To interact with REST API, client will need to send the correct AES encrypted **auth-app** key.
+  * During registration and login phase, all user inputs are validated using **Joi**.
+  * During registration, passwords and the Unique User JWT Secret Keys are hashed and stored in the database.
+  * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header.
+  * JWT expires every hour.
   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
   
