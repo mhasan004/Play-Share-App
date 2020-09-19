@@ -6,6 +6,7 @@
 <details>      
     <summary> VULNERABILITIES TO BE FIXED:   </summary> 
      * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldnt be made using meaningful info, will add a salt
+    
      * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. So need to chnage `APP_AUTH_KEY` after every response.
     </details>
 
@@ -57,10 +58,10 @@
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
   * Encrption keys in **.env** are concatenations of several randomly generated hashes. 
-  * To interact with REST API, client will need to send the correct AES encrypted **auth-app** key.
+  * To interact with REST API, client will need to send the correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header. (In Process: `APP_AUTH_KEY` will change with every request to guard againt further man-in-the-middle attacks). 
   * During registration and login phase, all user inputs are validated using **Joi**.
-  * During registration, passwords and the Unique User JWT Secret Keys are hashed and stored in the database.
-  * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header.
+  * During registration, passwords are hashed and stored in the database. 
+  * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header. If an attacker retrieves this token, they will need the correct **auth-app** header to make a successful request. 
   * JWT expires every hour.
   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
