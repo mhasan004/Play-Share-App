@@ -42,14 +42,14 @@
 1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
     <details>      
       <summary> Description of the variables </summary>
-
+    
       * `DB_CONNECT`  - Store your MongoDB Connection URL
       * `ADMIN_EMAIL` - This is the email address of the admin account.
-      * `APP_AUTH_KEY` - Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
-      * `ADMIN_SECRET_KEY` - This will be used to make the admin's JWT
-      * `USER_SECRET_KEY`  - This will be used to make the user's JWT
-      * `SERVER_ENCRYPTION_KEY`   - This key will help the client decrypt the JWT token that is sent from the server durign login.
-      * `CLIENT_ENCRYPTION_KEY`   - This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
+      * `APP_AUTH_KEY` - (Will be hashed every request) Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
+      * `ADMIN_SECRET_KEY` - (Will be hashed every hour) This will be used to make the admin's JWT
+      * `USER_SECRET_KEY`  - (Will be hashed every hour) This will be used to make the user's JWT
+      * `SERVER_ENCRYPTION_KEY`   - (Will be hashed every hour) This key will help the client decrypt the JWT token that is sent from the server durign login.
+      * `CLIENT_ENCRYPTION_KEY`   - (Will be hashed every hour) This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
 
     </details>
@@ -61,12 +61,14 @@
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
   * Encrption keys in **.env** are concatenations of several randomly generated hashes. 
-  * To interact with REST API, client will need to send the correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header. (In Process: `APP_AUTH_KEY` will change with every request to guard againt further man-in-the-middle attacks). 
+  * (IN DEVELOPMENT) `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from makign requests. 
+  * To make succesfuly requests to the server, client need to supply the correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header and the correct AES encrypted JWT token in the **auth-token** header. 
+  * `APP_AUTH_KEY` will be hashed with every response to guard againt further man-in-the-middle attacks. If attacker has the JWT token, this adds another barrier of security. 
   * During registration and login phase, all user inputs are validated using **Joi**.
   * During registration, passwords are hashed and stored in the database. 
   * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header. If an attacker retrieves this token, they will need the correct **auth-app** header to make a successful request. 
   * JWT expires every hour.
-  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (IN PROCESS: adding a salt so user string)
+  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (IN DEVELOPMENT: adding a salt so user string to increase the randomness of JWT)
   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
   
