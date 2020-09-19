@@ -4,6 +4,8 @@
 
 * *Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)*
 
+* VULNERABILITIES TO BE FIXED: JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. KWT shouldnt be made using meaningful info, i should add a salt
+
 <br/>
 
 
