@@ -63,6 +63,7 @@
   * During registration, passwords are hashed and stored in the database. 
   * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header. If an attacker retrieves this token, they will need the correct **auth-app** header to make a successful request. 
   * JWT expires every hour.
+  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (IN PROCESS: adding a salt so user string)
   * To access private user routes, client need to send the correct encrypted JWT through the **auth-token** header to the server. 
 
   
