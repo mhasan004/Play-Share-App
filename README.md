@@ -60,7 +60,7 @@
 
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
-  * (IN DEVELOPMENT) Authetication headers 
+  * **(IN DEVELOPMENT)** Authetication headers 
   * JWT expires every hour.
   * Encryption keys are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
   * During registration and login phase, all user inputs are validated using **Joi**.
