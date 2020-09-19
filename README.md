@@ -55,6 +55,7 @@
 2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
 3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 
+
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
   * Encrption keys in **.env** are concatenations of several randomly generated hashes. 
