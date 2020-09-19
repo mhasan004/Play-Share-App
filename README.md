@@ -1,7 +1,7 @@
 # Social_Media_REST_API
 
-* *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
-* *Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)*
+* This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production
+* Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)
 
 * <details>      
     <summary> VULNERABILITIES TO BE FIXED:   </summary> 
