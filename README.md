@@ -78,9 +78,8 @@
   * The request is validated using **Joi**
 
 <details>      
-    <summary> <h1>🔒 LOGIN SECURITY</h1   </summary> 
-        
-### 🔒 LOGIN SECURITY
+    <summary> <h3>🔒 LOGIN SECURITY</h3>   </summary> 
+    
 * **Client**
   * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
 * **Server**
