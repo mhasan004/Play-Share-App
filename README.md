@@ -39,7 +39,7 @@
  
 
 # 🏠 RUN SERVER LOCALLY:
-1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database: 
+1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database. Make sure the keys are long and randomly generated. 
     <details>      
       <summary> Description of the variables </summary>
     
@@ -61,7 +61,7 @@
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
   * JWT expires every hour.
-  * Encryption keys in **.env** are concatenations of several randomly generated hashes. 
+  * Encryption keys are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
   * During registration and login phase, all user inputs are validated using **Joi**.
   * During registration, passwords are hashed and stored in the database. 
   * **(IN DEVELOPMENT)** `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
