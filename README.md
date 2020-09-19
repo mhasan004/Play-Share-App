@@ -60,10 +60,10 @@
 
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
-  * Encrption keys in **.env** are concatenations of several randomly generated hashes. 
-  * (IN DEVELOPMENT) `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from makign requests. 
-  * To make succesfuly requests to the server, client need to supply the correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header and the correct AES encrypted JWT token in the **auth-token** header. 
-  * `APP_AUTH_KEY` will be hashed with every response to guard againt further man-in-the-middle attacks. If attacker has the JWT token, this adds another barrier of security. 
+  * Encryption keys in **.env** are concatenations of several randomly generated hashes. 
+  * (IN DEVELOPMENT) `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
+  * To make successfully make requests to the server, client need to supply the correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header and the correct AES encrypted JWT token in the **auth-token** header. 
+  * `APP_AUTH_KEY` will be hashed with every response to guard against further man-in-the-middle attacks. If attacker has the JWT token, this adds another barrier of security. 
   * During registration and login phase, all user inputs are validated using **Joi**.
   * During registration, passwords are hashed and stored in the database. 
   * After successful login, the server creates an unique JWT, encrypts it using AES, and sends it to the client through the **auth-token** header. If an attacker retrieves this token, they will need the correct **auth-app** header to make a successful request. 
