@@ -7,8 +7,9 @@
     <summary> VULNERABILITIES TO BE FIXED:   </summary> 
     
 * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldnt be made using meaningful info, will add a salt
-
-* Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. So need to chnage `APP_AUTH_KEY` after every response.
+* Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. Change `APP_AUTH_KEY` after every response. 
+* `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
+* Authetication headers 
     
  </details>
 
@@ -70,7 +71,7 @@
     1) The correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header
     2) The correct AES encrypted JWT token in the **auth-token** header. 
   * `APP_AUTH_KEY` will be hashed with every response to guard against further man-in-the-middle attacks. If attacker has the JWT token, this adds another barrier of security. 
-  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (IN DEVELOPMENT: adding a salt so user string to increase the randomness of JWT)
+  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (**IN DEVELOPMENT**: adding a salt so user string to increase the randomness of JWT)
 
   
 ### 🔑 REGISTRATION SECURITY
