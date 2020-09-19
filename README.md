@@ -77,6 +77,9 @@
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
   * The request is validated using **Joi**
 
+<details>      
+    <summary> <h1>🔒 LOGIN SECURITY</h1   </summary> 
+        
 ### 🔒 LOGIN SECURITY
 * **Client**
   * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
@@ -96,6 +99,8 @@
   * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
   * In the server, the JWT token is encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted (with AES) both ways.
+
+</details>    
 
 # 📐 USABILITY (CLIENT REQUESTS) - NOT DOCUMENTED YET:
 * **Client Headers:** Send encrypted authentication code to server through the header
