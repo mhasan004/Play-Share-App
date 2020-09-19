@@ -1,15 +1,14 @@
 # Social_Media_REST_API
 
 * *This REST API will be the server for my social media app which will mimic the functionality of twitter. The Client and Server Sides are still in production*
-
 * *Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)*
 
 * VULNERABILITIES TO BE FIXED: 
     <details>      
-      <summary>  </summary> 
-   * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldnt be made using meaningful info, will add a salt
-   * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. So need to chnage `APP_AUTH_KEY` after every response.
-      </details>
+        <summary>  </summary> 
+        * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldnt be made using meaningful info, will add a salt
+        * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. So need to chnage `APP_AUTH_KEY` after every response.
+    </details>
 
 <br/>
 
