@@ -7,9 +7,10 @@
 * <details>      
     <summary> VULNERABILITIES TO BE FIXED:   </summary> 
     
-    * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldnt be made using meaningful info, will add a salt
-    * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. They wont need to decrypt it. Change `APP_AUTH_KEY` after every response. 
-    * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
+    * Encrypted Information send via headers will neeed to be sent using Authentication headers. 
+    * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldn't be made using meaningful info, will add a salt
+    * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. To prevent this, will change `APP_AUTH_KEY` after every response. 
+    * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that know the keys from making further requests. 
     * Authetication headers 
     
  </details>
