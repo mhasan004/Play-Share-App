@@ -1,7 +1,7 @@
-# Social_Media_REST_API
+# Game Share
 
-* This REST API will be the server for an Reddit-like clone. The Client and Server Sides are still in production
-* Will implement Reddit's hierarchy comment system, Reddit users and groups, etc
+* This is a Reddit/Imgur-like app where gamers can share shart clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
+* Server: REST API built with Node, Express, MongoDB. Will migrate databse to PostgresQL. Client: Currently beig built with React
 * Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)
 
 * <details>      
