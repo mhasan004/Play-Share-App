@@ -1,6 +1,6 @@
 # Game Share
 
-* This is a Reddit/Imgur-like app where gamers can share shart clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
+* This is a Reddit/Imgur-like app where gamers can share short clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
 * Server: REST API built with Node, Express, MongoDB. Will migrate databse to PostgresQL. Client: Currently beig built with React
 * Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)
 
