@@ -1,11 +1,17 @@
 const mongoose = require('mongoose')
-
+// username, handle, email, password, key
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
         min: 3,
         max: 255
+    },
+    handle: {
+        type: String,
+        required: false,
+        min: 3,
+        max: 20
     },
     email: {
         type: String,
