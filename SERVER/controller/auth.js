@@ -4,18 +4,37 @@ const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                  // Import the Joi Validation functions
 
+
+function decryptRequestItems(req, requestItemArray){ // 1) DECRYPT ALL
+    let bytes = "";
+    returnArray = []
+    requestItemArray.forEach(item =>{
+        bytes = CryptoJS.AES.decrypt(item,  process.env.CLIENT_ENCRYPTION_KEY);
+        returnArray.push(bytes.toString(CryptoJS.enc.Utf8))
+    })
+    return returnArray
+}
+
 exports.registerNewUser = async (req,res,next) =>                                                                       
 {
     // 1b) DECRYPT ALL
-    let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
-    const username = bytes.toString(CryptoJS.enc.Utf8); 
-    bytes  = CryptoJS.AES.decrypt(req.body.email,  process.env.CLIENT_ENCRYPTION_KEY);
-    const email = bytes.toString(CryptoJS.enc.Utf8);
-    bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
-    const password = bytes.toString(CryptoJS.enc.Utf8); 
-        
+    console.log('dfsd')
+    const decryptedItemArray = decryptRequestItems(req, [req.body.username,req.body.email,req.body.password] )
+    const username = decryptedItemArray[0]
+    const email = decryptedItemArray[1]
+    const password = decryptedItemArray[2]
     req.body.username = username                                                                                                            // for validation!
     req.body.email = email
+    // let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
+    // const username = bytes.toString(CryptoJS.enc.Utf8); 
+    // bytes  = CryptoJS.AES.decrypt(req.body.email,  process.env.CLIENT_ENCRYPTION_KEY);
+    // const email = bytes.toString(CryptoJS.enc.Utf8);
+    // bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
+    // const password = bytes.toString(CryptoJS.enc.Utf8); 
+    
+
+
+
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
     if(error){ return res.status(400).json({status:-1, message: error.details[0].message}) }
@@ -57,12 +76,16 @@ exports.registerNewUser = async (req,res,next) =>
 exports.login = async (req,res,next) => 
 {    
     // // 1a) DECRYPT ALL
-    let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
-    const username = bytes.toString(CryptoJS.enc.Utf8);   
-    bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
-    const password = bytes.toString(CryptoJS.enc.Utf8);   
+    const decryptedItemArray = decryptRequestItems(req, [req.body.username, req.body.password] )
+    const username = decryptedItemArray[0]
+    const password = decryptedItemArray[2]
     req.body.username = username
     req.body.password = password
+    // let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
+    // const username = bytes.toString(CryptoJS.enc.Utf8);   
+    // bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
+    // const password = bytes.toString(CryptoJS.enc.Utf8);   
+ 
 
     // 1b) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)  

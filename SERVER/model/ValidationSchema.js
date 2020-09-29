@@ -27,8 +27,9 @@ function postValidation(data)
 {
     const validationSchema = Joi.object({
         title: Joi.string().min(2).max(30).required(),
-        content: Joi.string().max(1000).required(),
+        content: Joi.string().max(1000).required(),             //***VALIDATE URL
     })
+    console.log("Validate url in joli for post")
     return validationSchema.validate(data)                                                 
 }
 
@@ -36,3 +37,4 @@ module.exports.registerValidation = registerValidation
 module.exports.loginValidationUsername = loginValidationUsername
 module.exports.postValidation = postValidation
 
+// VALIDATE URL

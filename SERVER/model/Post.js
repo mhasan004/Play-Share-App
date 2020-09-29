@@ -1,7 +1,15 @@
 const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema({
-    author:{            //username
+    username:{                                  // username
+        type: String,                           // User's _id
+        required: true, 
+    },
+    display_name:{                                  // username
+        type: String,                           // User's _id
+        required: true, 
+    },
+    handle:{                                  // username
         type: String,                           // User's _id
         required: true, 
     },
@@ -22,7 +30,11 @@ const postSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    dislike:{
+    dislike:{           //addded this
+        type: Number,
+        default: 0
+    },
+    total_likes:{
         type: Number,
         default: 0
     }
