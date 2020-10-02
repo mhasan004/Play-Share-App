@@ -18,7 +18,6 @@ function decryptRequestItems(req, requestItemArray){ // 1) DECRYPT ALL
 exports.registerNewUser = async (req,res,next) =>                                                                       
 {
     // 1b) DECRYPT ALL
-    console.log('dfsd')
     const decryptedItemArray = decryptRequestItems(req, [req.body.username,req.body.email,req.body.password] )
     const username = decryptedItemArray[0]
     const email = decryptedItemArray[1]
