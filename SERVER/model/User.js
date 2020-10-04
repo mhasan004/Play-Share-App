@@ -7,16 +7,16 @@ const userSchema = new mongoose.Schema({
         min: 3,
         max: 50
     },
-    handle: {
+    handle: {                           // same as username for now
         type: String,
-        required: false,
+        required: true,
         min: 3,
         max: 20
     },
-    display_name: {
+    display_name: {                     // changable
         type: String,
-        required: false,
-        min: 3,
+        required: true,
+        min: 1,
         max: 100
     },
     email: {
@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
     },
     secretKey:{
         type: String,
-        default: "None Yet"
+        default: "Not Logged In"
     }
 })
 

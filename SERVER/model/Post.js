@@ -14,12 +14,13 @@ const postSchema = new mongoose.Schema({
         required: true, 
     },
     title:{                     
-        type: String,                           // title
+        type: String,                           // title of img or post              --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY
         required: true,
-        min:5
+        min:5,
+        max:20
     },
     content:{
-        type: String,                           // url of pic/img
+        type: String,                           // url of pic/img                    --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY     
         required: true,
     },
     date: {

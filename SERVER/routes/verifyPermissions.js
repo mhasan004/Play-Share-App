@@ -2,23 +2,22 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
+const {decryptRequestItems} = require("../controller/auth")                                                                 // Will use this function to decrypt request body
 
 exports.verifyApp = (req,res,next) => {                                                                                     // MiddleWare: App Register/login Access
     const recieved_access_key = req.header('auth-app')
     if(!recieved_access_key) 
-        return res.status(401).json({status: -1, message: "Access Denied! No auth-app Header"})
-    let recieved_token = null   
-    try{
-        const bytes = CryptoJS.AES.decrypt(recieved_access_key, process.env.CLIENT_ENCRYPTION_KEY);                             // DECRYPT KEY
-        recieved_token = bytes.toString(CryptoJS.enc.Utf8);
+        return res.status(401).json({status: -1, message: "Access Denied! No auth-app Header!"})
+    
+    const {decryptedItemArray, errObj} = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [recieved_access_key])      // Decrypt auth-app header
+    if (errObj != null){
+        console.log("bye")
+        return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "verifyPermisisons.js -> verifyApp Middleware "}})
     }
-    catch (err){
-        console.log("Couldn't decrypt auth token!")
-        return res.status(400).json({status: -1, message: "Error: " + err})   
-    }
-    if (recieved_token != process.env.APP_AUTH_KEY) {
+
+    if (decryptedItemArray[0] != process.env.APP_AUTH_KEY) {                                                                // see in the decrypted auth-app header is the one on file, if so, pass
         console.log("not verified app")
-        return res.status(401).json({status: -1, message: "This app does not have the correct auth-app header"})   
+        return res.status(401).json({status: -1, message: "Access Denied! This app does not have the correct auth-app header"})   
     }
     next()
 }
@@ -56,7 +55,6 @@ exports.verifyUser = async (req,res,next) => {                                  
     const username = bytes.toString(CryptoJS.enc.Utf8);
     const user = await User.findOne({username: username})
     const encryption_input = (user._id+user.email+user.username+user.password).toString()
-
 
     const recieved_encypted_token = req.header('auth-token') 
     if(!recieved_encypted_token || !user)  
