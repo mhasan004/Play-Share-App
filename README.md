@@ -19,6 +19,7 @@
 
 
 ![Login & Register Page Demo](login_register_demo.gif)
+
 <div style="text-align:center;   font-style: italic;">
   Login & Registration Demo: Still in Development
 </div>

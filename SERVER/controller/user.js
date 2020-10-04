@@ -14,7 +14,7 @@ exports.getAllPosts = async (req,res,next) =>
         res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
     }
 }
-exports.addPost = async (req,res,next) => 
+exports.makePost = async (req,res,next) => 
 {
     const username = req.baseUrl.split('/')[3]
     const {error} = postValidation(req.body)                                                                // 1) VALIDATE the POST request:              
@@ -89,18 +89,24 @@ exports.likeFeedPost = async (req,res,next) => {
     if (!post)
         return res.status(401).json({status: -1, message: "Couldn't get post"})  
 
-    let like_update = null
+    let update = null
+    let total_likes = null
     try{
-        if (like_dislike === "like")
-            like_update = await Post.updateOne({_id: post._id}, {$inc : {'likes' : 1}}).exec()
-        else if (like_dislike === "dislike" && post.likes != 0)
-            like_update = await Post.updateOne({_id: post._id}, {$inc : {'likes' : -1}}).exec()
+        if (like_dislike === "like"){
+            update = await Post.updateOne({_id: post._id}, {$inc : {'like' : 1}}).exec()
+            total_likes = await Post.updateOne({_id: post._id}, {$inc : {'total_likes' : 1}}).exec()
+            return res.status(200).json({status: 1, like: update, total_likes: total_likes})
+        }
+        else if (like_dislike === "dislike"){
+            update = await Post.updateOne({_id: post._id}, {$inc : {'dislikes' : 1}}).exec()
+            total_likes = await Post.updateOne({_id: post._id}, {$inc : {'total_likes' : -1}}).exec()
+            return res.status(200).json({status: 1, dislike: update, total_likes: total_likes})
+        }
         else{
             return res.status(400).json({status: -1, message: "Wrong url or cant downvote past 0. URL: /like/ or /dislike/"})
         }
-        res.status(200).json({status: 1, like: like_update})
     }       
     catch(err){
-        res.status(400).json({status: -1, message: "Failed to increase like: "+err})
+        res.status(400).json({status: -1, message: "Failed to increase or decrease like: "+err})
     }
 }

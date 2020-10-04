@@ -4,22 +4,51 @@ const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                  // Import the Joi Validation functions
 
+function decryptRequestItems(decryptionkey, requestItemArray){              // 1) DECRYPT Request Body
+    let bytes = "";
+    let decryptedItemArray = []
+    let errObj = null
+
+    try{
+        requestItemArray.forEach(passedReq =>{
+            bytes = CryptoJS.AES.decrypt(passedReq, decryptionkey);
+            decryptedItemArray.push(bytes.toString(CryptoJS.enc.Utf8))
+        })
+    }
+    catch(err){
+        errObj = {
+            message: "ERROR: Couldn't decrypt request data!\n\t\tError: "+ err, 
+            err_output_location: "auth.js -> decryptRequestItems()"
+        }
+        console.log("Printing from auth.js: "+errObj.message+" \n\t\terr_output_location"+errObj.location)
+    }
+    return {decryptedItemArray, errObj}
+}
+
+// display_name, username, email, password
 exports.registerNewUser = async (req,res,next) =>                                                                       
 {
     // 1b) DECRYPT ALL
-    let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
-    const username = bytes.toString(CryptoJS.enc.Utf8); 
-    bytes  = CryptoJS.AES.decrypt(req.body.email,  process.env.CLIENT_ENCRYPTION_KEY);
-    const email = bytes.toString(CryptoJS.enc.Utf8);
-    bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
-    const password = bytes.toString(CryptoJS.enc.Utf8); 
-        
-    req.body.username = username                                                                                                            // for validation!
+    const {decryptedItemArray, errObj} = decryptRequestItems(                                        // Decrypt display_name, username, email, password
+        process.env.CLIENT_ENCRYPTION_KEY, 
+        [req.body.display_name, req.body.username, req.body.email, req.body.password]
+    )     
+    if (errObj != null){
+        console.log("bye")
+        return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "auth.js -> registerNewUser Middleware "}})
+    }
+    const display_name = decryptedItemArray[0]
+    const username = decryptedItemArray[1]
+    const email = decryptedItemArray[2]
+    const password = decryptedItemArray[3]
+    req.body.display_name = display_name                                                            // Setting req body for Joi verification!
+    req.body.username = username                                                                                                            // for validation with Joi!
     req.body.email = email
+    req.body.password = password
+
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
-    if(error){ return res.status(400).json({status:-1, message: error.details[0].message}) }
-
+    if(error){ return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message}) }
       
     // 1c) VALIDATE the POST request: See if user and email already exists in DB
     const user_exists  = await User.findOne({username: username})                      
@@ -30,49 +59,48 @@ exports.registerNewUser = async (req,res,next) =>
     // 1d) HASH THE PASSWORD FOR STORAGE!
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)                                                                              // leave salt as 10 and every year increase it by 1 to make cracking uyr passwords difficult
     let hashed_password = null
-    try{ 
-        hashed_password = await bcrypt.hash(password, salt)
-    }
+    try{  hashed_password = await bcrypt.hash(password, salt)}
     catch{ return res.status(401).json( {status: -1, message: "Failed to hash password!" } )}
 
     // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the DB
-    const new_user = new User({                                                         
+    const new_user = new User({   
         username: username,
+        handle: "@"+username, 
+        display_name: display_name,                                                                                      
         email: email,
         password: hashed_password,
     })
                
     // 3) Add the user to the DB
-    try{                                                                                
-        const added_user = await new_user.save()
-        res.status(200).json( {status: 1, added_user: added_user._id})
+    let added_user = null                                                                   
+    try{ added_user = await new_user.save()}
+    catch(err){  return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})} 
+    try{
+        const enc_added_user = CryptoJS.AES.encrypt(added_user._id.toString(), process.env.SERVER_ENCRYPTION_KEY).toString(); 
+        res.status(200).json( {status: 1, added_user: enc_added_user})
         console.log("registered: "+added_user.username)
     }
-    catch(err){
-        return res.status(400).json({status: -1, message:"Error: " + err})
-    } 
-}   
+    catch(err){  return res.status(400).json({status: -1, message:"Error Encrypting db user id to send to client. Error: " + err})} 
+}
+
 
 
 exports.login = async (req,res,next) => 
 {    
-    // // 1a) DECRYPT ALL
-    let bytes  = CryptoJS.AES.decrypt(req.body.username,  process.env.CLIENT_ENCRYPTION_KEY);
-    const username = bytes.toString(CryptoJS.enc.Utf8);   
-    bytes  = CryptoJS.AES.decrypt(req.body.password,  process.env.CLIENT_ENCRYPTION_KEY);
-    const password = bytes.toString(CryptoJS.enc.Utf8);   
+    // 1a) DECRYPT ALL
+    const decryptedItemArray = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [req.body.username, req.body.password])
+    const username = decryptedItemArray[0]
+    const password = decryptedItemArray[2]
     req.body.username = username
     req.body.password = password
 
     // 1b) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)  
-    if(error)
-        return res.status(400).json({status:-1, message: error.details[0].message}) 
+    if(error) return res.status(400).json({status:-1, message: error.details[0].message}) 
 
     // 1c) VALIDATE the POST request: See if user and email already exists in DB
     const user = await User.findOne({username: username})                                                                                   // Find the user doc in DB with this email
-    if (!user) 
-        return res.status(400).json( {status: -1, message: "Invalid username or password"} ) 
+    if (!user) return res.status(400).json( {status: -1, message: "Invalid username or password"} ) 
     
     // 1d) CHECK PASSWORD: retrieved password is encrypted with CLIENT_ENCRYPTION_KEY. Decrypt and check hash on DB
     try{
@@ -119,7 +147,9 @@ exports.login = async (req,res,next) =>
     const server_token_enc = CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 
     res.header('auth-token', server_token_enc)                                                                                              // Send the token with the response
     res.status(200).json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
-    
     console.log("Logged In: "+user.username)
+    console.log("** Remove this! (auth.js) JWT encrypted sent: "+ server_token_enc)
+
 }
    
+exports.decryptRequestItems = decryptRequestItems

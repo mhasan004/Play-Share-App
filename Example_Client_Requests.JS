@@ -2,17 +2,17 @@
     // Set 'auth-app' header to APP_AUTH_KEY encrypted with CLIENT_ENCRYPTION_KEY
     // ADD A NEW USER TO DB:                        http://localhost:8080/api/auth/register                 POST    d
         {
-            "username": "name",       
-            "email": "name@gmail.com",
-            "password": "123456789"
+            "username": "name",             // encrypt this with AES and CLIENT_ENCRYPTION_KEY
+            "email": "name@gmail.com",      // encrypt this with AES and CLIENT_ENCRYPTION_KEY
+            "password": "123456789"         // encrypt this with AES and CLIENT_ENCRYPTION_KEY
         }
         // Client (before sending): 
             // Encrypt (with AES) the Password with the CLIENT_ENCRYPTION_KEY
 
     // LOGIN:                                       http://localhost:8080/api/auth/login                    POST    d
         {
-            "username": "name", // OR USE EMAIL
-            "password": "123456789"
+            "username": "name",             // OR USE EMAIL - // encrypt this with AES and CLIENT_ENCRYPTION_KEY
+            "password": "123456789"         // encrypt this with AES and CLIENT_ENCRYPTION_KEY
         }        
         // Client (before sending): 
             // Encrypt (with AES) the Password with the CLIENT_ENCRYPTION_KEY
