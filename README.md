@@ -1,27 +1,26 @@
-# Play Share
+# Play Share App
 
 * This is a Reddit/Imgur-like app where gamers can share short clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
 * Server: REST API built with Node, Express, MongoDB. Will migrate databse to PostgresQL. Client: Currently beig built with React
 * Implemented many security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features)
 
 * <details>      
-    <summary> VULNERABILITIES TO BE FIXED:   </summary> 
-    
-    * Encrypted Information send via headers will neeed to be sent using Authentication headers. 
-    * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldn't be made using meaningful info, will add a salt
-    * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. To prevent this, will change `APP_AUTH_KEY` after every response. 
-    * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that know the keys from making further requests. 
-    * Authetication headers 
+  <summary > VULNERABILITIES TO BE FIXED:   </summary> 
+  
+  * Encrypted Information send via headers will neeed to be sent using Authentication headers. 
+  * JWT is created using concatenated user data that is AES encrypted + `USER_SECRET_KEY` and `ADMIN_SECRET_KEY`. JWT shouldn't be made using meaningful info, will add a salt
+  * Attacker can make requests by using the encrypted **app-auth** header and encrrypted JWT. To prevent this, will change `APP_AUTH_KEY` after every response. 
+  * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that know the keys from making further requests. 
+  * Authetication headers 
     
  </details>
 
 <br/>
 
-
 ![Login & Register Page Demo](login_register_demo.gif)
 
 <div style="text-align:center;   font-style: italic;">
-  Login & Registration Demo: Still in Development
+    Fig 1:  Login & Registration Demo: Frotn-end in Development (Login and Signup Page migrated to React)
 </div>
 
 # 📌 TECHNOLOGIES USED:
@@ -57,38 +56,56 @@
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
 
     </details>
-   
+   </br>
 2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
 3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
+<br/>
+<br/>
 
 
 # 🛡️ APP SECURITY:
   * All data in requests and responses are AES encrypted.
-  * **(IN DEVELOPMENT)** Authetication headers 
   * JWT expires every hour.
   * Encryption keys are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
-  * During registration and login phase, all user inputs are validated using **Joi**.
-  * During registration, passwords are hashed and stored in the database. 
-  * **(IN DEVELOPMENT)** `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
-  * To successfully make requests to the server, client need to supply two things:
+  * To successfully make requests to the server, client need to supply two pieces of information:
     1) The correct AES encrypted `APP_AUTH_KEY` in the **auth-app** header
     2) The correct AES encrypted JWT token in the **auth-token** header. 
+  * During registration and login phase, all user inputs are validated using **Joi**.
+  * During registration, passwords are hashed and stored in the database. 
   * `APP_AUTH_KEY` will be hashed with every response to guard against further man-in-the-middle attacks. If attacker has the JWT token, this adds another barrier of security. 
-  * Admin and user JWT are created differently. User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. (**IN DEVELOPMENT**: adding a salt so user string to increase the randomness of JWT)
+  * Admin and user JWT are created differently. 
+    * User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. 
+    * Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. 
+  <details>      
+    <summary style="padding-left: 25px;"> IN DEVELOPMENT: </summary>
 
+  * Authetication headers 
+  * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
+  * Add salt so user string to increase the randomness of JWT
+  </details>
+<br/>
+
+<details>      
+    <summary  style="font-size:22px; padding-left: 25px;">🔑 REGISTRATION SECURITY  </summary> 
+    
+  * **Client:** 
+    * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+  * **Server:** 
+    * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
+    * The request is validated using **Joi**
+  </details>
+<br/>
+
+
+<details>      
+    <summary  style="font-size:22px; padding-left: 25px;">🔒 LOGIN SECURITY  </summary> 
+    
+  * **CLIENT SECURITY**
+    * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
+ 
+<details>      
+  <summary  style="font-weight: bold; padding-left: 25px;"> SERVER SECURITY </summary> 
   
-### 🔑 REGISTRATION SECURITY
-* **Client:** 
-  * The username, email address, and password are encrypted (with AES) using the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **Server:** 
-  * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`. Only the password is hashed using **bcrypt** and all are stored in the database
-  * The request is validated using **Joi**
-
-
-### 🔒 LOGIN SECURITY    
-* **Client**
-  * The username, email address, and password are encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` and is sent to the REST API Server over http. 
-* **Server**
   * The username, email address, and password are decrypted using the `CLIENT_ENCRYPTION_KEY`.
   * User is verified by using **bcrypt** to calculate a hash of the decrypted password and comparing it to the hashed password that is stored in the database. 
   * **Unique JWT Token Creation Process for Users:**
@@ -100,10 +117,21 @@
     * The JWT token lasts for one hour.
   * **JWT Token Creation Process for Admin:**
     * The JWT is created using the concatenation of all the user's profile data, the JWT User Secret Key, and `ADMIN_SECRET_KEY`
-* **Sending Encrypted JWT Tokens**
+</details>
+
+
+<details>      
+  <summary  style="font-weight: bold; padding-left: 25px;"> Sending Encrypted JWT Tokens </summary> 
+  
   * The JWT token is encrypted (with AES) with the `CLIENT_ENCRYPTION_KEY` if sending from client to the server, and the `SERVER_ENCRYPTION_KEY` if sending from server to the client.
   * In the server, the JWT token is encrypted (with AES) using the `SERVER_ENCRYPTION_KEY` and is stored in the 'auth-token' header and is sent to the client. When verifying a user, can decrypt the jwt token that the client sent in the header by decrypting it using the `CLIENT_ENCRYPTION_KEY`. 
   * When the client makes a request to access a private route, it needs to decrypted the token stored in the header using the `SERVER_ENCRYPTION_KEY` and send it to the server by encrypting it using the `CLIENT_ENCRYPTION_KEY`. This way, the token is encrypted (with AES) both ways.
+</details>
+  
+</details>
+<br/>
+<br/>
+
 
 
 # 📐 USABILITY (CLIENT REQUESTS) - NOT DOCUMENTED YET:
@@ -114,6 +142,23 @@
   * Header **'Content-Type'** = `application/json`
   
   
+* **Registration: Client &#8594; POST Request to REST API Server to Register New User**
+  *   Registration Post Request Body: AES encrypt `auth-app` and `auth-token` headers
+  *   Registration Post Request Headers: AES encrypt `auth-app` and `auth-token` headers
+
+<div style="width=100; height=100; text-align:center; font-style: italic ">    
+
+  ![Post Request Body](/Pictures/Registration/Registration_Post_Request_Body.PNG )
+  
+  <p > Fig 2: Registration Post Request Body </p>
+
+  ![Post Request Header ](/Pictures/Registration/Registration_Post_Request_Headers.PNG)
+ 
+  <p > Fig 3: Post Registration BodyHeader </p>
+
+</div>    
+
+
   
 
 
