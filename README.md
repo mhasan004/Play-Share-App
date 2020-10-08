@@ -130,11 +130,9 @@
   
 </details>
 <br/>
-<br/>
 
 
-
-# 📐 USABILITY (CLIENT REQUESTS) - NOT DOCUMENTED YET:
+# 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers:** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key. 
   * Header **'auth-app'** = encrypt (with AES) the `APP_AUTH_KEY` with the `CLIENT_ENCRYPTION_KEY`. This lets you access the login and registration routes.
