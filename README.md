@@ -20,7 +20,7 @@
 ![Login & Register Page Demo](login_register_demo.gif)
 
 <div style="text-align:center;   font-style: italic;">
-    Fig 1:  Login & Registration Demo: Frotn-end in Development (Login and Signup Page migrated to React)
+    Fig 1:  Login & Registration Demo: Front-end in Development (Login and Signup Page migrated to React)
 </div>
 
 # 📌 TECHNOLOGIES USED:
