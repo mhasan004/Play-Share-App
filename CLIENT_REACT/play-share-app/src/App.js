@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import LoginRegisterPage from "./JSX/SignInUpPage/LoginRegisterPage";
 
-class App extends Component{
-    
+class App extends Component{  
     render(){
         return (
             <LoginRegisterPage />
