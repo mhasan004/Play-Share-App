@@ -35,7 +35,6 @@ exports.makePost = async (req,res,next) =>
     }
 }
 
-
 exports.getAPost = async (req,res,next) => 
 {
     const post = await Post.findOne({_id: req.params.post_id})
@@ -71,7 +70,6 @@ exports.deleteAPost = async (req,res,next) =>
         res.status(400).json({status: -1, message: "Failed to delete post: "+err})
     }
 }
-
 
 exports.getFeed = async (req,res,next) => {
     try{

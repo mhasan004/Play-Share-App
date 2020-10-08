@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                  // Import the Joi Validation functions
 
+// Function to decrypt request fields. Input: decryption_key, [fields, to, decrypt]. Returns: {[decrypted, fields], errObj} 
 function decryptRequestItems(decryptionkey, requestItemArray){              // 1) DECRYPT Request Body
     let bytes = "";
     let decryptedItemArray = []
     let errObj = null
-
     try{
         requestItemArray.forEach(passedReq =>{
             bytes = CryptoJS.AES.decrypt(passedReq, decryptionkey);
@@ -25,11 +25,11 @@ function decryptRequestItems(decryptionkey, requestItemArray){              // 1
     return {decryptedItemArray, errObj}
 }
 
-// display_name, username, email, password
+// Input Fields: display_name, username, email, password
 exports.registerNewUser = async (req,res,next) =>                                                                       
 {
-    // 1b) DECRYPT ALL
-    const {decryptedItemArray, errObj} = decryptRequestItems(                                        // Decrypt display_name, username, email, password
+    // 1a) DECRYPT ALL FILEDS FROM REQUEST (display_name, username, email, password) 
+    const {decryptedItemArray, errObj} = decryptRequestItems(                                      
         process.env.CLIENT_ENCRYPTION_KEY, 
         [req.body.display_name, req.body.username, req.body.email, req.body.password]
     )     
@@ -41,15 +41,15 @@ exports.registerNewUser = async (req,res,next) =>
     const username = decryptedItemArray[1]
     const email = decryptedItemArray[2]
     const password = decryptedItemArray[3]
-    req.body.display_name = display_name                                                            // Setting req body for Joi verification!
+    req.body.display_name = display_name                                                                                                    // Setting req body for Joi verification!
     req.body.username = username                                                                                                            // for validation with Joi!
     req.body.email = email
     req.body.password = password
 
-    // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
+    // 1b) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
     if(error){ return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message}) }
-      
+
     // 1c) VALIDATE the POST request: See if user and email already exists in DB
     const user_exists  = await User.findOne({username: username})                      
     const email_exists = await User.findOne({email: email})
@@ -83,11 +83,10 @@ exports.registerNewUser = async (req,res,next) =>
     catch(err){  return res.status(400).json({status: -1, message:"Error Encrypting db user id to send to client. Error: " + err})} 
 }
 
-
-
+// Input Fields: username, password
 exports.login = async (req,res,next) => 
 {    
-    // 1a) DECRYPT ALL
+    // 1a) DECRYPT ALL FILEDS FROM REQUEST (username, password) 
     const decryptedItemArray = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [req.body.username, req.body.password])
     const username = decryptedItemArray[0]
     const password = decryptedItemArray[2]
@@ -130,7 +129,7 @@ exports.login = async (req,res,next) =>
 
     // 3) Hash the unique user secret token and store in DB so one user cant peek at another user's page
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)
-    // if (user.username != "admin"){
+    
     try{ 
         const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
         await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
@@ -138,10 +137,8 @@ exports.login = async (req,res,next) =>
     catch{ 
         return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})
     }
-    // }
-    // else{
-    //     console.log("\nNEED TO WRITE CODE TO LOG IN ADMIN!\n")
-    // }
+    /* if (user.username != "admin"){...^}
+       else{console.log("\nNEED TO WRITE CODE TO LOG IN ADMIN!\n")}*/
 
     // 4) Encrypt the JWT token and set it in the header
     const server_token_enc = CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 

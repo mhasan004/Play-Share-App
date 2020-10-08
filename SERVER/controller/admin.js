@@ -14,7 +14,6 @@ exports.getAllPosts = async (req,res,next) => {
     res.status(200).json({status:1, posts})
 }
 
-
 exports.getUserById = async (req,res,next) => {
     const user = await User.findOne({_id: req.params.user_id})
     if (!user) 
@@ -40,7 +39,6 @@ exports.deleteUser = async (req,res,next) => {
     }
 }
 
-
 exports.getPost = async (req,res,next) => {
     const post = await Post.findOne({_id: req.params.post_id})
     if (!post) 
@@ -59,7 +57,6 @@ exports.deletePost = async (req,res,next) => {
         res.status(400).json({status: -1, message: "Failed to delete post: "+err})
     }
 }
-
 
 exports.getAllPostsOfUsername = async (req,res,next) => {
     try{ 
@@ -81,21 +78,21 @@ exports.getAllPostsOfEmail = async (req,res,next) => {
     }
 }
 
-// exports.deleteUserPostsALL = async (req,res,next) => {
-//     try{
-//         const user_posts = await Post.find({author: username})
-//         user_posts.forEach(async function(post){
-//             try{
-//                 const deleted_post = await Post.deleteOne({ _id: post._id })
-//                 res.status(200).json({status: 1, deleted_post})
-//             }
-//             catch(err){
-//                 res.status(400).json({status: -1, message: "Failed to delete this post "+post._id+" : "+err}) 
-//             }
-//         })
-//     }
-//     catch(err){
-//         res.status(400).json({status: -1, message: "Failed to delete all posts of this user"+err}) 
-//     }
-// }
+/* exports.deleteUserPostsALL = async (req,res,next) => {
+    try{
+        const user_posts = await Post.find({author: username})
+        user_posts.forEach(async function(post){
+            try{
+                const deleted_post = await Post.deleteOne({ _id: post._id })
+                res.status(200).json({status: 1, deleted_post})
+            }
+            catch(err){
+                res.status(400).json({status: -1, message: "Failed to delete this post "+post._id+" : "+err}) 
+            }
+        })
+    }
+    catch(err){
+        res.status(400).json({status: -1, message: "Failed to delete all posts of this user"+err}) 
+    }
+}*/
 

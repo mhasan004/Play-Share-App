@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-// username-not changable, handle, displayname, email, password, key, date made
+// username - not changable, handle, displayname, email, password, key, date made
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
