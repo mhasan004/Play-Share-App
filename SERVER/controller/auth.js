@@ -2,6 +2,7 @@ const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
+//const crypto = require('crypto')                            // using just to make jwt secret key
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                  // Import the Joi Validation functions
 
 // Function to decrypt request fields. Input: decryption_key, [fields, to, decrypt]. Returns: {[decrypted, fields], errObj} 
@@ -84,6 +85,9 @@ exports.registerNewUser = async (req,res,next) =>
 }
 
 // Input Fields: username, password
+// Will generete a JWT using a secret key, string to hash in token, expiration time
+    //data - id of token = string of usernmae, _id
+// Chnages to JWT -> secret key made with a randomly hashed 
 exports.login = async (req,res,next) => 
 {    
     // 1a) DECRYPT ALL FILEDS FROM REQUEST (username, password) 
@@ -111,20 +115,23 @@ exports.login = async (req,res,next) =>
     }
 
     // 2) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated)
-    const encryption_input = (user._id+user.email+user.username+user.password).toString()
+    // const data_to_encrypt = crypto.randomBytes(64).toString('hex')
+    const data_to_encrypt = (user._id+user.username).toString()
     let token = null
     let unique_user_secret_key = null
     try{    
-        unique_user_secret_key = CryptoJS.AES.encrypt(encryption_input, process.env.USER_SECRET_KEY).toString();         // Each user need to have a different JWT so one user cant go to anothe ruser's private route
+        unique_user_secret_key = CryptoJS.AES.encrypt(data_to_encrypt, process.env.USER_SECRET_KEY).toString();         // Each user need to have a different JWT so one user cant go to anothe ruser's private route
     }
     catch (err){
         console.log( 'FAILED TO MAKE UNIQUE KEY!')
         return res.status(400).json({status:-1, message: "Failed to to hash secret key:" + err})
     }
-    if (user.email === process.env.ADMIN_EMAIL)
-        token = jwt.sign({id: encryption_input}, (unique_user_secret_key+process.env.ADMIN_SECRET_KEY).toString(), {expiresIn: '1h'})        // Admin Token
+    if (user.email === process.env.ADMIN_EMAIL){
+        unique_user_secret_key = CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString(); 
+        token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})        // Admin Token
+    }
     else{
-        token = jwt.sign({id: encryption_input}, unique_user_secret_key, {expiresIn: '1h'})                  // Make a new JWT Token. Pass in user's db _id and ur made up token    
+        token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})                  // Make a new JWT Token. Pass in user's db _id and ur made up token    
     }
 
     // 3) Hash the unique user secret token and store in DB so one user cant peek at another user's page
@@ -146,7 +153,7 @@ exports.login = async (req,res,next) =>
     res.status(200).json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
     console.log("Logged In: "+user.username)
     console.log("** Remove this! (auth.js) JWT encrypted sent: "+ server_token_enc)
-
 }
+
    
 exports.decryptRequestItems = decryptRequestItems
