@@ -86,7 +86,9 @@ exports.registerNewUser = async (req,res,next) =>
 
 // Input Fields: username, password
 // Will generete a JWT using a secret key, string to hash in token, expiration time
-    //data - id of token = string of usernmae, _id
+    // data - id of token = string of usernmae, _id
+    // secret key for users = AES(data_to_encrypt, USER_SECRET_KEY)
+    // secret key for admin = AES(AES(data_to_encrypt, USER_SECRET_KEY),ADMIN_SECRET_KEY) 
 // Chnages to JWT -> secret key made with a randomly hashed 
 exports.login = async (req,res,next) => 
 {    
@@ -134,9 +136,8 @@ exports.login = async (req,res,next) =>
         token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})                  // Make a new JWT Token. Pass in user's db _id and ur made up token    
     }
 
-    // 3) Hash the unique user secret token and store in DB so one user cant peek at another user's page
+    // 3) STORE THE UNIQUE SECRET KEY: Hash the unique user secret token and store in DB so one user cant peek at another user's page
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)
-    
     try{ 
         const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
         await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route

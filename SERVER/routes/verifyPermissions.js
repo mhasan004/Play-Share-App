@@ -27,6 +27,9 @@ exports.verifyUser = async (req,res,next) => {                                  
     const encryption_input = (user._id+user.email+user.username+user.password).toString()
 
     const recieved_encypted_token = req.header('auth-token') 
+    // const auth_header = req.headers['authorization']
+    // const recieved_encypted_token = auth_header && auth_header.split(' ')[1]
+
     if(!recieved_encypted_token || !user)  
         return res.status(401).json({status: -1, message: "Access Denied! Maybe Wrong auth-token Header?"}) 
     bytes  = CryptoJS.AES.decrypt(recieved_encypted_token, process.env.CLIENT_ENCRYPTION_KEY);                        // DECRYPT TOKEN
