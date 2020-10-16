@@ -4,19 +4,25 @@ import OverlayContainer from './OverlayContainer'
 import Feed from '../Feed/Feed'
 import { Route, BrowserRouter as Router, Switch, Link } from "react-router-dom";
 
-function LoginRegisterPage() {
-    return (
-        <Router>
+class LoginRegisterPage extends React.Component {
+    state = {
+        username: "",
+        password: "",
+        email: "",
+        username_reg: "",
+        password_reg: "",
+        email_reg: "",
+        formAction: ""
+    }
+    render(){
+        return (
             <div class="container" id="container">
-                <FormContainer formAction="login" />
+                <FormContainer formAction="login" stateP = {this.state}/>
                 <FormContainer formAction="register" />
                 <OverlayContainer />
             </div>
-            
-            <Route path="/register" method="POST" exact component={Feed} />      
-        </Router>
-
-    )
+        )
+    }
 }
 
 export default LoginRegisterPage;
