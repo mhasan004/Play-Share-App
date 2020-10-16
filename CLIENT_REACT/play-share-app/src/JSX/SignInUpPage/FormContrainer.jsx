@@ -110,10 +110,10 @@ class FormContainer extends Component {
                         <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                     <span>{spanText}</span>
-                
+{/*                 
                     <div>
                         <LoginForm state={this.state} handleUsername={e => this.handleUsername(e)}  handlePassword={e => this.handlePassword(e)} />  
-                    </div>
+                    </div> */}
                     <div >
                         <LoginForm state={this.state} handleUsername={e => this.handleUsername(e)}  handlePassword={e => this.handlePassword(e)} />  
                     </div>
