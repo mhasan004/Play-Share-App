@@ -1,4 +1,6 @@
 import React, {Component} from "react";
+const API_URL = "http://localhost:8080/api/auth/"
+const CryptoJS = require("crypto-js");
 
 class FormContainerLogin extends React.Component {
     state = {
@@ -6,29 +8,44 @@ class FormContainerLogin extends React.Component {
         password: "",
     }
 
-    handleUsername(event){        
-        console.log("log     "+event.target.value)     
-        // if (event.target.value == null || event.target.value == undefined) return console.log("u")
-        // console.log(event.target.value)           
+    // handleUsername(event){        
+    //     console.log("log username    "+event.target.value)       
+    //     this.setState({
+    //         username: event.target.value                    
+    //     })
+    // }   
+    // handlePassword(event){
+    //     console.log("log password    "+event.target.value)
+    //     this.setState({
+    //         password: event.target.value
+    //     })
+    // }
+    handleInputChange(event){
         this.setState({
-            username: event.target.value                    
+            [event.target.name]: event.target.value
         })
-        // console.log("username :"+ this.state.username)
-    }   
-    handlePassword(event){
-        console.log("log     "+event.target.value)
-        // if (event.target.value == null || event.target.value == undefined) return console.log("p")
-        this.setState({
-            password: event.target.value
-        })
-        // console.log("password :"+ this.state.password)
     }
-    handleFormSubmit(event){
-        // this.setState({
-        //     username: event.target.value                // 3) Get form data         
-        // })    
-        console.log(this.state)
-        event.preventDefault()                          // no refresh of screen after submit        
+    async handleFormSubmit(event){
+        event.preventDefault()                          // no refresh of screen after submit 
+        // CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString();
+        const res = await fetch(API_URL+"login", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: this.state.username,
+                password: this.state.password,
+            })
+        })
+        const data = await res.json()
+        if (data.status == 1){
+            this.setState({ username: "", password: ""}) 
+            console.log("LOGGEDIN!")
+        }
+        else
+            console.log(data)
     }
 
 
@@ -40,7 +57,7 @@ class FormContainerLogin extends React.Component {
         
         return (
             <div class={containerCss}>
-                <form  onSubmit={this.handleFormSubmit}>
+                <form  onSubmit={e=>this.handleFormSubmit(e)}>
                     <h1>{heading}</h1>
                     <div class="container-social-icons">
                         <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -49,8 +66,8 @@ class FormContainerLogin extends React.Component {
                     </div>
                     <span>{spanText}</span>
 
-                    <input type="text"     value={this.state.username} onChange={e=>this.handleUsername(e)}></input>  
-                    <input type="password" value={this.state.password} onChange={e=>this.handlePassword(e)}></input>
+                    <input type="text"     value={this.state.username} onChange={e=>this.handleInputChange(e)} name="username" placeholder="Username" ></input>  
+                    <input type="password" value={this.state.password} onChange={e=>this.handleInputChange(e)} name="password" placeholder="Password" ></input>
                     <a href="#">Forgot your password?</a>
                     <br/>
                     <br/>

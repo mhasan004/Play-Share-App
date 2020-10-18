@@ -9,3 +9,4 @@ JWT need: data to encrypt, secret key, expiration
     // send encrypted jwt to client
 
 client sends token to api in bearer, need my api to read bearer and verify!
+

@@ -9,12 +9,14 @@ const cors     = require('cors')
 const authRoutes  = require('./routes/auth')
 const adminRoutes = require('./routes/admin')
 const userRoutes  = require('./routes/user')
+const getKeyRoutes  = require('./routes/getKeys')
 const {verifyUser, verifyAdmin, verifyApp} = require('./routes/verifyPermissions')                  // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
 
 const app = express()
 app.use(cors())
-app.use(express.json())    
+app.use(express.json())   
 
+app.use('/api/getKey', getKeyRoutes)
 app.use('/api/auth',  verifyApp, authRoutes)                                                        // Register new user, login user (only apps with access key can register or login)
 app.use('/api/admin', verifyApp, verifyUser, adminRoutes)                                               // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyApp, verifyUser, userRoutes)                                       // PRIVATE USER ROUTES   

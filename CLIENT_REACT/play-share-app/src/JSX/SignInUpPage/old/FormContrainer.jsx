@@ -156,14 +156,16 @@ class FormContainer extends Component {
 }
 
 function LoginForm({state, handleUsername, handlePassword}) {                //B)  // 3) Use the "onChange" method of the textinput. call the handler function that was passed via props when onChange activates
-    return ( <div >
+    return ( 
+    <div >
         <input type="text"  onChange={e=>handleUsername(e)}></input>  
         <input type="password" value={state.password} onChange={e=>handlePassword(e)}></input>
         <a href="#">Forgot your password?</a>
         <br/>
         <br/>
         <button type="submit" id='signInButton'>Sign In</button> 
-    </div>);
+    </div>
+    );
 }  
 
 

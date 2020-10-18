@@ -23,6 +23,9 @@ function decryptRequestItems(decryptionkey, requestItemArray){              // 1
         }
         console.log("Printing from auth.js: "+errObj.message+" \n\t\terr_output_location"+errObj.location)
     }
+    // return {decryptedItemArray, errObj}
+    console.log("**Note** Disabling Decrypting Function temporarily by setting output to input")
+    decryptedItemArray = requestItemArray
     return {decryptedItemArray, errObj}
 }
 
@@ -32,20 +35,20 @@ exports.registerNewUser = async (req,res,next) =>
     // 1a) DECRYPT ALL FILEDS FROM REQUEST (display_name, username, email, password) 
     const {decryptedItemArray, errObj} = decryptRequestItems(                                      
         process.env.CLIENT_ENCRYPTION_KEY, 
-        [req.body.display_name, req.body.username, req.body.email, req.body.password]
+        [req.body.username, req.body.email, req.body.password]
     )     
     if (errObj != null){
-        console.log("bye")
+        console.log("cant register new user because cant decrypt")
         return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "auth.js -> registerNewUser Middleware "}})
     }
-    const display_name = decryptedItemArray[0]
-    const username = decryptedItemArray[1]
-    const email = decryptedItemArray[2]
-    const password = decryptedItemArray[3]
-    req.body.display_name = display_name                                                                                                    // Setting req body for Joi verification!
+    const username = decryptedItemArray[0]
+    const email = decryptedItemArray[1]
+    const password = decryptedItemArray[2]
+    // const display_name = decryptedItemArray[3]
     req.body.username = username                                                                                                            // for validation with Joi!
     req.body.email = email
     req.body.password = password
+    // req.body.display_name = display_name                                                                                                    // Setting req body for Joi verification!
 
     // 1b) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
@@ -67,7 +70,7 @@ exports.registerNewUser = async (req,res,next) =>
     const new_user = new User({   
         username: username,
         handle: "@"+username, 
-        display_name: display_name,                                                                                      
+        display_name: username,                                                                                      
         email: email,
         password: hashed_password,
     })
@@ -75,7 +78,7 @@ exports.registerNewUser = async (req,res,next) =>
     // 3) Add the user to the DB
     let added_user = null                                                                   
     try{ added_user = await new_user.save()}
-    catch(err){  return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})} 
+    catch(err){ return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})} 
     try{
         const enc_added_user = CryptoJS.AES.encrypt(added_user._id.toString(), process.env.SERVER_ENCRYPTION_KEY).toString(); 
         res.status(200).json( {status: 1, added_user: enc_added_user})
@@ -93,12 +96,18 @@ exports.registerNewUser = async (req,res,next) =>
 exports.login = async (req,res,next) => 
 {    
     // 1a) DECRYPT ALL FILEDS FROM REQUEST (username, password) 
-    const decryptedItemArray = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [req.body.username, req.body.password])
+    const {decryptedItemArray, errObj} = await decryptRequestItems(               //    const decryptedItemArray = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [req.body.username, req.body.password])                                   
+        process.env.CLIENT_ENCRYPTION_KEY, 
+        [req.body.username, req.body.password]
+    )     
+    if (errObj != null){
+        console.log("failed to decrypt req!")
+        return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "auth.js -> registerNewUser Middleware "}})
+    }
     const username = decryptedItemArray[0]
-    const password = decryptedItemArray[2]
+    const password = decryptedItemArray[1]
     req.body.username = username
     req.body.password = password
-
     // 1b) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)  
     if(error) return res.status(400).json({status:-1, message: error.details[0].message}) 
