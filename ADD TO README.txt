@@ -1,3 +1,6 @@
+Using helmet.js on server to protect against most attacks
+decryption middleware (can take off when i switch to https)
+
 // chnaged JWT auth:
 JWT need: data to encrypt, secret key, expiration
     // data_to_encrypt: (string of usernmae + _id)

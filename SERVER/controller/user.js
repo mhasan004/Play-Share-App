@@ -5,6 +5,7 @@ const {postValidation} = require('../model/ValidationSchema')
 
 exports.getAllPosts = async (req,res,next) => 
 {
+    console
     const username = req.baseUrl.split('/')[3]
     try{
         const user_posts = await Post.find({author: username})
@@ -36,7 +37,7 @@ exports.makePost = async (req,res,next) =>
 }
 
 exports.getAPost = async (req,res,next) => 
-{
+{   
     const post = await Post.findOne({_id: req.params.post_id})
     if (!post)
         return res.status(401).json({status: -1, message: "This Post Doesn't Exist!"})       

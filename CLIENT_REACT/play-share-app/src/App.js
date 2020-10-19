@@ -4,7 +4,11 @@ import LoginRegisterPage from "./JSX/SignInUpPage/LoginRegisterPage";
 class App extends Component{  
     render(){
         return (
-            <LoginRegisterPage />
+            <div>
+                <h1>REMINDER: SERVER HAS AUTH OFF FOR TESTING</h1>
+                <LoginRegisterPage />
+            </div>
+            
         );
     }
 }

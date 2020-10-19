@@ -5,16 +5,38 @@ const User = require('../model/User')
 const {decryptRequestItems} = require("../controller/auth")                                                                 // Will use this function to decrypt request body
 
 exports.verifyApp = (req,res,next) => {                                                                                     // MiddleWare: App Register/login Access
-    // const recieved_access_key = req.headers['auth-app']
-    // if (recieved_access_key != process.env.APP_AUTH_KEY) {                                                                // see in the decrypted auth-app header is the one on file, if so, pass
-    //     console.log("not verified app")
-    //     return res.status(401).json({status: -1, message: "Access Denied! This app does not have the correct auth-app header"})   
+    const recieved_access_key = req.headers['auth-app']
+    // if(!recieved_access_key) 
+    //     return res.status(401).json({status: -1, message: "Access Denied! No auth-app Header!"})
+    // const {decryptedItemArray, errObj} = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [recieved_access_key])      // Decrypt auth-app header
+    // if (errObj != null){
+    //     console.log("bye")
+    //     return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "verifyPermisisons.js -> verifyApp Middleware "}})
     // }
+    // if (decryptedItemArray[0] != process.env.APP_AUTH_KEY) {                                                                // see in the decrypted auth-app header is the one on file, if so, pass
+    if (recieved_access_key != process.env.APP_AUTH_KEY) {                                                                // see in the decrypted auth-app header is the one on file, if so, pass
+        console.log("not verified app")
+        return res.status(401).json({status: -1, message: "Access Denied! This app does not have the correct auth-app header"})   
+    }
     console.log("**Note** Disabling verifyApp middle ware temporarily")
     next()
 }
 
 exports.verifyUser = async (req,res,next) => {                                                                              // MiddleWare: Private Unique User Route
+    // 1a) DECRYPT ALL FILEDS FROM REQUEST (username, password) 
+    // const {decryptedItemArray, errObj} = await decryptRequestItems(               //    const decryptedItemArray = decryptRequestItems(process.env.CLIENT_ENCRYPTION_KEY, [req.body.username, req.body.password])                                   
+    //     process.env.CLIENT_ENCRYPTION_KEY, 
+    //     [req.body.username, req.body.password]
+    // )     
+    // if (errObj != null){
+    //     console.log("failed to decrypt req!")
+    //     return res.status(400).json({status: -1, message: "Couldn't decrypt request data! Error: "+errObj.message, err_location: {err_output_location: errObj.err_output_location, err_location: "auth.js -> registerNewUser Middleware "}})
+    // }
+    // const username = decryptedItemArray[0]
+    // const password = decryptedItemArray[1]
+    // req.body.username = username
+    // req.body.password = password
+   
     const user = await User.findOne({username: req.originalUrl.split('/')[3]})
     const recieved_encypted_token = req.headers['auth-token'] 
     // const auth_header = req.headers['authorization']
