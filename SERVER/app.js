@@ -20,16 +20,20 @@ app.use(cors())
 app.use(express.json())    
 // app.use('/api/getKey', getKeyRoutes)
 
-// app.use(decryptBody, decryptSelectedHeader)                                                     // MY MIDDLEWARES to decrypt body and some headers
-// app.use('/api', verifyApp)                                                                      // MY MIDDLEWARE to see if the right client
-app.use('/api/auth', authRoutes)                                                                   // Register new user, login user (only apps with access key can register or login)
-app.use('/api/admin', verifyUser, adminRoutes)                                                     // PRIVATE ADMIN ROUTES
-app.use('/api/user/:username', verifyUser, userRoutes)                                       // PRIVATE USER ROUTES   
+// app.use(decryptBody, decryptSelectedHeader)                                                      // MY MIDDLEWARES to decrypt body and some headers
+// app.use('/api', verifyApp)                                                                       // MY MIDDLEWARE to see if the right client
+app.get('/', (req,res,next) => {                                                        // Front page testing
+    res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>")); 
+    next()
+})                       
+app.use('/api/auth', authRoutes)                                                                    // Register new user, login user (only apps with access key can register or login)
+app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
+app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   
 
-const port = 8080
+const port = 3000
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
     .then( () => {
-        app.listen(port, ()=> console.log(`CONNECTED TO DB!              http://localhost:${port}`))
+        app.listen(port, ()=> console.log(`CONNECTED TO DB!              http://localhost:${port}     PID: ${process.pid}`))
     })
     .catch((err) => {console.log("Connection Failed! " + err)})
     

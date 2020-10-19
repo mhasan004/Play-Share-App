@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-const API_URL = "http://localhost:8080/api/auth/"
-
+import API_URL_BASE from "../../App" 
+const API_URL = "http://157.230.184.203:8000" + "/api/auth/register"
 class FormContainerRegister extends React.Component {
     state = {
         username: "",
@@ -16,7 +16,7 @@ class FormContainerRegister extends React.Component {
     async handleFormSubmit(event){
         event.preventDefault()                          // no refresh of screen after submit 
         // CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString();
-        const res = await fetch(API_URL+"register", {
+        const res = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
