@@ -1,7 +1,7 @@
 # Play Share App
 * This is a Reddit/Imgur-like app where gamers can share short clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
-* Server: REST API built with Node, Express, MongoDB. Will migrate databse to PostgresQL. Client: Currently being built with React
-* Implemented various security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features). This implementation can easily be disabled by disablign the middleware. 
+* Server: REST API built with Node, Express, MongoDB. Will migrate database to PostgresSQL. Client: Currently being built with React
+* Implemented various security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features). This implementation can easily be disabled by disabling the middleware. 
 * Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. 
 
 <br/>
@@ -15,12 +15,12 @@
 # 📌 TECHNOLOGIES USED:
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
 * The Client side is still in production and is being built with **React**
-* **helmet.js** - used to give some basic security to REST API application
-* **node-rsa** - used to creeate asymmetric RSA keys
-* **bcrypt** - used to store hashed passwords and portion of key needed to make JWT into the database
-* **crypto-js** - used to encrpt and decrypt username, email, password, and JWT between requests and responses between client and server (this is in a middleware so can easily disable when usign https)
-* **JWT** - used to authenticate a user
-* **Joi** - used to validate cLient request body
+* **helmet.js** - used to give some basic security to REST API application.
+* **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
+* **bcrypt** - used to store hashed passwords and portion of key needed to make JWT into the database.
+* **crypto-js** - used to encrypt response and decrypt request using the client's symmetric key.
+* **JWT** - used to authenticate a user.
+* **Joi** - used to validate client request body.
 
 # 📋 APPLICATION OVERVIEW:
 * The login and register process is explained in the **APP SECURITY** section.
@@ -38,7 +38,7 @@
       * `APP_AUTH_KEY` - (Will be hashed every request) Need this key to give the client permission to talk to the server. This is to stop unauthorized apps to attack the server with new user registrations and ultimately overload the database.
       * `ADMIN_SECRET_KEY` - (Will be hashed every hour) This will be used to make the admin's JWT
       * `USER_SECRET_KEY`  - (Will be hashed every hour) This will be used to make the user's JWT
-      * `SERVER_ENCRYPTION_KEY`   - (Will be hashed every hour) This key will help the client decrypt the JWT token that is sent from the server durign login.
+      * `SERVER_ENCRYPTION_KEY`   - (Will be hashed every hour) This key will help the client decrypt the JWT token that is sent from the server during login.
       * `CLIENT_ENCRYPTION_KEY`   - (Will be hashed every hour) This key will help the server decrypt the password and the JWT token that is sent from the client during registration and login.
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
     </details>
@@ -60,7 +60,7 @@
   <details>      
     <summary style="padding-left: 25px;"> IN DEVELOPMENT: </summary>
 
-  * Authetication headers 
+  * Authentication headers 
   * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
   * Add salt so user string to increase the randomness of JWT
   </details>
