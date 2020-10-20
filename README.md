@@ -45,8 +45,6 @@
 2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
 3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 <br/>
-
-
 # 🛡️ APP SECURITY:
   ![Post Request Body](/Pictures/My_TLS_Handshake.PNG)
 
@@ -66,10 +64,6 @@
   * Add salt so user string to increase the randomness of JWT
   </details>
 <br/>
-
-<br/>
-
-
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers:** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key. 
