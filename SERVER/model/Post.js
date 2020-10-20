@@ -5,11 +5,11 @@ const postSchema = new mongoose.Schema({
         type: String,                           // User's _id
         required: true, 
     },
-    display_name:{                                  // username
-        type: String,                           // User's _id
-        required: true, 
-    },
-    handle:{                                  // username
+    // display_name:{                           // username - disabled for now
+    //     type: String,                        // User's _id
+    //     required: true, 
+    // },
+    handle:{                                    // username
         type: String,                           // User's _id
         required: true, 
     },
@@ -20,9 +20,13 @@ const postSchema = new mongoose.Schema({
         max:20
     },
     content:{
-        type: String,                           // url of pic/img                    --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY     
-        required: true,
+        type: String,                           // url of pic/img                    --> IN THE FUTURE: LET USER EITHER POST TITLE ONLY OR URL ONLY     
     },
+    // group:{
+    //     type: String,                           // game group id
+    //     min:1,
+    //     max:20
+    // },
     date: {
         type: Date,
         default: Date.now

@@ -8,7 +8,7 @@ exports.getAllPosts = async (req,res,next) =>
     console
     const username = req.baseUrl.split('/')[3]
     try{
-        const user_posts = await Post.find({author: username})
+        const user_posts = await Post.find({username: username})
         res.status(200).json({status: 1, user_posts})                                                       
     }
     catch{
@@ -22,9 +22,10 @@ exports.makePost = async (req,res,next) =>
     if(error){ return res.status(400).json({status:-1, message: error.details[0].message}) }
 
     const post = new Post({                                                                                 // 2) Make New Post:
-        author: username,
+        username: username,
         title: req.body.title,
         content: req.body.content,
+        // group: req.body.group,
     })
 
     try{                                                                                                    // 3) Save to DB:

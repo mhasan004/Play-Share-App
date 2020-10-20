@@ -1,8 +1,8 @@
-import React from "react";
-
-function OverlayContainer() {
-    return (
-        <div class="overlay-container">
+import React, {Component} from "react";
+class OverlayContainer extends React.Component {
+    render(){                                                               
+        return (
+            <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
                     <h1>Welcome Back! Sign in here!</h1>
@@ -15,8 +15,9 @@ function OverlayContainer() {
                     <button class="overlay-button" id="signUpButtonOverlay" >Register</button>
                 </div>
             </div>
-        </div>
-    );
+            </div>
+        )
+    }
 }
 
 export default OverlayContainer;
