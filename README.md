@@ -71,24 +71,10 @@
   * Header **'auth-token'** = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
   
-  <!-- 
+  
 * **Registration: Client &#8594; POST Request to REST API Server to Register New User**
   *   Registration Post Request Body: AES encrypt `auth-app` and `auth-token` headers
   *   Registration Post Request Headers: AES encrypt `auth-app` and `auth-token` headers
-
-<div style="width=100; height=100; text-align:center; font-style: italic ">    
-
-  ![Post Request Body](/Pictures/Registration/Registration_Post_Request_Body.PNG )
-  
-  <p > Fig 2: Registration Post Request Body </p>
-
-  ![Post Request Header ](/Pictures/Registration/Registration_Post_Request_Headers.PNG)
- 
-  <p > Fig 3: Post Registration BodyHeader </p>
-
-</div>     -->
-
-
   
 
 
