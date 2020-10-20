@@ -65,16 +65,14 @@
   * Add salt so user string to increase the randomness of JWT
   </details>
 <br/>
+
 # 📐 USABILITY (CLIENT REQUESTS):
-* **Client Headers:** Send encrypted authentication code to server through the header
-  * To make any requests to the server, the application needs to have the valid access key. 
+* **Client Headers & Body:** Send encrypted authentication code to server through the header
+  * To make any requests to the server, the application needs to have the valid access key.
+  * Header **'hand-shaken'** = 1 to say that TLS handshake made, 0 to say sending client's symmetric key to server, nothing to initiate TLS handshake
   * Header **'auth-token'** = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
-  
-  
-* **Registration: Client &#8594; POST Request to REST API Server to Register New User**
-  *   Registration Post Request Body: AES encrypt `auth-app` and `auth-token` headers
-  *   Registration Post Request Headers: AES encrypt `auth-app` and `auth-token` headers
+  * AES encrypt the post request body with the symmetric key
   
 
 
