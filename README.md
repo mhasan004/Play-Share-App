@@ -3,7 +3,6 @@
 * Server: REST API built with Node, Express, MongoDB. Will migrate databse to PostgresQL. Client: Currently being built with React
 * Implemented various security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features). This implementation can easily be disabled by disablign the middleware. 
 * Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. 
-    * https://playshare.cloud/
 
 <br/>
 
