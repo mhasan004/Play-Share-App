@@ -46,7 +46,7 @@
 3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 <br/>
 # 🛡️ APP SECURITY:
-  ![Post Request Body](/Pictures/My_TLS_Handshake.PNG)
+  ![Post Request Body](/Pictures/My_TLS_Handshake.png)
 
   * All data in requests and responses are AES encrypted by the symmetric key.
   * JWT expires every hour.
