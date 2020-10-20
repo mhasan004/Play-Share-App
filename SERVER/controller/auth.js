@@ -2,9 +2,8 @@ const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
-const NodeRSA = require('node-rsa');
-//const crypto = require('crypto')                            // using just to make jwt secret key
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                  // Import the Joi Validation functions
+const {SYMMETRIC_KEY_encrypt} = require('../routes/Decrypt_Encrypt_Request')
 
 // Input Fields: display_name, username, email, password
 exports.registerNewUser = async (req,res,next) =>                                                                       
@@ -12,23 +11,19 @@ exports.registerNewUser = async (req,res,next) =>
     const username = req.body.username
     const email = req.body.email
     const password = req.body.password
-
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
     if(error){ return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message}) }
-
     // 1b) VALIDATE the POST request: See if user and email already exists in DB
     const user_exists  = await User.findOne({username: username})                      
     const email_exists = await User.findOne({email: email})
     if (user_exists || email_exists)   
         return res.status(400).json( {status: -1, message: "This Username or Email Address is Already Registered!" } ) 
-    
     // 1c) HASH THE PASSWORD FOR STORAGE!
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)                                                                              // leave salt as 10 and every year increase it by 1 to make cracking uyr passwords difficult
     let hashed_password = null
     try{  hashed_password = await bcrypt.hash(password, salt)}
     catch{ return res.status(401).json( {status: -1, message: "Failed to hash password!" } )}
-
     // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the DB
     const new_user = new User({   
         username: username,
@@ -36,8 +31,7 @@ exports.registerNewUser = async (req,res,next) =>
         // display_name: username,                                  // disabeld for now                                                                                      
         email: email,
         password: hashed_password,
-    })
-               
+    })        
     // 3) Add the user to the DB
     let added_user = null                                                                   
     try{ added_user = await new_user.save()}
@@ -60,11 +54,10 @@ exports.login = async (req,res,next) =>
 {    
     const username = req.body.username
     const password = req.body.password
-
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)  
     if(error) return res.status(400).json({status:-1, message: error.details[0].message}) 
-
+   
     // 1b) VALIDATE the POST request: See if user and email already exists in DB
     const user = await User.findOne({username: username})                                                                                   // Find the user doc in DB with this email
     if (!user) return res.status(400).json( {status: -1, message: "Invalid username or password"} ) 
@@ -114,9 +107,9 @@ exports.login = async (req,res,next) =>
     }
 
     // 4) Encrypt the JWT token and set it in the header
-    const server_token_enc = token //CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 
+    const server_token_enc = SYMMETRIC_KEY_encrypt(token)
     res.header('auth-token', server_token_enc)                                                                                              // Send the token with the response
-    res.status(200).json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
+    res.status(200).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!"} ) 
     console.log("Logged In: "+user.username)
     // console.log("** Remove this! (auth.js) JWT (not ecrypted versison) sent: "+ token)
 }

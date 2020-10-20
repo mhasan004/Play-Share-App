@@ -4,6 +4,15 @@ decryption middleware (can take off when i switch to https)
 cluster
 
 
+TLS: 
+    1) client gets public key:
+        a) generate a random hash
+        b) encrypt it with public_key
+        { 
+            header: hand-shake = 1
+            header: key = public_key_enc(random hash)
+        }
+
 
 // chnaged JWT auth:
 JWT need: data to encrypt, secret key, expiration
