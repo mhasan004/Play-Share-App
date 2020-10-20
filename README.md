@@ -69,7 +69,7 @@
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers & Body:** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key.
-  * Header **'hand-shaken'** = 1 to say that TLS handshake made, 0 to say sending client's symmetric key to server, nothing to initiate TLS handshake
+  * Header **'hand-shake'** = 1 to say that TLS handshake made, 0 to say sending client's symmetric key to server, nothing to initiate TLS handshake
   * Header **'auth-token'** = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
   * Header **'Content-Type'** = `application/json`
   * AES encrypt the post request body with the symmetric key
