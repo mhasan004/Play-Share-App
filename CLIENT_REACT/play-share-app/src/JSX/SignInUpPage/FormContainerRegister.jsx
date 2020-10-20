@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import API_URL_BASE from "../../App" 
-const API_URL = "http://157.230.184.203:8000" + "/api/auth/register"
+// import API_URL_BASE from "../../App" 
+const API_URL = "https://www.playshare.cloud" + "/api/auth/register"
 class FormContainerRegister extends React.Component {
     state = {
         username: "",
@@ -43,7 +43,6 @@ class FormContainerRegister extends React.Component {
         const containerCss = "container-form container-sign-up";
         const heading = "Register";
         const spanText = "or use your email for registration";
-        
         return (
             <div class={containerCss}>
                 <form  onSubmit={e=>this.handleFormSubmit(e)}>

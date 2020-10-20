@@ -3,7 +3,7 @@
 @import url('https://fonts.google.com/specimen/Montserrat?selection.family=Montserrat:wght@400;800&sidebar.open=true');
 
 :root{
-    --background-color: linear-gradient(-25deg,#7e468b,  #dd83a5, #bd6449);/* #ddd;        #ac1962,  #E73C7E, #EE7752                 #d48ee6,  #ec699b, #e98363);*/
+    --background-color:  #ddd; /*linear-gradient(-25deg,#7e468b,  #dd83a5, #bd6449); #ddd;        #ac1962,  #E73C7E, #EE7752                 #d48ee6,  #ec699b, #e98363);*/
 
     --form-background-color: white;    
     --form-text-color: black; 

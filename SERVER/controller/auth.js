@@ -33,7 +33,7 @@ exports.registerNewUser = async (req,res,next) =>
     const new_user = new User({   
         username: username,
         handle: "@"+username, 
-        display_name: username,                                                                                      
+        // display_name: username,                                  // disabeld for now                                                                                      
         email: email,
         password: hashed_password,
     })

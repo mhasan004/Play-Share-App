@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 // const CryptoJS = require("crypto-js")
-let API_URL = "http://157.230.184.203:8000"+"/api/auth/login"
+const API_URL = "https://www.playshare.cloud"+"/api/auth/login"
 
 
 class FormContainerLogin extends React.Component {
@@ -8,19 +8,6 @@ class FormContainerLogin extends React.Component {
         username: "",
         password: "",
     }
-
-    // handleUsername(event){        
-    //     console.log("log username    "+event.target.value)       
-    //     this.setState({
-    //         username: event.target.value                    
-    //     })
-    // }   
-    // handlePassword(event){
-    //     console.log("log password    "+event.target.value)
-    //     this.setState({
-    //         password: event.target.value
-    //     })
-    // }
     handleInputChange(event){
         this.setState({
             [event.target.name]: event.target.value
@@ -28,7 +15,6 @@ class FormContainerLogin extends React.Component {
     }
     async handleFormSubmit(event){
         event.preventDefault()                          // no refresh of screen after submit 
-        // CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString();
         const res = await fetch(API_URL, {
             method: 'POST',
             headers: {

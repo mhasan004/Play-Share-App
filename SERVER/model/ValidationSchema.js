@@ -26,9 +26,11 @@ function loginValidationUsername(data)
 // Post validation
 function postValidation(data)
 {
-    const validationSchema = Joi.object({
+    const validationSchema = Joi.object({        
+        username: Joi.string().alphanum().min(3).max(10).required(),
         title: Joi.string().min(2).max(30).required(),
-        content: Joi.string().max(1000).required(),             //***VALIDATE URL
+        // group: Joi.string().min(1).max(20),
+        content: Joi.string()//.required(),             //***VALIDATE URL
     })
     console.log("Validate url in joli for post")
     return validationSchema.validate(data)                                                 

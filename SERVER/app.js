@@ -30,7 +30,7 @@ app.use('/api/auth', authRoutes)                                                
 app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   
 
-const port = 3000
+const port = 8000
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
     .then( () => {
         app.listen(port, ()=> console.log(`CONNECTED TO DB!              http://localhost:${port}     PID: ${process.pid}`))

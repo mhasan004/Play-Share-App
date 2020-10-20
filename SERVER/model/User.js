@@ -7,18 +7,19 @@ const userSchema = new mongoose.Schema({
         min: 3,
         max: 50
     },
-    handle: {                           // same as username for now
+    handle: {                               // can set a different handle that poublic sees - same as username for now - unique
         type: String,
         required: true,
         min: 3,
         max: 20
     },
-    display_name: {                     // changable
-        type: String,
-        required: true,
-        min: 1,
-        max: 100
-    },
+    // display_name: {                      // changable - disabled for now
+    //     type: String,
+    //     required: true,
+    //     min: 1,
+    //     max: 100
+    // },
+    
     email: {
         type: String,
         required: true,
