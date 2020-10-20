@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 // import API_URL_BASE from "../../App" 
-const API_URL = "https://www.playshare.cloud" + "/api/auth/register"
+// const API_URL = "https://www.playshare.cloud" + "/api/auth/register"
+const API_URL = "http://localhost:8000"+"/api/auth/register"
+
 class FormContainerRegister extends React.Component {
     state = {
         username: "",
@@ -15,7 +17,6 @@ class FormContainerRegister extends React.Component {
     }
     async handleFormSubmit(event){
         event.preventDefault()                          // no refresh of screen after submit 
-        // CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString();
         const res = await fetch(API_URL, {
             method: 'POST',
             headers: {

@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 class OverlayContainer extends React.Component {
- 
     render(){                                                               
         return (
             <div class="overlay-container">

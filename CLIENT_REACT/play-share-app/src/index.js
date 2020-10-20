@@ -2,10 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App.js';
 // import './index.css';
-// import dotenv from  'dotenv'
-
 import * as serviceWorker from './serviceWorker';
-// require('dotenv').config({ path: '../../.env' })                                                       // To use keys stored in .env file
 
 ReactDOM.render(
   <React.StrictMode>

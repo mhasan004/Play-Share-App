@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 // const CryptoJS = require("crypto-js")
-const API_URL = "https://www.playshare.cloud"+"/api/auth/login"
+// const API_URL = "https://www.playshare.cloud"+"/api/auth/login"
+const API_URL = "http://localhost:8000"+"/api/auth/login"
 
 
 class FormContainerLogin extends React.Component {
@@ -34,10 +35,7 @@ class FormContainerLogin extends React.Component {
         else
             console.log(data)
     }
-
-
     render(){
-        // Setting the login or register form 
         const containerCss = "container-form container-sign-in";
         const heading = "Sign In";
         const spanText = "or use your account";

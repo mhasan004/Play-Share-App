@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    secretKey:{
+    secret_key:{
         type: String,
         default: "Not Logged In"
     }

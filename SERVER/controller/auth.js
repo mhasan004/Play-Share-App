@@ -43,7 +43,7 @@ exports.registerNewUser = async (req,res,next) =>
     try{ added_user = await new_user.save()}
     catch(err){ return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})} 
     try{
-        const enc_added_user = CryptoJS.AES.encrypt(added_user._id.toString(), process.env.SERVER_ENCRYPTION_KEY).toString(); 
+        const enc_added_user = added_user //CryptoJS.AES.encrypt(added_user._id.toString(), process.env.SERVER_ENCRYPTION_KEY).toString(); 
         res.status(200).json( {status: 1, added_user: enc_added_user})
         console.log("registered: "+added_user.username)
     }
@@ -106,18 +106,19 @@ exports.login = async (req,res,next) =>
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)
     try{ 
         const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
-        await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
+        const a = await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
     }                                                  
     catch{ 
+        console.log("Failed to add hashed user token to DB for user: "+user.username)
         return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})
     }
-  
+
     // 4) Encrypt the JWT token and set it in the header
-    const server_token_enc = CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 
+    const server_token_enc = token //CryptoJS.AES.encrypt(token, process.env.SERVER_ENCRYPTION_KEY).toString(); 
     res.header('auth-token', server_token_enc)                                                                                              // Send the token with the response
     res.status(200).json( {status: 1, message: "Logged In! Set header with token to access private routes!"} ) 
     console.log("Logged In: "+user.username)
-    console.log("** Remove this! (auth.js) JWT (not ecrypted versison) sent: "+ token)
+    // console.log("** Remove this! (auth.js) JWT (not ecrypted versison) sent: "+ token)
 }
 
    
