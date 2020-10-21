@@ -19,10 +19,9 @@ exports.verifyUser = async (req,res,next) => {                                  
     // const auth_header = req.headers['authorization']
     // const recieved_token = auth_header && auth_header.split(' ')[1]
 
-    if(!recieved_token || !user || user.login_status === 0)  
+    if(!recieved_token || !user )//|| user.login_status === 0)  
         return res.status(401).json({status: -1, message: `Access Denied! Wrong auth-token Header, user not found, or user not logged in!`}) 
-    const encryption_input = (user._id+user.username).toString()
-    
+          
     // VERIFY the user by checking if correct JWT - Recreate what the User's Secret Key hash should be and verify. Then calculate the JWT hash and verify:
     let verified = null
     const JWT_admin_key = CryptoJS.AES.encrypt(process.env.USER_SECRET_KEY, process.env.ADMIN_SECRET_KEY).toString();               // encrypt USER_SECRET_KEY with ADMIN_SECRET_KEY 

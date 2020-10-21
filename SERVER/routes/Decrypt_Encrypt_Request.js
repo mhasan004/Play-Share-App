@@ -3,18 +3,32 @@ const NodeRSA = require('node-rsa');
 const key = new NodeRSA({b: 1024});                     // PUBLIC + PRIVATE KEY MADE - len of the bytes
 const public_key = key.exportKey('public')          // public key ------> sendout
 const private_key = key.exportKey('private')        // private key
-let SYMMETRIC_KEY = null;
 const RSA_private_key = new NodeRSA(private_key)
+
 const encrypted_headers = [
-    // "auth-app", 
     "auth-token"
 ]
+// let SYMMETRIC_KEY = null
+let SYMMETRIC_KEY_DICT = {}
+let MAX_CLIENT_CONNECTIONS = 10
+
+function findEmptyKey(){
+    const SYMMETRIC_KEY_DICT_ARRAY = Object.keys(SYMMETRIC_KEY_DICT).map(Number)
+    const range_array = Array(MAX_CLIENT_CONNECTIONS).fill(1).map((x, y) => x + y)
+    let available_keys = range_array.filter(x => !SYMMETRIC_KEY_DICT_ARRAY.includes(x)) 
+    if (available_keys.length == 0){     // max client full so resize * 2
+        const returnVal = MAX_CLIENT_CONNECTIONS+1
+        MAX_CLIENT_CONNECTIONS = MAX_CLIENT_CONNECTIONS*2
+        return returnVal
+    }
+    return available_keys[0]
+}
+
 
 exports.initiateCheckHandShake =  (req,res,next) => {
     // Handshake was done so can decrypt client data with SYMMETRIC_KEY
-    if (req.headers["hand-shake"] == 1){                    // handshake already performed, so its only to decrypt
-        res.set('hand-shake', 1) 
-        console.log("ok")
+    if ((req.headers["hand-shake"] > 0)){                    // handshake already performed, so its only to decrypt
+        res.set('hand-shake', req.headers["hand-shake"]) 
         next()
     }
     // 1) Client making 1st request, giving them public_key 
@@ -28,17 +42,18 @@ exports.initiateCheckHandShake =  (req,res,next) => {
     // 2) clint needs to return body: key=public_key_enc(SYMMETRIC_KEY). header: hand-shake=1. 
     else if (req.headers["hand-shake"] == 0 && req.headers["key"] != null){
         try{ 
-            SYMMETRIC_KEY = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
+            const empty_index = findEmptyKey()
+            SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
-            return res.status(200).json({status:1, message: "Got SYMMETRIC_KEY! Set header: 'hand-shake' = 1 for future requests"}) 
+            return res.status(200).json({status:1, hand_shake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'hand-shake' = ${empty_index} for future requests (see hand_shake_index field)`}) 
         }        
         catch(err){
             console.log("Failed to get Client's SYMMETRIC_KEY!")
-            return res.status(400).json({status:-1, message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), hand-shake = 1. 2) hand-shake = 0  to reinitiate TLS handshake. Error: "+err}) 
+            return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), hand-shake = handsake index. 2) hand-shake = 0  to reinitiate TLS handshake. Error: "+err}) 
         }
     }
-    else if (req.headers["hand-shake"] === 0 && req.headers["key"] == null){
-        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'hand-shake' header to 1 after sending SYMMETRIC_KEY"}) 
+    else if (req.headers["hand-shake"] == 0 && req.headers["key"] == null){
+        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'hand-shake' header to handshake index returned by server after client sent SYMMETRIC_KEY"}) 
     }
 }
 
@@ -91,16 +106,15 @@ exports.decryptSelectedHeader = async (req,res,next) =>
     next()
 }
 
-exports.SYMMETRIC_KEY_encrypt = (data) =>{
-    const encrypted_data = CryptoJS.AES.encrypt(data, SYMMETRIC_KEY).toString(); 
-    return encrypted_data
+exports.SYMMETRIC_KEY_encrypt = (data, hand_shake) =>{
+    return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[hand_shake]).toString(); 
 }
 
 
 exports.public_key = public_key;
 exports.private_key = private_key;
 exports.RSA_private_key = RSA_private_key;
-exports.SYMMETRIC_KEY = SYMMETRIC_KEY;
+exports.SYMMETRIC_KEY_DICT = SYMMETRIC_KEY_DICT;
 
 
 

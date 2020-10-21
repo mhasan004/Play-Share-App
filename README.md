@@ -65,8 +65,14 @@
     4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `hand-shake` = 1, signifying handshake completed for server.
     5. Client will finish by sending a request with header `hand-shake` = 1, signifying it has received the server's message
     6. Server will only fulfill requests for auth routes if the `hand-shake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
+    7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
 
     </details>
+
+  * To login, two pieces of information need to be valid: 
+    1. Correct JWT for user (expires during logout),
+    2. Valid `SYMMETRIC_KEY` (or else it will remake one through TLS handshake), deleted during logout.
+
   * All data in requests and responses are AES encrypted by the symmetric key.
   * JWT expires every hour.
   * Encryption keys needed to make JWT and hash passwords are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
@@ -89,7 +95,10 @@
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers & Body:** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key.
-  * Header `hand-shake` = 1 to say that TLS handshake made, 0 to say sending client's symmetric key to server, nothing to initiate TLS handshake
+  * Header `hand-shake` =  
+    * nothing - to initiate TLS handshake
+    * `0` - to  say sending client's symmetric key to server 
+    * `hand_shake_index` - this is sent by server after successful TLS handshake 
   * Header `auth-token` = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
   * Header `Content-Type` = `application/json`
   * AES encrypt the post request body with the symmetric key
