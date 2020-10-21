@@ -8,8 +8,9 @@ const {SYMMETRIC_KEY_encrypt} = require('../routes/Decrypt_Encrypt_Request')
 // Input Fields: display_name, username, email, password
 exports.registerNewUser = async (req,res,next) =>                                                                       
 {
-    const {username, email, password} = req.body
-
+    const username = req.body.username
+    const email = req.body.email
+    const password = req.body.password
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = registerValidation(req.body)                                       
     if(error){ return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message}) }
@@ -45,12 +46,13 @@ exports.registerNewUser = async (req,res,next) =>
 // Input Fields: username, password
 // Will generete a JWT using a secret key, string to hash in token, expiration time
     // data - id of token = string of usernmae, _id
-    // secret key for users = AES(JWT_payload, USER_SECRET_KEY)
-    // secret key for admin = AES(AES(JWT_payload, USER_SECRET_KEY),ADMIN_SECRET_KEY) 
+    // secret key for users = AES(data_to_encrypt, USER_SECRET_KEY)
+    // secret key for admin = AES(AES(data_to_encrypt, USER_SECRET_KEY),ADMIN_SECRET_KEY) 
 // Chnages to JWT -> secret key made with a randomly hashed 
 exports.login = async (req,res,next) => 
 {    
-    const {username, password} = req.body
+    const username = req.body.username
+    const password = req.body.password
     // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)  
     if(error) return res.status(400).json({status:-1, message: error.details[0].message}) 
@@ -69,40 +71,46 @@ exports.login = async (req,res,next) =>
     }
 
     /* 2) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated)
-        * JWT_payload: {id: user._id}
-        * admin token = jwt.sign(JWT_payload, JWT_admin_key,   {expiresIn: '1h'})   -----  JWT_admin_key = encrypt USER_SECRET_KEY with ADMIN_SECRET_KEY
-        * admin token = jwt.sign(JWT_payload, USER_SECRET_KEY, {expiresIn: '1h'})               
+        * data_to_encrypt: (string of usernmae + _id)
+        * unique_user_secret_key for users = AES(data_to_encrypt, USER_SECRET_KEY)
+        * unique_user_secret_key for admin = AES(unique_user_secret_key, ADMIN_SECRET_KEY)    ===     AES(AES(data_to_encrypt, USER_SECRET_KEY), ADMIN_SECRET_KEY) 
+        * token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})   
     */
-    const JWT_payload = {id: user._id.toString()}
+    const data_to_encrypt = (user._id+user.username).toString()
     let token = null
+    let unique_user_secret_key = null
+    try{    
+        unique_user_secret_key = CryptoJS.AES.encrypt(data_to_encrypt, process.env.USER_SECRET_KEY).toString();         // Each user need to have a different JWT so one user cant go to anothe ruser's private route
+    }
+    catch (err){
+        console.log( 'FAILED TO MAKE UNIQUE KEY!')
+        return res.status(400).json({status:-1, message: "Failed to to hash secret key:" + err})
+    }
     if (user.email === process.env.ADMIN_EMAIL){
-        try{    
-            const JWT_admin_key = CryptoJS.AES.encrypt(process.env.USER_SECRET_KEY, process.env.ADMIN_SECRET_KEY).toString();               // encrypt USER_SECRET_KEY with ADMIN_SECRET_KEY 
-            token = jwt.sign(JWT_payload, JWT_admin_key, {expiresIn: '1h'})                                                                 // Admin Token uses an encryption of USER_SECRET_KEY with ADMIN_SECRET_KEY 
-        }
-        catch (err){
-            console.log('FAILED to to make admin encryption key for JWT creation for admin failed!')
-            return res.status(400).json({status:-1, message: "FAILED to to make admin encryption key for JWT creation for admin failed!: Error:" + err})
-        }
+        unique_user_secret_key = CryptoJS.AES.encrypt(unique_user_secret_key, process.env.ADMIN_SECRET_KEY).toString(); 
+        token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})        // Admin Token
     }
     else{
-        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: '1h'})                                                       // User JWT is simple, just encrypt with USER_SECRET_KEY 
+        token = jwt.sign({id: data_to_encrypt}, unique_user_secret_key, {expiresIn: '1h'})                  // Make a new JWT Token. Pass in user's db _id and ur made up token    
     }
 
-    // 3) Change logged in status for user
+    // 3) STORE THE UNIQUE SECRET KEY: Hash the unique user secret token and store in DB so one user cant peek at another user's page
+    const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)
     try{ 
-        const a = await User.updateOne({ _id: user._id }, {login_status: 1})                                                                // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
+        const hashed_secret_key = await bcrypt.hash(unique_user_secret_key, salt)
+        const a = await User.updateOne({ _id: user._id }, {secret_key: hashed_secret_key})                                                        // Save the hashed unique user secret key in the user's profile so we can verify the user for the route
     }                                                  
     catch{ 
-        console.log("Failed change login status for user: " + user.username)
-        return res.status(400).json({status:-1, message: "Failed change login status for user"})
+        console.log("Failed to add hashed user token to DB for user: "+user.username)
+        return res.status(400).json({status:-1, message: "Failed to add hashed user token to DB so login failed"})
     }
 
     // 4) Encrypt the JWT token and set it in the header
-    const token_enc = SYMMETRIC_KEY_encrypt(token)
-    res.set('auth-token', token_enc)                                                                                                     // Send the token with the response
+    const server_token_enc = SYMMETRIC_KEY_encrypt(token)
+    res.header('auth-token', server_token_enc)                                                                                              // Send the token with the response
     res.status(200).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!"} ) 
-    console.log("Logged In: " + user.username)
+    console.log("Logged In: "+user.username)
     // console.log("** Remove this! (auth.js) JWT (not ecrypted versison) sent: "+ token)
 }
 
+   

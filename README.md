@@ -9,7 +9,9 @@
 ![Login & Register Page Demo](login_register_demo2.gif)
 
 <div style="text-align:center;   font-style: italic;">
-    Fig 1:  Login & Registration Demo
+    Fig 1:  Login & Registration Demo 
+
+  (Changes from demo: Database will only indicate if user is logged in or not. 'secret_key' as seen in the demo is no longer stored )
 </div>
 
 # 📌 TECHNOLOGIES USED:
@@ -36,7 +38,7 @@
       * `DB_CONNECT`  - Store your MongoDB Connection URL
       * `ADMIN_EMAIL` - This is the email address of the admin account.
       * `ADMIN_SECRET_KEY` - (Will be hashed every hour) This will be used to make the admin's JWT 
-      * `USER_SECRET_KEY`  - (Will be hashed every hour) This will be used to make the user's JWT
+      * `USER_SECRET_KEY`  - (Will be hashed every hour) This will be used to make the admin's and user's JWT
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
     </details>
 2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
@@ -44,7 +46,10 @@
 <br/>
 
 # 🛡️ APP SECURITY:
-  ![Post Request Body](/Pictures/My_TLS_Handshake.png)
+  ![TLS Handshake](/Pictures/My_TLS_Handshake.png)
+  <div style="text-align:center;   font-style: italic;">
+    Fig 2:  TLS Handshake I implemented on the server. Client in development.
+  </div>
 
   * TLS handshake can be performed but is not needed since server and client will communicate over https. Implemented basic version of TLS for fun
     <details>      
@@ -68,14 +73,15 @@
   * During registration and login phase, all user inputs are validated using **Joi**.
   * During registration, passwords are hashed and stored in the database. 
   * Admin and user JWT are created differently. 
-    * User JWT is created by hashing a unique user string. The unique user string is the user's stored data (objectId, username, name, hashed password, email) AES encrypted by the `USER_ENCRYPTION_KEY`. 
-    * Admin JWT uses the same process but uses both the `USER_ENCRYPTION_KEY` and the `ADMIN_ENCRYPTION_KEY`. 
+    * User JWT is created by encrypting user's _id with `USER_ENCRYPTION_KEY` key. 
+    * Admin JWT uses the same process but it's encryption key is the AES encryption of `USER_ENCRYPTION_KEY` with the `ADMIN_ENCRYPTION_KEY`. 
+    * Logged in users are marked on the database to avoid tampering.
   
   <details>      
-    <summary style="padding-left: 25px;"> IN DEVELOPMENT: </summary>
+    <summary style="padding-left: 25px;"> FIXES IN DEVELOPMENT: </summary>
 
-  * Authentication headers 
-  * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`, `SERVER_ENCRYPTION_KEY`, `CLIENT_ENCRYPTION_KEY` will all be hashed every hour to prevent attackers that have access from making requests. 
+  * Using Authentication Headers 
+  * `ADMIN_SECRET_KEY`, `USER_SECRET_KEY`
   * Add salt so user string to increase the randomness of JWT
   </details>
 <br/>

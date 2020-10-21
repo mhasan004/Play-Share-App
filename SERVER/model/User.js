@@ -7,13 +7,13 @@ const userSchema = new mongoose.Schema({
         min: 3,
         max: 50
     },
-    handle: {                               // can set a different handle that poublic sees - same as username for now - unique
+    handle: {                                                       // can set a different handle that poublic sees - same as username for now - unique
         type: String,
         required: true,
         min: 3,
         max: 20
     },
-    // display_name: {                      // changable - disabled for now
+    // display_name: {                                              // changed - disabled for now
     //     type: String,
     //     required: true,
     //     min: 1,
@@ -36,9 +36,9 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    secret_key:{
-        type: String,
-        default: "Not Logged In"
+    login_status:{                                                  // changed from secret_key:{
+        type: Number,
+        default: 0
     }
 })
 

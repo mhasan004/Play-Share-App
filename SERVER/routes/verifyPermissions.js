@@ -19,34 +19,43 @@ exports.verifyUser = async (req,res,next) => {                                  
     // const auth_header = req.headers['authorization']
     // const recieved_token = auth_header && auth_header.split(' ')[1]
 
-    if(!recieved_token || !user)  
-        return res.status(401).json({status: -1, message: "Access Denied! Maybe Wrong auth-token Header or bad url? Make user username is in /api/user/:username"}) 
+    if(!recieved_token || !user || user.login_status === 0)  
+        return res.status(401).json({status: -1, message: `Access Denied! Wrong auth-token Header, user not found, or user not logged in!`}) 
     const encryption_input = (user._id+user.username).toString()
     
     // VERIFY the user by checking if correct JWT - Recreate what the User's Secret Key hash should be and verify. Then calculate the JWT hash and verify:
     let verified = null
-    const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
-    const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
+    const JWT_admin_key = CryptoJS.AES.encrypt(process.env.USER_SECRET_KEY, process.env.ADMIN_SECRET_KEY).toString();               // encrypt USER_SECRET_KEY with ADMIN_SECRET_KEY 
     try{
         try{
-            verified = jwt.verify(recieved_token, (user_secret_key+process.env.ADMIN_SECRET_KEY).toString())                                             // See if if the admin is trying to access this router
+            verified = jwt.verify(recieved_token, process.env.USER_SECRET_KEY)                                                      // See if a right user is trying to access this router
         }                       
         catch(err){
             try{
-                const verify_user_secret_key = await bcrypt.compare(user_secret_key, user.secret_key)
-                if (!verify_user_secret_key)
-                    return res.status(401).json({status: -1, message: "Access Denied! Invalid Secret Token"}) 
-                verified = jwt.verify(recieved_token, user_secret_key)                                                      // See if a right user is trying to access this router
+                verified = jwt.verify(recieved_token, JWT_admin_key)                                                                 // See if if the admin is trying to access this router
+                return res.status(401).json({status: -1, message: "Access Denied! Invalid Secret Token"}) 
             }            
-            catch{throw err}                                                                                                // If neither the admin or the right user, throw error        
+            catch{throw err}                                                                                                        // If neither the admin or the right user, throw error        
         }
-        req.user = verified                                                                                                 // req.user = JWT object
+        req.user = verified                                                                                                         // req.user = JWT object
         next()
     }
     catch(err){
         return res.status(400).json({status: -1, message: "Access Denied! Invalid Token: " + err}) 
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* Admin In DEV
