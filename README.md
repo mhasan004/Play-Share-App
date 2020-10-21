@@ -62,9 +62,9 @@
     3. Client generates a random hash (`SYMMETRIC_KEY`) and encrypts with public key and sends request to server with two headers: 
       * 1) header `hand-shake` = 0
       * 2) header `key` = `SYMMETRIC_KEY` encrypted with public key
-    4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a resonse with header `hand-shake` = 1, signifying handshake completed for server.
-    5. Client will finish by sending a request with header `hand-shake` = 1, signifying it has recieved the server's message
-    6. Server will only fullfill requests for auth routes if the `hand-shake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
+    4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `hand-shake` = 1, signifying handshake completed for server.
+    5. Client will finish by sending a request with header `hand-shake` = 1, signifying it has received the server's message
+    6. Server will only fulfill requests for auth routes if the `hand-shake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
 
     </details>
   * All data in requests and responses are AES encrypted by the symmetric key.
