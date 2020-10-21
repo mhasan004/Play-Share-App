@@ -20,7 +20,7 @@
 * **helmet.js** - used to give some basic security to REST API application.
 * **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
 * **bcrypt** - used to store hashed passwords and portion of key needed to make JWT into the database.
-* **crypto-js** - used to encrypt response and decrypt request using the client's symmetric key.
+* **crypto-js** - used to encrypt response and decrypt request using the client's symmetric key (AES).
 * **JWT** - used to authenticate a user.
 * **Joi** - used to validate client request body.
 
