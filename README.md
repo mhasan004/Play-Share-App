@@ -46,7 +46,7 @@
 <br/>
 
 # 🛡️ APP SECURITY:
-  ![TLS Handshake](/Pictures/My_TLS_Handshake.png)
+  ![TLS Handshake](/Pictures/My_TLS_Handshake2.png)
   <div style="text-align:center;   font-style: italic;">
     Fig 2:  TLS Handshake I implemented on the server. Client in development.
   </div>
@@ -68,6 +68,7 @@
     7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
 
     </details>
+    
 
   * To login, two pieces of information need to be valid: 
     1. Correct JWT for user (expires during logout),
