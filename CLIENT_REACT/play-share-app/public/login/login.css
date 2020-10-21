@@ -30,7 +30,7 @@
 body{
     background: var(--background-color);
 }
-#root{
+#AppDiv{
     font-family: 'Montserrat', sans-serif;
     background: var(--background-color);/* rgb(218, 230, 236);/*rgb(117, 211, 230);*/
 
