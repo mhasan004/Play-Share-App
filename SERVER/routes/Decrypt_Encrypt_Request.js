@@ -12,18 +12,21 @@ const encrypted_headers = [
 
 exports.initiateCheckHandShake =  (req,res,next) => {
     // Handshake was done so can decrypt client data with SYMMETRIC_KEY
-    if (req.headers["hand-shake"] === 1){                    // handshake already performed, so its only to decrypt
+    if (req.headers["hand-shake"] == 1){                    // handshake already performed, so its only to decrypt
         res.set('hand-shake', 1) 
+        console.log("ok")
         next()
     }
     // 1) Client making 1st request, giving them public_key 
     else if (req.headers["hand-shake"] == null){
-        res.set('pub-key', public_key) 
-        res.set('hand-shake', 0)                                                                                    
-        return res.status(200).json({status:0, message: "Giving Client the Public Key in 'pub-key' header. Respond with headers: 'hand-shake' = 0, key = public_key_encypt(SYMMETRIC_KEY)"})  
+        res.set({
+            'pub-key': Buffer.from(public_key).toString('base64'),
+            'hand-shake': 0
+        })
+        return res.status(200).json({status:0, message: "Giving client the base64 encoded Public Key in 'pub-key' header. Respond with headers: 'hand-shake' = 0, key = base64(public_key_encypt(SYMMETRIC_KEY))"})  
     }
     // 2) clint needs to return body: key=public_key_enc(SYMMETRIC_KEY). header: hand-shake=1. 
-    else if (req.headers["hand-shake"] === 0 && req.headers["key"] != null){
+    else if (req.headers["hand-shake"] == 0 && req.headers["key"] != null){
         try{ 
             SYMMETRIC_KEY = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
@@ -31,7 +34,7 @@ exports.initiateCheckHandShake =  (req,res,next) => {
         }        
         catch(err){
             console.log("Failed to get Client's SYMMETRIC_KEY!")
-            return res.status(400).json({status:-1, message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, client may not have encrypted SYMMETRIC_KEY with server's public key! Set headers: key = public_key_encypt(SYMMETRIC_KEY), hand-shake = 0. Error: "+err}) 
+            return res.status(400).json({status:-1, message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), hand-shake = 1. 2) hand-shake = 0  to reinitiate TLS handshake. Error: "+err}) 
         }
     }
     else if (req.headers["hand-shake"] === 0 && req.headers["key"] == null){
@@ -51,12 +54,12 @@ exports.decryptBody = async (req,res,next) =>
         }
         catch(err){
             field_array.push(field)
-            err_array.push(err)
+            error_array.push(err)
         }
     }
     if (field_array.length != 0){
         err_obj = {
-            message: `ERROR: Couldn't decrypt request body field(s): '${field_array}'! Maybe bad SYMMETRIC_KEY? \n\t\tError(s): ${error_array}`, 
+            message: `ERROR: Couldn't decrypt request body field(s): '${field_array}'! Maybe bad SYMMETRIC_KEY? \n\t\tSError(s): ${error_array}`, 
             err_output_location: "DecryptBody Middleware"
         }
         console.log("Printing from decryptBody Middleware: "+err_obj.message+" \n\t\terr_output_location: "+err_obj.err_output_location)
