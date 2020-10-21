@@ -14,10 +14,9 @@ app.use(helmet())                                                               
 app.use(cors())                                                
 app.use(express.json())    
 
-// app.use(decryptBody, decryptSelectedHeader)                                                      // MY MIDDLEWARES to decrypt body and some headers
-// app.use('/api', verifyApp)                                                                       // MY MIDDLEWARE to see if the right client
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
-app.use('/', initiateCheckHandShake);                                                               // Initilize TLS handshake and get client's Symmetric key             
+app.use('/', initiateCheckHandShake);                                                               // Initilize TLS handshake and get client's Symmetric key       
+// app.use('/api/auth', decryptBody, decryptSelectedHeader)                                         // MY MIDDLEWARES to decrypt body and some headers for login and request
 app.use('/api/auth', authRoutes)                                                                    // Register new user, login user (only apps with access key can register or login)
 app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   

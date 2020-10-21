@@ -37,8 +37,7 @@ exports.registerNewUser = async (req,res,next) =>
     try{ added_user = await new_user.save()}
     catch(err){ return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})} 
     try{
-        const enc_added_user = added_user //CryptoJS.AES.encrypt(added_user._id.toString(), process.env.SERVER_ENCRYPTION_KEY).toString(); 
-        res.status(200).json( {status: 1, added_user: enc_added_user})
+        res.status(200).json( {status: 1, added_user: added_user})
         console.log("registered: "+added_user.username)
     }
     catch(err){  return res.status(400).json({status: -1, message:"Error Encrypting db user id to send to client. Error: " + err})} 
@@ -62,7 +61,7 @@ exports.login = async (req,res,next) =>
     const user = await User.findOne({username: username})                                                                                   // Find the user doc in DB with this email
     if (!user) return res.status(400).json( {status: -1, message: "Invalid username or password"} ) 
     
-    // 1c) CHECK PASSWORD: retrieved password is encrypted with CLIENT_ENCRYPTION_KEY. Decrypt and check hash on DB
+    // 1c) CHECK PASSWORD on DB:
     try{
         const valid_pass = await bcrypt.compare(password, user.password)                                                                    // CHECK PASSWORD: Compare if the passed in pas and the hashed db pass are the same
         if(!valid_pass){ return res.status(400).json( {status: -1, message: "Invalid username or password"} ) }
