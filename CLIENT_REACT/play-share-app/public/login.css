@@ -7,7 +7,7 @@
 
     --form-background-color: white;    
     --form-text-color: black; 
-    --form-input-box-background-color:  #eee;
+    --form-input-box-background-color: #eee;
     --form-social-icon-color: black;
     --form-social-icon-background-color: #eee;
     --form-button-color: #ff4b2b;
@@ -28,12 +28,41 @@
     box-sizing: border-box; 
 }
 body{
-    background: var(--background-color);
+    /* background: var(--background-color); */
+    background: black;
 }
 #AppDiv{
-    font-family: 'Montserrat', sans-serif;
-    background: var(--background-color);/* rgb(218, 230, 236);/*rgb(117, 211, 230);*/
+    background: var(--background-color);/* rgb(218, 230, 236);rgb(117, 211, 230);*/
+    /* background-image: url('htt/ps://i.pinimg.com/originals/27/31/a1/2731a16236abc0447eccb33d9fe87424.gif'); */
+    /* background-image: url('https://i.kym-cdn.com/photos/images/original/000/779/948/ebe.gif'); */
+    /* background-image: url('https://i.pinimg.com/originals/b0/a8/ff/b0a8ff43c9c21062dcce0b066c60053b.gif');
+    background-size: span; */
+    /* background-repeat: no-repeat; */
+    /* background-size: auto; */
+    /* background-image: url('https://media2.giphy.com/media/2dnGHOAQt1tIziib5X/giphy.gif?cid=ecf05e47iyf9lx4be4ejcm3fv44jizyrm8twrk1nnhv5gi6h&rid=giphy.gif'); 
+    height: 100vh;
+    padding:0;
+    margin:0; */
+    
 
+
+
+    /*https://i.pinimg.com/originals/da/d1/bf/dad1bf8f71a3f01560ad27a7bd73f35c.gif - trippy*/
+
+
+
+    /* Background full
+    background: url('https://media2.giphy.com/media/2dnGHOAQt1tIziib5X/giphy.gif?cid=ecf05e47iyf9lx4be4ejcm3fv44jizyrm8twrk1nnhv5gi6h&rid=giphy.gif') no-repeat center center fixed; 
+    
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    */
+
+
+    /*------------------*/
+    font-family: 'Montserrat', sans-serif;
     display: flex;
     flex-direction: column;                     /* column: all in one col = each div in own row*/
 

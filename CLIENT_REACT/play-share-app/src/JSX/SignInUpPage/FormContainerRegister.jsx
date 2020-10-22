@@ -38,7 +38,6 @@ class FormContainerRegister extends React.Component {
             console.log(data)
     }
 
-
     render(){
         // Setting the login or register form 
         const containerCss = "container-form container-sign-up";
@@ -58,7 +57,7 @@ class FormContainerRegister extends React.Component {
                     <input value={this.state.username} onChange={e=>this.handleInputChange(e)} type="text"     name="username" placeholder="Username" />
                     <input value={this.state.email}    onChange={e=>this.handleInputChange(e)} type="email"    name="email"    placeholder="Email" />
                     <input value={this.state.password} onChange={e=>this.handleInputChange(e)} type="password" name="password" placeholder="Password" />
-                    <button type="submit" id='signUpButton'>Sign Up</button>
+                    <button type="submit" id='signUpButton' >Sign Up</button>
                 </form>
             </div>
         );

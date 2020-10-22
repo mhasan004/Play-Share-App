@@ -6,7 +6,7 @@
 
 <br/>
 
-![Login & Register Page Demo](login_register_demo2.gif)
+![Login & Register Page Demo](/PicturesGifs/login_register_demo2.gif)
 
 <div style="text-align:center;   font-style: italic;">
     Fig 1:  Login & Registration Demo 
@@ -46,7 +46,7 @@
 <br/>
 
 # 🛡️ APP SECURITY:
-  ![TLS Handshake](/Pictures/My_TLS_Handshake2.png)
+  ![TLS Handshake](/PicturesGifs/My_TLS_Handshake3.png)
   <div style="text-align:center;   font-style: italic;">
     Fig 2:  TLS Handshake I implemented on the server. Client in development.
   </div>
@@ -57,14 +57,14 @@
 
     1. Client sends initial request to server (/auth/ routes only).
     2. Server generates RSA public and private keys and send to public key to client:
-      * 1) header `hand-shake` = 0
+      * 1) header `handshake` = 0
       * 2) header `pub_key` = public key
     3. Client generates a random hash (`SYMMETRIC_KEY`) and encrypts with public key and sends request to server with two headers: 
-      * 1) header `hand-shake` = 0
+      * 1) header `handshake` = 0
       * 2) header `key` = `SYMMETRIC_KEY` encrypted with public key
-    4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `hand-shake` = 1, signifying handshake completed for server.
-    5. Client will finish by sending a request with header `hand-shake` = 1, signifying it has received the server's message
-    6. Server will only fulfill requests for auth routes if the `hand-shake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
+    4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `handshake` = 1, signifying handshake completed for server.
+    5. Client will finish by sending a request with header `handshake` = 1, signifying it has received the server's message
+    6. Server will only fulfill requests for auth routes if the `handshake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
     7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
 
     </details>
@@ -96,10 +96,10 @@
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers & Body:** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key.
-  * Header `hand-shake` =  
+  * Header `handshake` =  
     * nothing - to initiate TLS handshake
     * `0` - to  say sending client's symmetric key to server 
-    * `hand_shake_index` - this is sent by server after successful TLS handshake 
+    * `handshake_index` - this is sent by server after successful TLS handshake 
   * Header `auth-token` = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
   * Header `Content-Type` = `application/json`
   * AES encrypt the post request body with the symmetric key

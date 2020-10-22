@@ -8,7 +8,6 @@ const RSA_private_key = new NodeRSA(private_key)
 const encrypted_headers = [
     "auth-token"
 ]
-// let SYMMETRIC_KEY = null
 let SYMMETRIC_KEY_DICT = {}
 let MAX_CLIENT_CONNECTIONS = 10
 
@@ -25,39 +24,39 @@ function findEmptyKey(){
 }
 
 /* HANDSHAKE
-    * 'hand-shake' >= 0   --> got SYMMETRIC_KEY so continue
-    * 'hand-shake'== null --> initiate handshake, res header = 0
-    * 'hand-shake'== 0    --> ongoing handshake, decrypted SYMMETRIC_KEY, set 'hand-shake'== #
- */
+    * 'handshake' >= 0   --> got SYMMETRIC_KEY so continue
+    * 'handshake'== null --> initiate handshake, res header = 0
+    * 'handshake'== 0    --> ongoing handshake, decrypted SYMMETRIC_KEY, set 'handshake'== #
+*/
 exports.initiateCheckHandShake =  (req,res,next) => {
     // Handshake was done so can decrypt client data with SYMMETRIC_KEY
-    if ((req.headers["hand-shake"] > 0)){                    // handshake already performed, so its only to decrypt
-        res.set('hand-shake', req.headers["hand-shake"]) 
+    if ((req.headers["handshake"] > 0)){                    // handshake already performed, so its only to decrypt
+        res.set('handshake', req.headers["handshake"]) 
         next()
     }
     // 1) Client making 1st request, giving them public_key 
-    else if (req.headers["hand-shake"] == null){
+    else if (req.headers["handshake"] == null){
         res.set({
             'pub-key': Buffer.from(public_key).toString('base64'),
-            'hand-shake': 0
+            'handshake': 0
         })
-        return res.status(200).json({status:0, message: "Giving client the base64 encoded Public Key in 'pub-key' header. Respond with headers: 'hand-shake' = 0, key = base64(public_key_encypt(SYMMETRIC_KEY))"})  
+        return res.status(200).json({status:0, message: "Giving client the base64 encoded Public Key in 'pub-key' header. Respond with headers: 'handshake' = 0, key = base64(public_key_encypt(SYMMETRIC_KEY))"})  
     }
-    // 2) clint needs to return body: key=public_key_enc(SYMMETRIC_KEY). header: hand-shake=1. 
-    else if (req.headers["hand-shake"] == 0 && req.headers["key"] != null){
+    // 2) clint needs to return body: key=public_key_enc(SYMMETRIC_KEY). header: handshake=1. 
+    else if (req.headers["handshake"] == 0 && req.headers["key"] != null){
         try{ 
             const empty_index = findEmptyKey()
             SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
-            return res.status(200).json({status:1, hand_shake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'hand-shake' = ${empty_index} for future requests (see hand_shake_index field)`}) 
+            return res.status(200).json({status:1, handshake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'handshake' = ${empty_index} for future requests (see handshake_index field)`}) 
         }        
         catch(err){
             console.log("Failed to get Client's SYMMETRIC_KEY!")
-            return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), hand-shake = handsake index. 2) hand-shake = 0  to reinitiate TLS handshake. Error: "+err}) 
+            return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), handshake = handsake index. 2) handshake = 0  to reinitiate TLS handshake. Error: "+err}) 
         }
     }
-    else if (req.headers["hand-shake"] == 0 && req.headers["key"] == null){
-        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'hand-shake' header to handshake index returned by server after client sent SYMMETRIC_KEY"}) 
+    else if (req.headers["handshake"] == 0 && req.headers["key"] == null){
+        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'handshake' header to handshake index returned by server after client sent SYMMETRIC_KEY"}) 
     }
 }
 
@@ -110,8 +109,8 @@ exports.decryptSelectedHeader = async (req,res,next) =>
     next()
 }
 
-exports.SYMMETRIC_KEY_encrypt = (data, hand_shake) =>{
-    // return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[hand_shake]).toString(); 
+exports.SYMMETRIC_KEY_encrypt = (data, handshake_index) =>{
+    // return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[handshake_index]).toString(); 
     return data
 }
 
