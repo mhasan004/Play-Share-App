@@ -1,7 +1,7 @@
 import React from "react";
 
 
-function User_Feed({username}) {
+function UserFeed({username}) {
     return (
         <div >
             <h1>User_Feed {username}</h1>
@@ -9,4 +9,4 @@ function User_Feed({username}) {
     );
 }
 
-export default User_Feed;
+export default UserFeed;

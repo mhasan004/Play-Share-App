@@ -28,7 +28,7 @@ class FormContainerLogin extends React.Component {
             })
         })
         const data = await res.json()
-        if (data.status == 1){
+        if (data.status === 1){
             this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
         }

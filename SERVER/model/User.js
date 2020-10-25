@@ -5,13 +5,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 3,
-        max: 50
+        max: 15
     },
     handle: {                                                       // can set a different handle that poublic sees - same as username for now - unique
         type: String,
         required: true,
         min: 3,
-        max: 20
+        max: 12
     },
     // display_name: {                                              // changed - disabled for now
     //     type: String,

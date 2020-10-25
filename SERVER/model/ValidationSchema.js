@@ -16,7 +16,7 @@ function registerValidation(data)
 function loginValidationUsername(data)
 {
     const validationSchema = Joi.object({                                                   // MAKE VALIDATION SCHEMA to login a user
-        username: Joi.string().alphanum().min(3).max(10).required(),
+        username: Joi.string().alphanum().min(3).max(15).required(),
         password: Joi.string().min(6).required()                                            // *** client posts an encrypted password!     
     })
     return validationSchema.validate(data)                                                  // VALIDATE Data of Post req before we add to DB
@@ -27,10 +27,10 @@ function loginValidationUsername(data)
 function postValidation(data)
 {
     const validationSchema = Joi.object({        
-        username: Joi.string().alphanum().min(3).max(10).required(),
-        title: Joi.string().min(2).max(30).required(),
+        username: Joi.string().alphanum().min(3).max(15).required(),
+        title: Joi.string().min(2).max(75).required(),
         // group: Joi.string().min(1).max(20),
-        content: Joi.string()//.required(),             //***VALIDATE URL
+        content: Joi.string().max(250).//.required(),             //***VALIDATE URL
     })
     console.log("Validate url in joli for post")
     return validationSchema.validate(data)                                                 

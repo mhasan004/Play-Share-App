@@ -28,10 +28,10 @@
     box-sizing: border-box; 
 }
 body{
-    /* background: var(--background-color); */
-    background: black;
+    background: var(--background-color);
+    /* background: black; */
 }
-#AppDiv{
+#app-div{
     background: var(--background-color);/* rgb(218, 230, 236);rgb(117, 211, 230);*/
     /* background-image: url('htt/ps://i.pinimg.com/originals/27/31/a1/2731a16236abc0447eccb33d9fe87424.gif'); */
     /* background-image: url('https://i.kym-cdn.com/photos/images/original/000/779/948/ebe.gif'); */
@@ -70,7 +70,7 @@ body{
     align-items: center;
     height: 100vh;
 
-    margin: 5px 0 5px;                          /* Margins to center it more: up by 5, down by 2, 0 on sides */
+    margin: 5px 0 2px;                          /* Margins to center it more: up by 5, down by 2, 0 on sides */
 }
 h1{
     font-weight: bold;

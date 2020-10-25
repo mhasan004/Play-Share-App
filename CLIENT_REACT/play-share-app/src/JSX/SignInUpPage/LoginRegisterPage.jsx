@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import FormContainerLogin from './FormContainerLogin'
 import FormContainerRegister from './FormContainerRegister'
 import OverlayContainer from './OverlayContainer'
+import './LoginRegisterPage.css'
 
 class LoginRegisterPage extends React.Component {
     button_signUp_overlay(){          // signup will add the class
@@ -19,10 +20,12 @@ class LoginRegisterPage extends React.Component {
 
     render(){
         return (// **** reg,log,overlay
+            <div id="app-div">
             <div class="container" id="container">
                 <FormContainerRegister />
                 <FormContainerLogin />          
                 <OverlayContainer button_signUp_overlay={this.button_signUp_overlay} button_signIn_overlay={this.button_signIn_overlay}/>                       
+            </div>
             </div>
         )
     }

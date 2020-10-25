@@ -16,11 +16,12 @@ const postSchema = new mongoose.Schema({
     title:{                     
         type: String,                           // title of img or post              --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY
         required: true,
-        min:5,
-        max:20
+        min:2,
+        max:75
     },
     content:{
-        type: String,                           // url of pic/img                    --> IN THE FUTURE: LET USER EITHER POST TITLE ONLY OR URL ONLY     
+        type: String,                           // url of pic/img          
+        max:250
     },
     // group:{
     //     type: String,                           // game group id
