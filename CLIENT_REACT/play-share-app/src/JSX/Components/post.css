@@ -1,12 +1,11 @@
-@import url('https://fonts.google.com/specimen/Quicksand?selection.family=Montserrat:wght@400;800&sidebar.open=true&query=quicksand');
-
+/* @import url('https://fonts.google.com/specimen/Quicksand?selection.family=Montserrat:wght@400;800&sidebar.open=true&query=quicksand'); */
+/* FONT qUICKSAND: added <link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>to indexhtml */
 
 .post-body{
-    font-family: 'Montserrat', sans-serif;
+    font-family: Quicksand;
     font-style: normal;
-    font-weight: normal; 
-    
-    position: relative;
+    font-weight: normal;
+
     margin-top: 10px;
     margin-bottom: 10px;
     padding: 8px;
@@ -15,11 +14,15 @@
 
     background: #FFFFFF;
     border-radius: 20px;
+
+    display: flex; 
+    flex-direction: column; 
 }
 
 .post-rows{
     display: flex; 
     flex-direction: column; 
+    position: relative;
 }
 .post-top-container{
     position: relative;
@@ -27,68 +30,119 @@
     margin-left: 15px;
     height: 70px;
     background: white;
-
 }
 .svg-stroke-container{
     position: absolute;
     margin-top: 4px;
-
 }
 .post-top-handle{    
     position: absolute;
     margin-top: 15px;
     margin-left: 22px;
     
-   
     font-size: 36px;
     line-height: 45px;
+    font-weight: normal;
     color: white;
 }
-
 .post-top-date{
     position: absolute;
     margin-top: 25px;
     margin-left: 330px;
 
-
     font-size: 20px;
     line-height: 25px;
-    color: #BFBFBF;
-
+    font-weight: normal;
+    color: #a89797;
 } 
 
 
+
+
+
 .post-title-content-container{
+    position: relative;
     margin-left: 15px;
 }
 .post-title{
     width: 810px;
     height: 95px;
+    margin-left: 22px;
 
     font-size: 30px;
     line-height: 45px;
-    margin-left: 22px;
+    font-weight: normal;
     color: #000000;
 }
 .post-content-img{
-    position: absolute;
     width: 810px;
-    height: 403px;
+    height: 390px;
     margin-left: 15px;
-    margin-left: 15px;
-    background-repeat: 'no-repeat';
+    background-size:cover;
+    background-repeat:no-repeat;
 
     /* background: url(https://i.imgur.com/E5qVIoE.jpg); */
     border-radius: 20px;
 }
 .post-content-text{
-    position: absolute;
     width: 810px;
-    height: 403px;
+    height: 390px;
     margin-left: 15px;
-
     border-radius: 20px;
 }
+
+
+
+
+
+
+.post-actions-constainer{
+    display: flex; 
+    flex-direction: row; 
+    margin-top: 10px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.post-actions-left{
+    display: flex; 
+    flex-direction: row; 
+
+}
+.post-arrows{
+    width: 50px;
+    height: 45px;
+    margin-top: 5px;
+}
+.post-total-likes-text{
+    font-family: Quicksand;
+    Font-size: 45px;
+    line-height: 45px;
+    font-style: normal;
+    font-weight: normal;
+
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+} 
+
+
+.post-actions-right{
+    display: flex; 
+    flex-direction: row; 
+    /* margin-top: 10px;
+    margin-right: 30px; */
+    float:right;
+}
+
+
+
+
+
+
+
+
+
 
 
 
