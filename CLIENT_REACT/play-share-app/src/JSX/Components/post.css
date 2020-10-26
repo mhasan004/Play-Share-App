@@ -1,94 +1,204 @@
-@import url('https://fonts.google.com/specimen/Quicksand?selection.family=Montserrat:wght@400;800&sidebar.open=true&query=quicksand');
-
+/* @import url('https://fonts.google.com/specimen/Quicksand?selection.family=Montserrat:wght@400;800&sidebar.open=true&query=quicksand'); */
+/* FONT qUICKSAND: added <link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>to indexhtml */
 
 .post-body{
-    font-family: 'Montserrat', sans-serif;
+    font-family: Quicksand;
     font-style: normal;
-    font-weight: normal; 
-    
-    position: relative;
+    font-weight: normal;
+
     margin-top: 10px;
     margin-bottom: 10px;
-    padding: 8px;
+
+    padding-top: 20px;
+    padding-bottom: 25px;
+    padding-left: 37px;
+    padding-right: 37px;
     width: 885px;
     height: 650px; 
 
-    background: #FFFFFF;
+    background: #ffffff;
     border-radius: 20px;
+
+    display: flex; 
+    flex-direction: column; 
 }
 
 .post-rows{
     display: flex; 
     flex-direction: column; 
+    position: relative;
 }
+
+
+
 .post-top-container{
     position: relative;
-    margin-top: 15px;
-    margin-left: 15px;
-    height: 70px;
+    display: flex; 
+    flex-direction: row; 
     background: white;
 
-}
-.svg-stroke-container{
-    position: absolute;
-    margin-top: 4px;
+    height: 70px;
+    width: 800px;
 
+}
+.post-top-container-left{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    
 }
 .post-top-handle{    
-    position: absolute;
-    margin-top: 15px;
-    margin-left: 22px;
-    
-   
-    font-size: 36px;
-    line-height: 45px;
-    color: white;
+    font-size: 36/16rem;
+    line-height: 45/16rem;
+    font-weight: normal;
+    color: #ABABAB;
+
+    padding-right: 20px;
+
 }
-
-.post-top-date{
-    position: absolute;
-    margin-top: 25px;
-    margin-left: 330px;
-
-
-    font-size: 20px;
-    line-height: 25px;
+.post-top-date{    
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    font-weight: normal;
     color: #BFBFBF;
-
+    padding-right: 20px;
 } 
 
 
+.post-top-container-right{     
+    position: absolute;
+    display: flex; 
+    flex-direction: row; 
+    background: grey;
+
+    /* margin-top: 4px; */
+    /* width: 280 */
+    /* margin-left: 204px; */
+    /* background: grey; */
+}
+.post-top-groupName{
+
+    position: absolute;
+    /* margin-right: -581px;  */
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 36px;
+    line-height: 45px;
+    color: #FFFFFF;
+
+    margin-right: -1416px;  
+
+}
+.svg-stroke-container{
+    margin-top: 5.495px;
+    margin-right: -1416px;  
+    /* position: absolute;
+    margin-right: -581px;  */
+
+}
+
+
+
+
+
+
+
 .post-title-content-container{
-    margin-left: 15px;
+    position: relative;
+    /* margin-left: 15px; */
 }
 .post-title{
     width: 810px;
     height: 95px;
+    /* margin-left: 22px; */
 
     font-size: 30px;
     line-height: 45px;
-    margin-left: 22px;
+    font-weight: normal;
     color: #000000;
 }
 .post-content-img{
-    position: absolute;
     width: 810px;
-    height: 403px;
-    margin-left: 15px;
-    margin-left: 15px;
-    background-repeat: 'no-repeat';
-
-    /* background: url(https://i.imgur.com/E5qVIoE.jpg); */
+    height: 390px;
+    /* margin-left: 15px; */
+    background-size:cover;
+    background-repeat:no-repeat;
     border-radius: 20px;
 }
 .post-content-text{
-    position: absolute;
     width: 810px;
-    height: 403px;
-    margin-left: 15px;
-
+    height: 390px;
+    /* margin-left: 15px; */
     border-radius: 20px;
 }
+
+
+
+
+
+
+.post-actions-constainer{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.post-actions-left{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    width: 200px;
+}
+.post-total-likes-text-div{
+    position: relative;
+    width: 100px;
+    margin-top: 5px;
+}
+.post-total-likes-text{
+    /* position: absolute; */
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Quicksand;
+    Font-size: 2.8125rem;
+    line-height: 2.8125rem;
+    font-style: normal;
+    font-weight: normal; 
+  
+    /* margin-top: -10px;
+ margin-left: auto;
+    margin-right: auto;
+    margin-left: 50px; */
+    /* margin-right: 10px;  */
+} 
+
+.post-arrows{
+    width: 2.8125rem;
+    height: 2.8125rem;
+    margin-top: 5px;
+}
+.post-arrow-up{
+    margin-left: 0px;
+}
+.post-arrow-down{
+    margin-right: 20px;
+}
+
+.post-actions-right{
+    display: flex; 
+    flex-direction: row; 
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -97,3 +207,16 @@
     margin-right: auto;
     
 }
+
+.center-vertically {
+    /* margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%); */
+    display: flex;
+
+    justify-content: center;
+    align-items: center; 
+
+  }

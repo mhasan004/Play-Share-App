@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema({
     //     type: String,                        // User's _id
     //     required: true, 
     // },
-    handle:{                                    // username
+    handle:{                                                                                                                       //______________new                                    // username
         type: String,                           // User's _id
         required: true, 
     },
@@ -23,26 +23,41 @@ const postSchema = new mongoose.Schema({
         type: String,                           // url of pic/img          
         max:250
     },
-    // group:{
-    //     type: String,                           // game group id
-    //     min:1,
-    //     max:20
-    // },
+    group:{
+        type: String,                           // game group name
+        min:1,
+        max:15
+    },
+    group_type:{                                                                                                                       //______________new                                
+        type: String,                           // game group type (game, etc). so far only one parent gropup
+        min:1,
+        max:20
+    },
+    isURL: {                                                                                                                       //______________new
+        type: Number,                           // is content a url?
+        default: 0
+    },
     date: {
         type: Date,
         default: Date.now
     },
-    like:{                          //** chnaged from liek to dislike */
+    likes:{                          //** chnaged from liek to dislike */
         type: Number,
         default: 0
     },
-    dislike:{           //addded this
+    dislikes:{                                                                                                                       //______________new
         type: Number,
         default: 0
     },
-    total_likes:{
+    total_likes:{                                                                                                                       //______________new
         type: Number,
         default: 0
+    },
+    user_liked: {                                                                                                                       //______________new 
+        type : Array , "default" : [] 
+    },
+    user_disliked: {                                                                                                                       //______________new 
+        type : Array , "default" : [] 
     }
 })
 
