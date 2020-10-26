@@ -4,6 +4,8 @@ const postSchema = new mongoose.Schema({
     username:{                                  // username
         type: String,                           // User's _id
         required: true, 
+        min: 3,
+        max: 15
     },
     // display_name:{                           // username - disabled for now
     //     type: String,                        // User's _id
@@ -12,16 +14,8 @@ const postSchema = new mongoose.Schema({
     handle:{                                                                                                                       //______________new                                    // username
         type: String,                           // User's _id
         required: true, 
-    },
-    title:{                     
-        type: String,                           // title of img or post              --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY
-        required: true,
-        min:2,
-        max:75
-    },
-    content:{
-        type: String,                           // url of pic/img          
-        max:250
+        min: 3,
+        max: 12
     },
     group:{
         type: String,                           // game group name
@@ -33,13 +27,26 @@ const postSchema = new mongoose.Schema({
         min:1,
         max:20
     },
+    title:{                     
+        type: String,                           // title of img or post              --> IN THE FUTURE: LET USER EITHER PST TITLE ONLY OR URL ONLY
+        required: true,
+        min:2,
+        max:75
+    },
+    content:{
+        type: String,                           // url of pic/img          
+        max:250
+    },
+
+    
     isURL: {                                                                                                                       //______________new
-        type: Number,                           // is content a url?
+        type: Boolean,                           // is content a url?
         default: 0
     },
     date: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        max:22
     },
     likes:{                          //** chnaged from liek to dislike */
         type: Number,

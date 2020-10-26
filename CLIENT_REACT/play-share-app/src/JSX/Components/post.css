@@ -45,19 +45,20 @@
     position: relative;
     display: flex; 
     flex-direction: row; 
+    /* margin-right: 100px */
     
 }
 .post-top-handle{    
-    font-size: 36/16rem;
-    line-height: 45/16rem;
+    font-size: 2.2rem;
+    line-height: 2.9rem;
     font-weight: normal;
     color: #818080;
 
-    padding-right: 20px;
+    padding-right: 10px;
 
 }
 .post-top-date{    
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 1.5rem;
     font-weight: normal;
     color: #a1a1a1;
@@ -67,36 +68,24 @@
 } 
 
 
-.post-top-container-right{     
+
+ .post-top-container-right{     
     position: absolute;
     display: flex; 
     flex-direction: row; 
-    background: grey;
 
-    /* margin-top: 4px; */
-    /* width: 280 */
-    /* margin-left: 204px; */
-    /* background: grey; */
+    margin-top: 5px;
+    margin-left: 465.4px;
 }
 .post-top-groupName{
-
     position: absolute;
-    /* margin-right: -581px;  */
+    
     font-family: Quicksand;
     font-style: normal;
     font-weight: normal;
-    font-size: 36px;
+    font-size: 35px;
     line-height: 45px;
-    color: #FFFFFF;
-
-    margin-right: -1416px;  
-
-}
-.svg-stroke-container{
-    margin-top: 5.495px;
-    margin-right: -1416px;  
-    /* position: absolute;
-    margin-right: -581px;  */
+    color: white;
 }
 
 
@@ -183,13 +172,13 @@
     display: flex; 
     flex-direction: row; 
 }
-.post-actions-left_background{
+.post-actions-left-background{
     position: absolute;
     margin-left: -30px;
 }
-rect{
-    fill:white;
-}
+.post-actions-left-background rect{
+    fill:white; 
+} 
 
 
 
@@ -216,5 +205,13 @@ rect{
 
     justify-content: center;
     align-items: center; 
-
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
   }

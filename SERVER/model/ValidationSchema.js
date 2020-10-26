@@ -28,16 +28,33 @@ function postValidation(data)
 {
     const validationSchema = Joi.object({        
         username: Joi.string().alphanum().min(3).max(15).required(),
+        group: Joi.string().min(1).max(15),
+        group_type: Joi.string().min(1).max(20),
         title: Joi.string().min(2).max(75).required(),
-        // group: Joi.string().min(1).max(20),
-        content: Joi.string().max(250).//.required(),             //***VALIDATE URL
+        content: Joi.string().max(250),//.required(),             //***VALIDATE URL
+        isURL: Joi.boolean(),
     })
-    console.log("Validate url in joli for post")
+    return validationSchema.validate(data)                                                 
+}
+
+// Post validation
+function postLikeDislikeValidation(data)
+{
+    const validationSchema = Joi.object({        
+        username: Joi.string().alphanum().min(3).max(15).required(),
+        postId:  Joi.string().alphanum().required(),
+        likes: Joi.number().required(),
+        dislikes: Joi.number().required(),
+        total_likes: Joi.number().required(),
+        user_liked: Joi.array().items(Joi.string()).required(),
+        user_disliked: Joi.array().items(Joi.string()).required(),
+    })
     return validationSchema.validate(data)                                                 
 }
 
 module.exports.registerValidation = registerValidation
 module.exports.loginValidationUsername = loginValidationUsername
 module.exports.postValidation = postValidation
+module.exports.postLikeDislikeValidation = postLikeDislikeValidation
 
 // VALIDATE URL

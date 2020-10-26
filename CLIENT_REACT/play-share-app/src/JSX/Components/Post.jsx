@@ -150,7 +150,7 @@ class Post extends React.Component{
             show_actions = true
         }
 
-
+/*fill={svg_stroke_color}/>*/
         return(
             <div class="post-body center">
                 <div class="post-rows">
@@ -161,11 +161,16 @@ class Post extends React.Component{
                         </div>   
 
                         <div class="post-top-container-right center-vertically"> 
-                             <svg class="svg-stroke-container center-vertically"  width="280" height="59" viewBox="0 0 280 59" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="280" height="59" rx="25" fill={svg_stroke_color}/>
-                                <rect x="225" width="55" height="59" fill={svg_stroke_color}/>
+                            <svg class="svg-stroke-container center-vertically"  width="383" height="60" viewBox="0 0 383 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="0.984528" y="0.5" width="382.015" height="59" rx="25" fill={svg_stroke_color}/>
+                                <rect x="308" y="0.5" width="75.0388" height="59" fill={svg_stroke_color}/>
                             </svg>
+
                             <h1 class="post-top-groupName"> {this.state.group} </h1> 
+
+                            
+
+
                         </div>  
                     </div>  
 
@@ -181,7 +186,7 @@ class Post extends React.Component{
                 </div>
 
                 <div class="post-actions-constainer ">
-                     <svg class="post-actions-left_background" width="193" height="40" viewBox="0 0 193 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                     <svg class="post-actions-left-background" width="193" height="40" viewBox="0 0 193 58" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="193" height="58" rx="20" fill="#EEEEEE"/>
                         </svg>
                     <span class="post-actions-left">
@@ -190,7 +195,7 @@ class Post extends React.Component{
                             <path d="M11.7759 26.0033L32.7759 26.0033V52.0033H11.7759V26.0033Z" fill={svg_up_arrow_color}/>
                         </svg>
                         <div class="post-total-likes-text-div">
-                            <a class="post-total-likes-text"  style={{color: {total_likes_color}}}>{this.state.total_likes}</a>
+                            <a class="post-total-likes-text noselect"  style={{color: {total_likes_color}}}>{this.state.total_likes}</a>
                         </div>
                         <svg class="post-arrow-down post-arrows" onClick={e=>this.dislikeHandler(e)} viewBox="0 0 44 53" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 52.0033L0 26.0033H44L22 52.0033Z" fill={svg_down_arrow_color}/>
