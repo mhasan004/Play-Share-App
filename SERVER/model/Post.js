@@ -26,15 +26,15 @@ const postSchema = new mongoose.Schema({
     group:{
         type: String,                           // game group name
         min:1,
-        max:20
+        max:15
     },
     group_type:{                                                                                                                       //______________new                                
-        type: String,                           // game group type (game, etc)
+        type: String,                           // game group type (game, etc). so far only one parent gropup
         min:1,
         max:20
     },
     isURL: {                                                                                                                       //______________new
-        type: Number,                           // game group type (game, etc)
+        type: Number,                           // is content a url?
         default: 0
     },
     date: {
