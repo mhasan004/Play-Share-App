@@ -8,12 +8,13 @@ import './JSX/app.css'
 // export var API_URL_BASE = "http://157.230.184.203:8000"; 
 
 class App extends Component{  
+    logged_user = "mhasan1"
     render(){
         return (    
             <Router>                             
                     <Switch>
                         <LoginRegisterPage path="/" exact component={LoginRegisterPage}/>
-                        <GlobalFeed path="/global_feed" component={GlobalFeed}/>
+                        <GlobalFeed path="/global_feed" logged_user={this.logged_user} component={GlobalFeed}/>
                         <UserFeed   path="/user_feed/:username" component={UserFeed}/>
                     </Switch>
             </Router>      

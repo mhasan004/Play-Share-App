@@ -46,7 +46,7 @@
 <br/>
 
 # 🛡️ APP SECURITY:
-  ![TLS Handshake](/PicturesGifs/My_TLS_Handshake4.png)
+  ![TLS Handshake](/PicturesGifs/My_TLS_Handshake5.png)
   <div style="text-align:center;   font-style: italic;">
     Fig 2:  TLS Handshake I implemented on the server. Client in development.
   </div>
