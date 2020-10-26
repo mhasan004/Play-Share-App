@@ -6,34 +6,59 @@ import './post.css'
 
 class Post extends React.Component{
     state = {
-        username: "John Doe",
-        handle: "@johnDoe00942",
-        date: "Posted Today",
+        username: this.props.post.username,
+        handle: this.props.post.handle,
+        date: this.props.post.date,
 
-        title: "This is my game play, we won 30 battles but lost 55 but that is ok because ",
-        content: "https://i.imgur.com/fiAqUmu.jpeg",
-        isURL: 1,
+        title: this.props.post.title,
+        content: this.props.post.content,
+        group: this.props.post.group,
+        group_type: this.props.post.group_type,
+        isURL: this.props.post.isURL,
 
-        like: 0,
-        dislike: 0,
-        total_likes: 0,
+        like: this.props.post.likes,
+        dislike: this.props.post.dislikes,
+        total_likes: this.props.post.total_likes,
 
-        users: []
+        user_liked:  this.props.post.user_liked,
+        user_disliked:  this.props.post.user_disliked,
     }
 
     like(event) {
+        // if (this.state.user_liked.includes(this.props.logged_user)){            // if already liked, remove it
+        //     this.setState({
+        //         like: this.state.like - 1,
+        //         total_likes: this.state.total_likes - 1,
+        //         user_liked: this.state.user_liked.filter(usrs => usrs !== this.props.logged_user),
+        //     })
+        //     return
+        // }
+
         // if like post is valid: 
             this.setState({
                 like: this.state.like + 1,
-                total_likes: this.state.total_likes + 1
+                total_likes: this.state.total_likes + 1,
+                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.props.logged_user),
+                user_liked: this.state.user_liked.push(this.props.logged_user)
             })
+        
         console.log("like:        total_likes: "+this.state.total_likes)
     }
-    dislike(event) {
+    dislike(event) {    
+        // if (this.state.user_disliked.includes(this.props.logged_user)){   // if already liked, remove it
+        //     this.setState({
+        //         dislike: this.state.dislike - 1,
+        //         total_likes: this.state.total_likes + 1,
+        //         user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.props.logged_user),
+        //     })
+        //     return
+        // }
         // if dislike post is valid: 
             this.setState({
                 dislike: this.state.dislike + 1,
-                total_likes: this.state.total_likes - 1
+                total_likes: this.state.total_likes - 1,
+                user_liked: this.state.user_liked.filter(usrs => usrs !== this.props.logged_user),
+                user_disliked: this.state.user_disliked.push(this.props.logged_user)
             })
         console.log("dislike:      total_likes: "+this.state.total_likes)
     }
@@ -47,21 +72,49 @@ class Post extends React.Component{
         console.log("comment")
     }
     render(){
-      
+        let svg_color = "white"
+        let total_likes_color = "#7C7777"
+        let show_actions = false
+
+        if (this.state.group_type === "game")
+            svg_color = "#FF4B2B"
+        else
+            svg_color = "#2BB3FF"
+
+        if (this.state.total_likes > 0)
+            total_likes_color = "#2BB3FF"
+        else if (this.state.total_likes < 0)
+            total_likes_color = "#FF4B2B"
+        else
+            total_likes_color = "#7C7777"
+
+
+
+        if (this.state.username === this.props.logged_user){
+            show_actions = true
+        }
+
+
         return(
             <div class="post-body center">
                 <div class="post-rows">
                     <div class="post-top-container"> 
-                        <svg class="svg-stroke-container"  width="319" height="69" viewBox="0 0 319 69" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M94.5241 5.58364C51.6238 10.4037 29.9999 -3 3.49995 26C-6 46 7.5 59 7.5 59C7.5 59 16.9999 67 29.9999 67C88.8501 67 193.072 43.0005 244.464 63.321C285.027 79.3601 306.476 56.3305 306.476 56.3305C314.725 49.7491 329.965 29.9013 306.476 19.6364C244.16 -7.59607 148.126 -0.438726 94.5241 5.58364Z" fill="#FF4B2B"/>
-                        </svg>
-                        <h1 class="post-top-handle"> {this.state.handle} </h1>
-                        <h1 class="post-top-date"> {this.state.date} </h1>
+                        <div class="post-top-container-left center-vertically"> 
+                                <h1 class="post-top-handle"> {this.state.handle} </h1>
+                                <h1 class="post-top-date"> {this.state.date} </h1>
+                        </div>   
+
+                        <div class="post-top-container-right center-vertically"> 
+                             <svg class="svg-stroke-container center-vertically"  width="280" height="59" viewBox="0 0 280 59" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="280" height="59" rx="25" fill={svg_color}/>
+                                <rect x="225" width="55" height="59" fill={svg_color}/>
+                            </svg>
+                            <h1 class="post-top-groupName"> {this.state.group} </h1> 
+                        </div>  
                     </div>  
 
                     <div class="post-title-content-container"> 
                         <h1 class="post-title">{this.state.title}</h1>
-                        {/* <div style={{backgroundImage: `url(${this.state.content})`, width:'250px',height:'250px'}}></div> */}
                         {this.state.isURL ? (
                             <div  class="post-content-img" style={{backgroundImage: `url(${this.state.content})`}}></div>
                         ) : (
@@ -77,19 +130,26 @@ class Post extends React.Component{
                             <path d="M22 0L44 26L0 26L22 0Z" fill="#2BB3FF"/>
                             <path d="M11.7759 26.0033L32.7759 26.0033V52.0033H11.7759V26.0033Z" fill="#2BB3FF"/>
                         </svg>
-                        <a class="post-total-likes-text">   {this.state.total_likes}  </a>
+                        <div class="post-total-likes-text-div">
+                            <a class="post-total-likes-text"  style={{color: {total_likes_color}}}>{this.state.total_likes}</a>
+                           
+                            
+                        </div>
                         <svg class="post-arrow-down post-arrows" onClick={e=>this.dislike(e)} viewBox="0 0 44 53" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 52.0033L0 26.0033H44L22 52.0033Z" fill="#FF4B2B"/>
                             <path d="M32.2241 26H11.2241V0H32.2241V26Z" fill="#FF4B2B"/>
                         </svg>
+                       
                     </span>
 
-                    <a class="post-comment" onClick={e=>this.comment(e)}>  <i class="far fa-comment-dots"></i></a>
 
-                    <span class="post-actions-right">
-                        <a class="post-edit" onClick={e=>this.edit(e)}>     <i class="fas fa-pen"></i></a>
-                        <a class="post-delete" onClick={e=>this.delete(e)}> <i class="far fa-trash-alt"></i></a>
-                    </span> 
+                    <a class="post-comment" onClick={e=>this.comment(e)}>  <i class="far fa-comment-dots"></i></a>
+                    {show_actions ? (
+                        <span class="post-actions-right">
+                            <a class="post-edit" onClick={e=>this.edit(e)}>     <i class="fas fa-pen"></i></a>
+                            <a class="post-delete" onClick={e=>this.delete(e)}> <i class="far fa-trash-alt"></i></a>
+                        </span> 
+                    ) : ( console.log())} 
                 </div>
             </div>
         );
