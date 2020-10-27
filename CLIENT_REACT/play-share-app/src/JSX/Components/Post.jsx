@@ -23,10 +23,9 @@ class Post extends React.Component{
         user_liked:  this.props.post.user_liked,
         user_disliked:  this.props.post.user_disliked,
         total_likes: this.props.post.total_likes,
-
     }
 
-    likeHandler(event) {
+    async likeHandler(event) {
         if (this.state.username === this.logged_user)                                                                           // cant vote on own post
             return
     
@@ -65,7 +64,7 @@ class Post extends React.Component{
             return
         }
     }
-    dislikeHandler(event) {    
+    async dislikeHandler(event) {    
         if (this.state.username === this.logged_user)                                                                           // cant vote on own post
             return
     
@@ -112,11 +111,17 @@ class Post extends React.Component{
     }
     commentHandler(event) {
         console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.logged_user+"         indisliked?: "+this.state.user_disliked.includes(this.logged_user))
-
-        // console.log("comment")
     }
+    likeChangeHandler(event){
+        console.log(event.target.value)
+    }
+    getLikeColor(){
+        if (this.state.total_likes > 0) return "#2BB3FF"
+        else if (this.state.total_likes < 0)  return "#FF4B2B"
+        else if (this.state.total_likes === 0) return "#A5A3A3"
+    }
+ 
     render(){
-        let total_likes_color    = "#7C7777"
         let svg_stroke_color     = "#A5A3A3"
         let svg_up_arrow_color   = "#A5A3A3"
         let svg_down_arrow_color = "#A5A3A3"
@@ -125,15 +130,10 @@ class Post extends React.Component{
         if (this.state.group_type === "game")
             svg_stroke_color = "#FF4B2B"
         else
-            svg_stroke_color = "#2BB3FF"
+            svg_stroke_color = "white"
 
 
-        if (this.state.total_likes > 0)
-            total_likes_color = "#2BB3FF"
-        else if (this.state.total_likes < 0)
-            total_likes_color = "#FF4B2B"
-        else
-            total_likes_color = "#7C7777"
+    
 
         if (this.state.user_liked.includes(this.logged_user)){
             svg_up_arrow_color   = "#2BB3FF"
@@ -174,7 +174,7 @@ class Post extends React.Component{
                         </div>  
                     </div>  
 
-                    <div class="post-title-content-container"> 
+                    <div class="post-title-content-container "> 
                         <h1 class="post-title">{this.state.title}</h1>
                         {this.state.isURL ? (
                             <div  class="post-content-img" style={{backgroundImage: `url(${this.state.content})`}}></div>
@@ -185,7 +185,7 @@ class Post extends React.Component{
                     </div> 
                 </div>
 
-                <div class="post-actions-constainer ">
+                <div class="post-actions-constainer  noselect">
                      <svg class="post-actions-left-background" width="193" height="40" viewBox="0 0 193 58" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="193" height="58" rx="20" fill="#EEEEEE"/>
                         </svg>
@@ -195,7 +195,7 @@ class Post extends React.Component{
                             <path d="M11.7759 26.0033L32.7759 26.0033V52.0033H11.7759V26.0033Z" fill={svg_up_arrow_color}/>
                         </svg>
                         <div class="post-total-likes-text-div">
-                            <a class="post-total-likes-text noselect"  style={{color: {total_likes_color}}}>{this.state.total_likes}</a>
+                            <a class="post-total-likes-text"  onChange={e=>this.likeChangeHandler(e)} style={{color: this.getLikeColor()}} >{this.state.total_likes}</a>
                         </div>
                         <svg class="post-arrow-down post-arrows" onClick={e=>this.dislikeHandler(e)} viewBox="0 0 44 53" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 52.0033L0 26.0033H44L22 52.0033Z" fill={svg_down_arrow_color}/>
@@ -205,10 +205,11 @@ class Post extends React.Component{
 
                     </span>
 
-
-                    <svg class="post-comment" onClick={e=>this.commentHandler(e)} width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.5 0C10.0648 0 0 10.0631 0 22.5C0 26.4465 1.02928 30.301 2.98382 33.7006L0.0848007 42.7032C-0.117416 43.3308 0.0487519 44.0188 0.514984 44.485C0.976753 44.9468 1.66306 45.1191 2.29683 44.9152L11.2994 42.0162C14.699 43.9707 18.5535 45 22.5 45C34.9352 45 45 34.9369 45 22.5C45 10.0648 34.9369 0 22.5 0ZM22.5 41.4844C18.9353 41.4844 15.4605 40.4898 12.4513 38.608C12.0184 38.3375 11.4807 38.2644 10.9805 38.4254L4.48174 40.5183L6.57463 34.0195C6.73325 33.5265 6.6663 32.9882 6.39164 32.5487C4.51023 29.5395 3.51562 26.0647 3.51562 22.5C3.51562 12.0321 12.0321 3.51562 22.5 3.51562C32.9679 3.51562 41.4844 12.0321 41.4844 22.5C41.4844 32.9679 32.9679 41.4844 22.5 41.4844ZM24.6973 22.5C24.6973 23.7133 23.7136 24.6973 22.5 24.6973C21.2864 24.6973 20.3027 23.7133 20.3027 22.5C20.3027 21.2864 21.2864 20.3027 22.5 20.3027C23.7136 20.3027 24.6973 21.2864 24.6973 22.5ZM33.4863 22.5C33.4863 23.7133 32.5027 24.6973 31.2891 24.6973C30.0754 24.6973 29.0918 23.7133 29.0918 22.5C29.0918 21.2864 30.0754 20.3027 31.2891 20.3027C32.5027 20.3027 33.4863 21.2864 33.4863 22.5ZM15.9082 22.5C15.9082 23.7133 14.9246 24.6973 13.7109 24.6973C12.4976 24.6973 11.5137 23.7133 11.5137 22.5C11.5137 21.2864 12.4976 20.3027 13.7109 20.3027C14.9246 20.3027 15.9082 21.2864 15.9082 22.5Z" fill="#BFBFBF"/>
-                    </svg>
+                    <div class="post-comment" onClick={e=>this.commentHandler(e)} >       
+                        <svg  width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.5 0C10.0648 0 0 10.0631 0 22.5C0 26.4465 1.02928 30.301 2.98382 33.7006L0.0848007 42.7032C-0.117416 43.3308 0.0487519 44.0188 0.514984 44.485C0.976753 44.9468 1.66306 45.1191 2.29683 44.9152L11.2994 42.0162C14.699 43.9707 18.5535 45 22.5 45C34.9352 45 45 34.9369 45 22.5C45 10.0648 34.9369 0 22.5 0ZM22.5 41.4844C18.9353 41.4844 15.4605 40.4898 12.4513 38.608C12.0184 38.3375 11.4807 38.2644 10.9805 38.4254L4.48174 40.5183L6.57463 34.0195C6.73325 33.5265 6.6663 32.9882 6.39164 32.5487C4.51023 29.5395 3.51562 26.0647 3.51562 22.5C3.51562 12.0321 12.0321 3.51562 22.5 3.51562C32.9679 3.51562 41.4844 12.0321 41.4844 22.5C41.4844 32.9679 32.9679 41.4844 22.5 41.4844ZM24.6973 22.5C24.6973 23.7133 23.7136 24.6973 22.5 24.6973C21.2864 24.6973 20.3027 23.7133 20.3027 22.5C20.3027 21.2864 21.2864 20.3027 22.5 20.3027C23.7136 20.3027 24.6973 21.2864 24.6973 22.5ZM33.4863 22.5C33.4863 23.7133 32.5027 24.6973 31.2891 24.6973C30.0754 24.6973 29.0918 23.7133 29.0918 22.5C29.0918 21.2864 30.0754 20.3027 31.2891 20.3027C32.5027 20.3027 33.4863 21.2864 33.4863 22.5ZM15.9082 22.5C15.9082 23.7133 14.9246 24.6973 13.7109 24.6973C12.4976 24.6973 11.5137 23.7133 11.5137 22.5C11.5137 21.2864 12.4976 20.3027 13.7109 20.3027C14.9246 20.3027 15.9082 21.2864 15.9082 22.5Z" fill="#BFBFBF"/>
+                        </svg>
+                    </div>      
 
 
                     {show_actions ? (

@@ -10,11 +10,11 @@
     margin-bottom: 10px;
 
     padding-top: 20px;
-    padding-bottom: 25px;
+    padding-bottom: 10px;
     padding-left: 37px;
     padding-right: 37px;
     width: 885px;
-    height: 650px; 
+    /* height: 650px;  */
 
     background: #ffffff;
     border-radius: 20px;
@@ -64,7 +64,6 @@
     color: #a1a1a1;
     padding-right: 20px;
     margin-top: 3px;
-
 } 
 
 
@@ -79,12 +78,12 @@
 }
 .post-top-groupName{
     position: absolute;
-    
     font-family: Quicksand;
     font-style: normal;
     font-weight: normal;
     font-size: 35px;
     line-height: 45px;
+
     color: white;
 }
 
@@ -97,7 +96,8 @@
 
 .post-title-content-container{
     position: relative;
-    /* margin-left: 15px; */
+    /* margin-: 15px; */
+    z-index: 1;
 }
 .post-title{
     width: 810px;
@@ -107,6 +107,8 @@
     font-size: 30px;
     line-height: 45px;
     font-weight: normal;
+
+    margin-bottom: 15px;
     color: #000000;
 }
 .post-content-img{
@@ -115,14 +117,22 @@
     /* margin-left: 15px; */
     background-size:cover;
     background-repeat:no-repeat;
+
+    margin-bottom: 15px;
     border-radius: 20px;
 }
 .post-content-text{
-    width: 810px;
-    height: 400px;
+    /* width: 810px;
+    height: 400px; */
     /* margin-left: 15px; */
+    /* margin-top: 15px; */
+
+    margin-bottom: 15px;
     border-radius: 20px;
 }
+
+
+
 
 
 
@@ -133,17 +143,14 @@
     position: relative;
     display: flex; 
     flex-direction: row; 
-    margin-top: 10px;
     margin-bottom: 15px;
     margin-left: 15px;
-
 }
-
 .post-actions-left{
     position: relative;
     display: flex; 
     flex-direction: row; 
-    width: 400px;
+    /* width: 400px; */
 }
 .post-total-likes-text-div{
     position: relative;
@@ -168,10 +175,6 @@
 .post-arrow-down{
     margin-right: 20px;
 }
-.post-actions-right{
-    display: flex; 
-    flex-direction: row; 
-}
 .post-actions-left-background{
     position: absolute;
     margin-left: -30px;
@@ -179,6 +182,47 @@
 .post-actions-left-background rect{
     fill:white; 
 } 
+
+
+
+
+
+
+.post-comment{
+    position: absolute;
+    left: 46%;
+}
+.post-actions-right{
+    position: absolute;
+
+    display: flex; 
+    flex-direction: row; 
+    left: 85%;
+}
+.post-edit{
+    margin-right: 10px;
+}
+.post-delete{
+    margin-right: 10px;
+}
+
+.post-comment:hover {
+    transform: scale(1.2);
+}
+.post-edit:hover {
+    transform: scale(1.2);
+}
+.post-delete:hover {
+    transform: scale(1.2);
+    fill:red;
+}
+
+.post-arrows:hover {
+    transform: scale(1.2);
+}
+
+
+
 
 
 
