@@ -15,6 +15,12 @@ exports.getAllPosts = async (req,res,next) =>
         res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
     }
 }
+Date.prototype.formatMMDDYYYY = function(){
+    return (this.getMonth() + 1) + 
+    "/" +  this.getDate() +
+    "/" +  this.getFullYear();
+}
+
 exports.makePost = async (req,res,next) => 
 {
     const username = req.baseUrl.split('/')[3]
@@ -23,16 +29,24 @@ exports.makePost = async (req,res,next) =>
 
     const post = new Post({                                                                                 // 2) Make New Post:
         username: username,
+        handle:'@'+username,
         title: req.body.title,
         content: req.body.content,
+        date: new Date().toLocaleDateString('en-US'),
         // group: req.body.group,
     })
 
     try{                                                                                                    // 3) Save to DB:
         const added_post = await post.save()
+        console.log("Post made")
         res.status(200).json({status: 1, added_post_id: added_post._id})
     }       
     catch(err){
+        console.log("failed to make post")
+        console.log(Date.now)
+        console.log((new Date()).toLocaleDateString('en-US'))
+       
+
         res.status(400).json({status: -1, message: "Failed to post: "+err})
     }
 }

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
-// import API_URL_BASE from "../../App" 
-// const API_URL = "https://www.playshare.cloud" + "/api/auth/register"
-const API_URL = "http://localhost:8000"+"/api/auth/register"
+import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
+var API_URL = require('../../App').API_URL
+const ROUTE_URL = API_URL+"/api/auth/register"
 
 class FormContainerRegister extends React.Component {
     state = {
@@ -17,7 +17,7 @@ class FormContainerRegister extends React.Component {
     }
     async handleFormSubmit(event){
         event.preventDefault()                          // no refresh of screen after submit 
-        const res = await fetch(API_URL, {
+        const res = await fetch(ROUTE_URL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -29,13 +29,18 @@ class FormContainerRegister extends React.Component {
                 password: this.state.password,
             })
         })
-        const data = await res.json()
-        if (data.status == 1){
+        const resJson = await res.json()
+        console.log(resJson)
+
+        if (resJson.status === 1){
             this.setState({ username: "", email: "",  password: ""}) 
             console.log("REGISTERED!")
+            this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
+                pathname: `/`,
+            });
         }
         else
-            console.log(data)
+            console.log(resJson)
     }
 
     render(){
@@ -66,6 +71,6 @@ class FormContainerRegister extends React.Component {
 
 
 
-export default FormContainerRegister;
+export default withRouter(FormContainerRegister);
 
 

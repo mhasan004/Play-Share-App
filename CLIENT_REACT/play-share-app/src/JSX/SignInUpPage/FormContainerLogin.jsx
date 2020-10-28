@@ -1,10 +1,9 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-
 // const CryptoJS = require("crypto-js")
-// const API_URL = "https://www.playshare.cloud"+"/api/auth/login"
-const API_URL = "http://localhost:8000"+"/api/auth/login"
+var API_URL = require('../../App').API_URL
+const ROUTE_URL = API_URL+"/api/auth/login"
 
 class FormContainerLogin extends React.Component {
     state = {
@@ -17,37 +16,42 @@ class FormContainerLogin extends React.Component {
         })
     }
   
-    
     async handleFormSubmit(event){
         event.preventDefault()                                       // no refresh of screen after submit 
-        // let history = useHistory();
 
-        // const { history } = this.props;                     
-        this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
-            pathname: `/globalFeed`,
-        });
-
-
-
-        const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
+        let resJson = null
+        try{
+            const res = await fetch(ROUTE_URL, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: this.state.username,
+                    password: this.state.password,
+                })
             })
-        })
-        const data = await res.json()
-        if (data.status === 1){
-            this.setState({ username: "", password: ""}) 
+            resJson = await res.json()
+        }
+        catch{ 
+            return console.log("couldn't log in from react")
+
+        }
+        
+        if (resJson.status === 1){
+            // this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
+            console.log("**WARNING: storing auth-token in local storage")            
+            localStorage.setItem('auth-token', resJson.auth_app);
+            console.log(localStorage.getItem('auth-token'))
+
+            this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
+                pathname: `/globalFeed`,
+            });
         }
         else
-            console.log(data)
-        
+            return console.log(resJson.message) 
     }
     
     render(){

@@ -22,14 +22,13 @@ class GlobalFeed extends React.Component{
             {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", content: "https://i.imgur.com/fiAqUmu.jpeg", group:"Doom",group_type:"game", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:1 },
             {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:0 },
         ]
-        console.log(this.props.history)
         return (
             <div class="global-feed-body">
                 <div class="global-feed-posts">
                     <Posts posts={posts} logged_user={this.props.logged_user} />
                 </div>
                 <div class="global-feed-MakePostIcon">
-                    <MakePostIcon history={this.props.history}/>
+                    <MakePostIcon history={this.props.history}  />
                 </div>
 
             </div>

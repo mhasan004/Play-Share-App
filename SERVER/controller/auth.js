@@ -101,7 +101,9 @@ exports.login = async (req,res,next) =>
     // 4) Encrypt the JWT token and set it in the header
     const token_enc = SYMMETRIC_KEY_encrypt(token, req.headers["handshake"])
     res.set('auth-token', token_enc)                                                                                                     // Send the token with the response
-    res.status(200).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!"} ) 
+    console.log("***WARNING! sending auth-token in res body. had issues reading header from react")
+    console.log(token_enc)
+    res.status(200).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!", auth_app: token_enc} ).end()
     console.log("Logged In: " + user.username)
     // console.log("** Remove this! (auth.js) JWT (not ecrypted versison) sent: "+ token)
 }

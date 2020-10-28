@@ -46,7 +46,7 @@ const postSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now,
-        max:22
+        // max:22
     },
     likes:{                          //** chnaged from liek to dislike */
         type: Number,
