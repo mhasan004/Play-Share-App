@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         min: 3,
-        max: 15
+        max: 1
     },
     handle: {                                                       // can set a different handle that poublic sees - same as username for now - unique
         type: String,

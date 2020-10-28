@@ -1,0 +1,185 @@
+
+.make-post-div{
+    position: relative;                      
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;   
+    /* align-items: center;         */
+    align-items: stretch;
+
+    outline: none;
+    border:none;
+    border-radius: 20px;
+    background: white;
+
+    padding: 20px 20px;
+    margin: 10px;
+    min-width: 600px;
+    max-width: 650px;
+
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    zoom:1.4;
+}  
+
+
+.make-post-tabs-div{
+   /* display: flex;                                                          issues causse dby this*/
+   /* flex-direction: row;                                                 issues causse dby this*/
+
+    transform: scaleX(.9);
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.make-post-tab-1{
+   margin-right: 5px;
+}
+.make-post-tab-2{
+    margin-right: 5px;
+}
+.make-post-tab-3{
+    margin-right: 5px;
+}
+
+
+
+
+.make-post-tab-name{
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+
+    z-index: 1;
+    margin-top: -120px;
+    margin-left: 14%;
+
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 25px;
+    line-height: 15px;
+    text-align: center;
+    color: #848282;
+    justify-content: space-between;
+    width:400px
+}
+.make-post-tab-name-post{
+    color: #ffffff;
+}
+.make-post-tab-name-img-vid{
+    /* margin-left: 45%; */
+}
+.make-post-tab-name-other{
+    /* margin-left: 35%; */
+    margin-right: -8%;
+}
+
+
+
+  
+.post-form-div{           
+    display: flex;       
+    flex-direction: column;
+    justify-content: center;
+}
+.post-form-name{
+    position: relative;    
+    padding: 10px 10px;                 /* size of inptu fields*/
+    margin: 0px 10px;  
+    margin-bottom: 15px;                
+
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 35px;
+    line-height: 45px;
+
+}
+.post-form-input-title{
+    
+    position: relative;                      
+    outline: none;
+    border:none;
+    border-radius: 10px;
+    z-index: 1;
+    background-color: #F4F4F4    ;
+    /* border: 2px solid #F4F4F4; */
+    color: #a0a0a0;
+    
+    
+    /* max-width: 600px; */
+
+    padding: 15px 10px;                 /* size of inptu fields*/
+    margin: 10px 10px;
+    margin-left: 11%;                   /*side change as screen chnages*/
+    margin-right: 10%;
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+}
+
+#postButton{
+    position: relative;                      
+    outline: none;
+    border:none;
+    border-radius: 15px;
+    background-color: #2BB3FF    ;
+    color: white;
+    
+  
+    padding: 15px 25px;                 /* size of inptu fields*/
+    margin: 5px 5px;
+    max-width: 100px;
+    margin-top: 10px;
+
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+
+
+/* parent
+    display: flex;                                     
+    flex-direction: column;                            
+    flex-wrap: wrap;                                   
+*/
+.post-form-name{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+
+
+.post-form-input:focus::placeholder {
+    color: transparent;
+}
+.post-form-input:focus {
+    border: 1px solid rgb(97, 97, 97);
+    background-color: rgb(255, 255, 255);
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+}
+.post-form-input:hover {
+    /* border: 1px solid rgb(97, 97, 97); */
+    background-color: rgb(248, 248, 248);
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+}
+#postButton:hover{
+    background-color: #00A3FF    ;
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }

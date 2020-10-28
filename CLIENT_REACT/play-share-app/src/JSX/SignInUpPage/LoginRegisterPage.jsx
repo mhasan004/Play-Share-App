@@ -20,7 +20,7 @@ class LoginRegisterPage extends React.Component {
 
     render(){
         return (// **** reg,log,overlay
-            <div id="app-div">
+            <div id="login-register-div">
             <div class="container" id="container">
                 <FormContainerRegister />
                 <FormContainerLogin />          

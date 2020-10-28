@@ -1,0 +1,52 @@
+.global-feed-body{
+    display: flex; 
+    flex-direction: row; 
+    /* margin: 10px;
+    border-radius: 20px; */
+
+}    
+.global-feed-posts{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    /* margin-right: 20px; */
+
+    /* margin-left: 20px; */
+}
+
+
+.global-feed-MakePostIcon{
+    margin-left: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+
+    margin-top: 25px;
+}
+
+
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+
+.center-vertically {
+    /* margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%); */
+    display: flex;
+
+    justify-content: center;
+    align-items: center; 
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }
