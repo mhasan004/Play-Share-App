@@ -1,7 +1,10 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+
 import LoginRegisterPage from "./JSX/SignInUpPage/LoginRegisterPage";
 import GlobalFeed from "./JSX/Feed/GlobalFeed";
+import MakePost from "./JSX/MakePostComponents/MakePost.jsx";
+
 import UserFeed from "./JSX/Feed/UserFeed";
 import './JSX/app.css'
 
@@ -13,9 +16,10 @@ class App extends Component{
         return (    
             <Router>                             
                     <Switch>
-                        <LoginRegisterPage path="/" exact component={LoginRegisterPage}/>
-                        <GlobalFeed path="/global_feed" logged_user={this.logged_user} component={GlobalFeed}/>
-                        <UserFeed   path="/user_feed/:username" component={UserFeed}/>
+                        <GlobalFeed path="/globalFeed" exact logged_user={this.logged_user} component={GlobalFeed}/>
+                        <MakePost   path="/globalFeed/makePost" exact component={MakePost}/>
+                        <UserFeed   path="/userFeed/:username" exact component={UserFeed}/>
+                        <LoginRegisterPage path="/" component={LoginRegisterPage}/>
                     </Switch>
             </Router>      
         );

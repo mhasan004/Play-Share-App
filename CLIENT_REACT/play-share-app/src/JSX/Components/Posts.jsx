@@ -7,11 +7,13 @@ class Posts extends React.Component{
         console.log(postId)
     }
     render(){
-    return(
-        <div class="posts-body">
-            {this.props.posts.map((post)=><Post post={post} logged_user={this.props.logged_user} deleteHandler={p=>this.deleteHandler(p)}/> )}
-        </div>
-    )
+        return(
+            <div class="posts-body">
+                {this.props.posts.map((post)=>
+                    <Post post={post} logged_user={this.props.logged_user} deleteHandler={p=>this.deleteHandler(p)}/> 
+                )}
+            </div>
+        )
     }
     
 }

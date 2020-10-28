@@ -1,0 +1,22 @@
+.make-post-icon-div{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    height: 100%;
+    zoom: .7
+}
+.make-post-icon-background{
+
+}
+.make-post-icon{
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+
+
+
+
+
+

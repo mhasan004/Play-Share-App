@@ -1,8 +1,10 @@
 import React, {Component} from "react";
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
+
 // const CryptoJS = require("crypto-js")
 // const API_URL = "https://www.playshare.cloud"+"/api/auth/login"
 const API_URL = "http://localhost:8000"+"/api/auth/login"
-
 
 class FormContainerLogin extends React.Component {
     state = {
@@ -14,8 +16,19 @@ class FormContainerLogin extends React.Component {
             [event.target.name]: event.target.value
         })
     }
+  
+    
     async handleFormSubmit(event){
-        event.preventDefault()                          // no refresh of screen after submit 
+        event.preventDefault()                                       // no refresh of screen after submit 
+        // let history = useHistory();
+
+        // const { history } = this.props;                     
+        this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
+            pathname: `/globalFeed`,
+        });
+
+
+
         const res = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -34,6 +47,7 @@ class FormContainerLogin extends React.Component {
         }
         else
             console.log(data)
+        
     }
     
     render(){
@@ -66,6 +80,4 @@ class FormContainerLogin extends React.Component {
 
 
 
-export default FormContainerLogin;
-
-
+export default withRouter(FormContainerLogin);                  // 3) need to export this class withRouter for redirect to work

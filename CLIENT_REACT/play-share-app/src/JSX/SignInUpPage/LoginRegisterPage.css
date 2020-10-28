@@ -30,7 +30,8 @@ body{
     background: var(--background-color);
     /* background: black; */
 }
-#app-div{
+#login-register-div{
+    /* zoom:1.5; */
     background: var(--background-color);/* rgb(218, 230, 236);rgb(117, 211, 230);*/
     /* background-image: url('htt/ps://i.pinimg.com/originals/27/31/a1/2731a16236abc0447eccb33d9fe87424.gif'); */
     /* background-image: url('https://i.kym-cdn.com/photos/images/original/000/779/948/ebe.gif'); */
@@ -94,6 +95,8 @@ a{
 
 
 .container{
+    transform: scale(1.2, 1.2);
+
     background: var(--form-background-color);
     border-radius: 20px;                            /* round the corners*/
     box-shadow: 0 14px 28px rgb(0, 0, 0, .25), 0 10px 10px rgb(0, 0, 0, 0.2);   /* TIP: MULTI SHADOWS */
@@ -102,8 +105,9 @@ a{
     overflow: hidden;                               /* if stuff goes outside on container, they will become hidden*/
 
     padding: 10px;
-    width: 768px;
-    max-width: 100%;                                /* cant get larger than width*/
+    margin: 10px;
+    width: 770px;
+    /* max-width: 100%;                                */
     min-height: 480px;
 }
 

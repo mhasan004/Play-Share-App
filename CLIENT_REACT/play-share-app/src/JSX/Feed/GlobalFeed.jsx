@@ -1,6 +1,9 @@
 import React from "react";
 import Posts from "../Components/Posts";
+import MakePostIcon from "../MakePostComponents/MakePostIcon"
+import './globalFeed.css'
 // import Post from "../Components/Post";
+import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
 
 
 class GlobalFeed extends React.Component{
@@ -19,11 +22,22 @@ class GlobalFeed extends React.Component{
             {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", content: "https://i.imgur.com/fiAqUmu.jpeg", group:"Doom",group_type:"game", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:1 },
             {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:0 },
         ]
+        console.log(this.props.history)
         return (
-            <Posts posts={posts} logged_user={this.props.logged_user} />
+            <div class="global-feed-body">
+                <div class="global-feed-posts">
+                    <Posts posts={posts} logged_user={this.props.logged_user} />
+                </div>
+                <div class="global-feed-MakePostIcon">
+                    <MakePostIcon history={this.props.history}/>
+                </div>
+
+            </div>
+
         );
     }
     
 }
 
-export default GlobalFeed;
+// export default GlobalFeed;
+export default withRouter(GlobalFeed);                  // 3) need to export this class withRouter for redirect to work

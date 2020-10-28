@@ -1,0 +1,110 @@
+
+.make-post-div{
+    position: relative;                      
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: wrap;   
+    /* align-items: center;         */
+    align-items: stretch;
+
+    outline: none;
+    border:none;
+    border-radius: 20px;
+    background: white;
+
+    padding: 20px 20px;
+    margin: 10px;
+    max-width: 600px;
+
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    zoom:1.4;
+}  
+
+
+
+.make-post-tabs{
+    /* margin-top: 40px;*/
+    align-self: center; 
+    max-width: 450px;
+}
+
+
+
+
+  
+.post-form-div{           
+    display: flex;       
+    flex-direction: column;
+    justify-content: center;
+}
+.post-form-name{
+    position: relative;    
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 35px;
+    line-height: 45px;
+
+    padding: 10px 10px;                 /* size of inptu fields*/
+    margin: 10px 10px;                  
+}
+.post-form-input{
+    position: relative;                      
+    outline: none;
+    border:none;
+    border-radius: 10px;
+    z-index: 1;
+    background-color: #F4F4F4    ;
+    /* border: 2px solid #F4F4F4; */
+    color: #848282;
+  
+    padding: 15px 25px;                 /* size of inptu fields*/
+    margin: 10px 10px;
+    margin-left: 10%;                   /*side change as screen chnages*/
+    margin-right: 10%;
+    max-width: 600px;
+}
+
+#postButton{
+    position: relative;                      
+    outline: none;
+    border:none;
+    border-radius: 15px;
+    background-color: #2BB3FF    ;
+    color: white;
+    
+  
+    padding: 15px 25px;                 /* size of inptu fields*/
+    margin: 5px 5px;
+    max-width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+/* parent
+    display: flex;                                     
+    flex-direction: column;                            
+    flex-wrap: wrap;                                   
+*/
+.post-form-name{
+    margin-left: auto;
+    margin-right: auto;}
+
+
+
+
+
+.post-form-input:focus::placeholder {
+    color: transparent;
+}
+.post-form-input:focus {
+    border: 1px solid rgb(97, 97, 97);
+    background-color: rgb(248, 248, 248);
+    -webkit-transition: 0.2s;
+    transition: 0.2s;
+}
