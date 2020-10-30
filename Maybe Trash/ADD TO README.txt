@@ -1,3 +1,22 @@
+added cors middleware to only accept req from client dom
+cookies: httpOnly: true, SameSite=strict, secure=true,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Using helmet.js on server to protect against most attacks
 decryption middleware (can take off when i switch to https)
 

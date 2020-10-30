@@ -29,7 +29,8 @@ class MakePost extends React.Component{
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'auth-token': localStorage.getItem('auth-token')
+                    'auth-token': localStorage.getItem('auth-token'),
+                    'credentials': 'include'                              // says to inslude read onyl cookies
                 },
                 body: JSON.stringify({
                     username: this.props.logged_user,

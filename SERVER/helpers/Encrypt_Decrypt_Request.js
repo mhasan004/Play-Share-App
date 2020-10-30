@@ -1,8 +1,8 @@
 // Middleware to decrypt request fields with 
 const NodeRSA = require('node-rsa');
 const key = new NodeRSA({b: 1024});                     // PUBLIC + PRIVATE KEY MADE - len of the bytes
-const public_key = key.exportKey('public')          // public key ------> sendout
-const private_key = key.exportKey('private')        // private key
+const public_key = key.exportKey('public')              // public key ------> sendout
+const private_key = key.exportKey('private')            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
 const encrypted_headers = [
@@ -11,7 +11,8 @@ const encrypted_headers = [
 let SYMMETRIC_KEY_DICT = {}
 let MAX_CLIENT_CONNECTIONS = 10
 
-function findEmptyKey(){
+function findEmptyKey()
+{
     const SYMMETRIC_KEY_DICT_ARRAY = Object.keys(SYMMETRIC_KEY_DICT).map(Number)
     const range_array = Array(MAX_CLIENT_CONNECTIONS).fill(1).map((x, y) => x + y)
     let available_keys = range_array.filter(x => !SYMMETRIC_KEY_DICT_ARRAY.includes(x)) 
@@ -28,7 +29,8 @@ function findEmptyKey(){
     * 'handshake'== null --> initiate handshake, res header = 0
     * 'handshake'== 0    --> ongoing handshake, decrypted SYMMETRIC_KEY, set 'handshake'== #
 */
-exports.initiateCheckHandShake =  (req,res,next) => {
+exports.initiateCheckHandShake =  (req,res,next) => 
+{
     // Handshake was done so can decrypt client data with SYMMETRIC_KEY
     if ((req.headers["handshake"] > 0)){                    // handshake already performed, so its only to decrypt
         res.set('handshake', req.headers["handshake"]) 
@@ -113,7 +115,6 @@ exports.SYMMETRIC_KEY_encrypt = (data, handshake_index) =>{
     // return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[handshake_index]).toString(); 
     return data
 }
-
 
 exports.public_key = public_key;
 exports.private_key = private_key;

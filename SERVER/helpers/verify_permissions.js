@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
-const {decryptRequestItems} = require("../controller/auth")                                                                 // Will use this function to decrypt request body
 
-exports.verifyApp = (req,res,next) => {                                                                                     // MiddleWare: App Register/login Access
-    if (req.headers['auth-app'] != process.env.APP_AUTH_KEY) {                                                                // see in the decrypted auth-app header is the one on file, if so, pass
+exports.verifyApp = (req,res,next) =>                                                                                               // MiddleWare: App Register/login Access
+{                                                                                             
+    if (req.headers['auth-app'] != process.env.APP_AUTH_KEY) {                                                                      // see in the decrypted auth-app header is the one on file, if so, pass
         console.log("not verified app")
         return res.status(401).json({status: -1, message: "Access Denied! This app does not have the correct auth-app header"})   
     }
@@ -13,7 +12,8 @@ exports.verifyApp = (req,res,next) => {                                         
     next()
 }
 
-exports.verifyUser = async (req,res,next) => {                                                                              // MiddleWare: Private Unique User Route
+exports.verifyUser = async (req,res,next) =>                                                                                        // MiddleWare: Private Unique User Route
+{                                                                              
     const user = await User.findOne({username: req.originalUrl.split('/')[3]})
     const recieved_token = req.headers['auth-token'] 
     // const auth_header = req.headers['authorization']
@@ -31,12 +31,14 @@ exports.verifyUser = async (req,res,next) => {                                  
         }                       
         catch(err){
             try{
-                verified = jwt.verify(recieved_token, JWT_admin_key)                                                                 // See if if the admin is trying to access this router
+                verified = jwt.verify(recieved_token, JWT_admin_key)                                                                // See if if the admin is trying to access this router
                 return res.status(401).json({status: -1, message: "Access Denied! Invalid Secret Token"}) 
             }            
             catch{throw err}                                                                                                        // If neither the admin or the right user, throw error        
         }
         req.user = verified                                                                                                         // req.user = JWT object
+        if (verified.username != user.username)
+            return res.status(401).json({status: -1, message: "Access Denied! User stored in JWT doesn't have access to this route!!"})  
         next()
     }
     catch(err){

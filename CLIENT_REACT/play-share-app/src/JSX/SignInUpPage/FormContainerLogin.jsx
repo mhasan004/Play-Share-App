@@ -26,6 +26,7 @@ class FormContainerLogin extends React.Component {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
+                    'credentials': 'include'                              // says to inslude read onyl cookies
                 },
                 body: JSON.stringify({
                     username: this.state.username,
@@ -35,7 +36,7 @@ class FormContainerLogin extends React.Component {
             resJson = await res.json()
         }
         catch{ 
-            return console.log("couldn't log in from react")
+            return console.log("couldn't log in from react - posted to api url: " + ROUTE_URL)
 
         }
         

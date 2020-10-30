@@ -22,6 +22,7 @@ class FormContainerRegister extends React.Component {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
+                'credentials': 'include'                              // says to inslude read onyl cookies
             },
             body: JSON.stringify({
                 username: this.state.username,

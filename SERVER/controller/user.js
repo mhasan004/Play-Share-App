@@ -5,8 +5,7 @@ const {postValidation} = require('../model/ValidationSchema')
 
 exports.getAllPosts = async (req,res,next) => 
 {
-    console
-    const username = req.baseUrl.split('/')[3]
+    const username = req.user.username                          //req.baseUrl.split('/')[3]
     try{
         const user_posts = await Post.find({username: username})
         res.status(200).json({status: 1, user_posts})                                                       
@@ -23,7 +22,7 @@ Date.prototype.formatMMDDYYYY = function(){
 
 exports.makePost = async (req,res,next) => 
 {
-    const username = req.baseUrl.split('/')[3]
+    const username = req.user.username                                                                      //req.baseUrl.split('/')[3]
     const {error} = postValidation(req.body)                                                                // 1) VALIDATE the POST request:              
     if(error){ return res.status(400).json({status:-1, message: error.details[0].message}) }
 

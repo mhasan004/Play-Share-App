@@ -3,17 +3,24 @@ require('dotenv').config({ path: '../.env' })                                   
 const express  = require('express')
 const mongoose = require('mongoose')
 const cors     = require('cors')
-const helmet = require("helmet")                                                                    // ngives 13 middlewares to give various protections to application
+const helmet = require("helmet")                                                                    // gives 13 middlewares to give various protections to application
+const cookieParser = require('cookie-parser')                                                       // to parse cookie
 const authRoutes   = require('./routes/auth')
 const adminRoutes  = require('./routes/admin')
 const userRoutes   = require('./routes/user')
-const {verifyUser, verifyAdmin, verifyApp} = require('./routes/verifyPermissions')                  // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
-const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./routes/Decrypt_Encrypt_Request') // MIDDLEWARE to decrypt body
-
+const {verifyUser, verifyAdmin, verifyApp} = require('./helpers/verify_permissions')                                 // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
+const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/Encrypt_Decrypt_Request')    // MIDDLEWARE to decrypt body
 const app = express()
-app.use(cors())                                                
+const client_url =  'http://localhost:3000'
+
+app.use(cors(                                                                                       // Only accept requests from the specific client domain
+    // {origin: client_url,
+    // credentials: true}
+));                                              
 app.use(helmet())                                                                                   // helmet 11 middleware for protections
 app.use(express.json())    
+app.use(cookieParser())                                                                             // to parse cookies
+
 
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
 // app.use('/', initiateCheckHandShake)                                                             // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
