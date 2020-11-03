@@ -1,6 +1,18 @@
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
+const APP_EXPORTS = require('../app')
+
+exports.checkOrigin = (req,res,next) =>                                                                       
+{
+    // if (res.headers.origin != APP_EXPORTS.CLIENT_URL) {
+    //     console.log(`Request tnot made from Client! Only ${APP_EXPORTS.CLIENT_URL} can Access API!`)
+    //     return res.status(401).json({status:-1, message:`Request tnot made from Client! Access Denied`}).end()
+    // } 
+    // const origin = req.get('host')
+    // console.log(origin)
+    next()
+}
 
 exports.verifyApp = (req,res,next) =>                                                                                               // MiddleWare: App Register/login Access
 {                                                                                             
@@ -44,6 +56,7 @@ exports.verifyUser = async (req,res,next) =>                                    
     catch(err){
         return res.status(400).json({status: -1, message: "Access Denied! Invalid Token: " + err}) 
     }
+    next()
 }
 
 

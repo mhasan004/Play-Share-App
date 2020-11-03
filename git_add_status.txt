@@ -1,0 +1,15 @@
+git add --all
+git status
+
+
+
+
+
+
+
+
+
+
+# git rm --cache -r CLIENT_REACT/play-share-app/node_modules
+# git rm --cache -r SERVER/node_modules/
+# git rm --cache .env

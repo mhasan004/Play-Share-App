@@ -5,6 +5,22 @@ const public_key = key.exportKey('public')              // public key ------> se
 const private_key = key.exportKey('private')            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
+// const {redis_client} = require("../app")
+// set data to redis cache:  redis.setex(key, expiration in secs, value)
+// get data to redis cache by makign a cache middle ware
+// cache middleware
+// function cache(req,res, next){
+//     const SYMMETRIC_KEY_DICT = 
+//     redis_client(key, (err, data)={if err throiw err} if (data !== null) res.json....daat;
+// }
+ 
+
+
+
+
+
+
+
 const encrypted_headers = [
     "auth-token"
 ]
@@ -42,7 +58,7 @@ exports.initiateCheckHandShake =  (req,res,next) =>
             'pub-key': Buffer.from(public_key).toString('base64'),
             'handshake': 0
         })
-        return res.status(200).json({status:0, message: "Giving client the base64 encoded Public Key in 'pub-key' header. Respond with headers: 'handshake' = 0, key = base64(public_key_encypt(SYMMETRIC_KEY))"})  
+        return res.status(200).json({status:0, message: "Giving client the base64 encoded Public Key in 'pub-key' header. Respond with headers: 'handshake' = 0, key = base64(public_key_encypt(SYMMETRIC_KEY))"}).end()  
     }
     // 2) clint needs to return body: key=public_key_enc(SYMMETRIC_KEY). header: handshake=1. 
     else if (req.headers["handshake"] == 0 && req.headers["key"] != null){
@@ -50,15 +66,15 @@ exports.initiateCheckHandShake =  (req,res,next) =>
             const empty_index = findEmptyKey()
             SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
-            return res.status(200).json({status:1, handshake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'handshake' = ${empty_index} for future requests (see handshake_index field)`}) 
+            return res.status(200).json({status:1, handshake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'handshake' = ${empty_index} for future requests (see handshake_index field)`}).end() 
         }        
         catch(err){
             console.log("Failed to get Client's SYMMETRIC_KEY!")
-            return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), handshake = handsake index. 2) handshake = 0  to reinitiate TLS handshake. Error: "+err}) 
+            return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), handshake = handsake index. 2) handshake = 0  to reinitiate TLS handshake. Error: "+err}).end() 
         }
     }
     else if (req.headers["handshake"] == 0 && req.headers["key"] == null){
-        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'handshake' header to handshake index returned by server after client sent SYMMETRIC_KEY"}) 
+        return res.status(400).json({status:-1, message: "Client-Server handshake ongoing - Client didn't send encryption key or didnt set 'handshake' header to handshake index returned by server after client sent SYMMETRIC_KEY"}).end() 
     }
 }
 
@@ -83,7 +99,7 @@ exports.decryptBody = async (req,res,next) =>
             err_output_location: "DecryptBody Middleware"
         }
         console.log("Printing from decryptBody Middleware: "+err_obj.message+" \n\t\terr_output_location: "+err_obj.err_output_location)
-        return res.status(400).json({status:-1, message: err_obj}) 
+        return res.status(400).json({status:-1, message: err_obj}).end()
     }
     next()
 }
@@ -93,7 +109,7 @@ exports.decryptSelectedHeader = async (req,res,next) =>
     let err_obj = null
     encrypted_headers.forEach(field=> {
         if (req.headers[field] == null){                                // if there is no encrypted header to decrypt, move on
-            // return res.status(400).json({status:-1, message: "Might be missing header"+field}) 
+            // return res.status(400).json({status:-1, message: "Might be missing header"+field}).end() 
             return
         }
         try{
@@ -105,7 +121,7 @@ exports.decryptSelectedHeader = async (req,res,next) =>
                 err_output_location: "DecryptBody Middleware"
             }
             console.log(err_obj.message+" \n\t\terr_output_location: "+err_obj.err_output_location)
-            // return res.status(400).json({status:-1, message: err_obj}) 
+            // return res.status(400).json({status:-1, message: err_obj}).end() 
         }
     })
     next()
@@ -116,7 +132,7 @@ exports.SYMMETRIC_KEY_encrypt = (data, handshake_index) =>{
     return data
 }
 
-exports.public_key = public_key;
-exports.private_key = private_key;
-exports.RSA_private_key = RSA_private_key;
+// exports.public_key = public_key;
+// exports.private_key = private_key;
+// exports.RSA_private_key = RSA_private_key;
 exports.SYMMETRIC_KEY_DICT = SYMMETRIC_KEY_DICT;

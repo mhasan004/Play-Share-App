@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import LoginRegisterPage from "./JSX/SignInUpPage/LoginRegisterPage";
+import SignInUpPage from "./JSX/SignInUpPage/SignInUpPage";
 import GlobalFeed from "./JSX/Feed/GlobalFeed";
 import MakePost from "./JSX/MakePostComponents/MakePost.jsx";
 import UserFeed from "./JSX/Feed/UserFeed";
@@ -15,10 +15,10 @@ class App extends Component{
         return (    
             <Router>                             
                 <Switch>
-                    <GlobalFeed path="/globalFeed" exact component={GlobalFeed} logged_user={this.logged_user} />
-                    <MakePost   path="/globalFeed/makePost" exact component={MakePost} logged_user={this.logged_user}/>
-                    <UserFeed   path="/userFeed/:username" exact component={UserFeed}/>
-                    <LoginRegisterPage path="/" component={LoginRegisterPage}/>
+                    {/* <GlobalFeed path="/globalFeed" exact component={GlobalFeed} logged_user={this.logged_user} /> */}
+                    {/* <MakePost   path="/globalFeed/makePost" exact component={MakePost} logged_user={this.logged_user}/> */}
+                    {/* <UserFeed   path="/userFeed/:username" exact component={UserFeed}/> */}
+                    <SignInUpPage path="/" component={SignInUpPage}/>
                 </Switch>
             </Router>      
         );
