@@ -1,31 +1,27 @@
 "use strict"
 require('dotenv').config({ path: '../.env' })                                                       // To use keys stored in .env file
-const express  = require('express')
-const mongoose = require('mongoose')
-// const redis = require('redis')                                                                      // (npm install redis, redis-server) in-memory, persistent data structure store to store key value pairs         
-const cors     = require('cors')
-const helmet = require("helmet")                                                                    // gives 13 middlewares to give various protections to application
-const morgan = require('morgan')                                                                    // middleware to log request/responses. can see how long it tookf or api to respond and optimize endpoints
+const express      = require('express')
+const mongoose     = require('mongoose')
+const cors         = require('cors')
+const helmet       = require("helmet")                                                              // gives 13 middlewares to give various protections to application
+const morgan       = require('morgan')                                                              // middleware to log request/responses. can see how long it tookf or api to respond and optimize endpoints
 const cookieParser = require('cookie-parser')                                                       // to parse cookie
 const authRoutes   = require('./routes/auth')
 const adminRoutes  = require('./routes/admin')
 const userRoutes   = require('./routes/user')
-const {verifyUser, verifyAdmin, verifyApp, checkOrigin} = require('./helpers/verify_permissions')                                 // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
-const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/Encrypt_Decrypt_Request')    // MIDDLEWARE to decrypt body
-const app = express()
-const port  = process.env.PORT || 8000
-// const redis_port  = process.env.REDIS_PORT || 6379
-// const redis_client = redis.createClient(redis_port)
-// redis_client.on("error", function (err) {
-//     console.log("Error " + err);
-// });
+const {verifyUser, verifyAdmin, verifyApp, checkOrigin} = require('./helpers/verify_permissions')                       // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
+const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/Encrypt_Decrypt_Request')       // MIDDLEWARE to decrypt body
 const CLIENT_URL =  'http://localhost:3000'
-module.exports.CLIENT_URL = CLIENT_URL
-// module.exports.redis_client = redis.createClient();
+const PORT = process.env.PORT || 8000
+const app  = express()
+
+
+// module.exports.CLIENT_URL = CLIENT_URL
+// module.exports = REDIS_CLIENT;
 
 
 
-app.use(checkOrigin, cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
+app.use(cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
     // {origin: CLIENT_URL,
     // credentials: true}
 ));                                              
@@ -33,7 +29,6 @@ app.use(helmet())                                                               
 app.use(morgan('dev'))                                                                              // logs response time
 app.use(express.json())                                                                             // parse request as json
 app.use(cookieParser())                                                                             // to parse cookies
-
 
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
 // app.use('/', initiateCheckHandShake)                                                             // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
@@ -45,7 +40,7 @@ app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404"
 
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
     .then( () => {
-        app.listen(port, ()=> console.log(`CONNECTED TO DB!              http://localhost:${port}     PID: ${process.pid}`))
+        app.listen(PORT, ()=> console.log(`CONNECTED TO DB!              http://localhost:${PORT}     PID: ${process.pid}`))
     })
     .catch((err) => {console.log("Connection Failed! " + err)})
     

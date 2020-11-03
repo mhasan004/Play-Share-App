@@ -5,9 +5,9 @@ import GlobalFeed from "./JSX/Feed/GlobalFeed";
 import MakePost from "./JSX/MakePostComponents/MakePost.jsx";
 import UserFeed from "./JSX/Feed/UserFeed";
 import './JSX/app.css'
-
 // export const API_URL = "http://157.230.184.203:8000"; 
-export var API_URL = "http://localhost:8000"
+// export var API_URL = "http://localhost:8000"
+let API_URL = "http://localhost:8000"
 
 class App extends Component{  
     logged_user = "mhasan1"
@@ -27,5 +27,8 @@ class App extends Component{
 
 export default App;
 
+module.exports = {
+    API_URL: API_URL
+}
 
 

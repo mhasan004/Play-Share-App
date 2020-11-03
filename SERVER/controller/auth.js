@@ -5,10 +5,11 @@ const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                                  // Import the Joi Validation functions
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/Encrypt_Decrypt_Request')
-const JWT_expire_time = 10
-const RT_expire_time = 21900                        // 1/2 month
-const RT_cookie_expire_time_sec = 2000000 
-// const {redis_client} = require("../app")
+const JWT_expire_time = '10m'
+const JWT_RT_expire_time = 24*60*60*15  //'15d'                        
+const RT_cookie_expire_time_sec = '20d' 
+const {REDIS_CLIENT} = require('../helpers/redis_db')
+
 
 // function to create new JWT
 async function createJWT(req, res, next, username, email) {               
@@ -22,7 +23,7 @@ async function createJWT(req, res, next, username, email) {
         catch (err){
             console.log('FAILED to to make admin encryption key for JWT creation for admin failed!')
             // return res.status(400).json({status:-1, message: "FAILED to to make admin encryption key for JWT creation for admin failed!: Error:" + err}).end()
-            throw "FAILED to to make admin encryption key for JWT creation for admin failed!: Error:" + err
+            throw "CreateJWT Error - FAILED to to make admin encryption key for JWT creation for admin failed!: Error:" + err
         }
     }
     else{
@@ -31,18 +32,15 @@ async function createJWT(req, res, next, username, email) {
     return token
 }
 // function to create new refresh token
-async function createStoreRefreshToken(req, res, next, username, email) {               
-    const refresh_token = jwt.sign({username: username, email: email}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: RT_expire_time})
-    const RT_entry = new Token({refreshToken: refresh_token})        
-    try{ 
-        // console.log("refresh token: "+refresh_token)
-        await RT_entry.save()
-    }
-    catch (err){
-        console.log('FAILED to add Refresh Token to DB')
-        //return res.status(400).json({status:-1, message: "FAILED to add Refresh Token to DB! Error:" + err}).end()
-        throw "FAILED to add Refresh Token to DB! Error:" + err
-    }
+function createStoreRefreshToken(req, res, next, username, email) {               
+    const refresh_token = jwt.sign({username: username, email: email}, process.env.REFRESH_TOKEN_SECRET, { expiresIn: JWT_RT_expire_time})
+    // Saving Refresh token to Redis Cache
+    REDIS_CLIENT.set(refresh_token, username, 'EX', JWT_RT_expire_time, (err) =>{                                     // set refresh token in redis cache as a key. no value. 
+        if (err){
+            console.log("CreateStoreRefreshToken: "+err)
+            throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
+        }
+    })                   
     return refresh_token
 }
 
@@ -127,7 +125,7 @@ exports.login = async (req,res,next) =>
 
     // 4) Set refresh token cookie
     res.cookie('refresh_token', refresh_token, {
-        maxAge: RT_cookie_expire_time_sec,
+        maxAge: parseInt(RT_cookie_expire_time_sec),
         httpOnly: true,
         sameSite: 'strict', 
         // secure: true,
@@ -150,29 +148,28 @@ exports.refresh = async (req,res,next) => {
         return res.status(401).json({status: -1, message: "No refresh-token sent, need to login"})
     }
     // 1) check if token in db 
-    const old_rt = await Token.findOne({refreshToken: old_refresh_token})
-    if (!old_rt){
-        return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"})
+    REDIS_CLIENT.exists(old_refresh_token, (err)=>{                                     // set refresh token in redis cache as a key. no value. 
+        return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again. Err: "+err})
+    })                   
+    // 2) check if token expired - if its expired, delete from db and return
+    let RT_verified  
+    try{
+        RT_verified = jwt.verify(old_refresh_token, process.env.REFRESH_TOKEN_SECRET)
     }
-    // 2) check if token expired - if its expired, delete from db
-    let  RT_verified  
-    try{RT_verified = jwt.verify(old_refresh_token, process.env.REFRESH_TOKEN_SECRET)}
     catch(err){ 
-        try{await Token.deleteOne({ _id: old_rt._id })}
-        catch(err){res.status(400).json({status: -1, message: "Failed to delete expired refresh Token: "+err})}
-        return res.status(401).json({status:-1, message: "Failed to verify refresh token! Might be expired! Error: "+err})
+        REDIS_CLIENT.del(old_refresh_token, (err)=>{
+            return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again! Failed to delete old refresh token from redis cache!"}).end()
+        })
+        return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again!"}).end()
     }
-    if (!RT_verified){
-        return res.status(401).json({status:-1, message: "Incorrect Refresh Token, need to login again"})
-    }
-    // 3) delete current rt from db
-    try{await Token.deleteOne({ _id: old_rt._id })}
-    catch(err){ return res.status(400).json({status: -1, message: "Failed to delete old refresh Token: "+err})}
-    // 4) Make new jwt and refresh token from username and emailstored in payload
+    // 3) Delete old RT, Make new jwt and RT from username and email stored in payload
+    REDIS_CLIENT.del(old_refresh_token, (err)=>{
+        return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in successfull login!"}).end()
+    })
     let new_jwt_token, new_refresh_token
     try{
         new_jwt_token = await createJWT(req, res, next, RT_verified.username)
-        new_refresh_token  = await createStoreRefreshToken(req, res, next, RT_verified.username, RT_verified.email) 
+        new_refresh_token = await createStoreRefreshToken(req, res, next, RT_verified.username, RT_verified.email) 
     }
     catch(err){
         return res.status(400).json({status:-1, message: err})
