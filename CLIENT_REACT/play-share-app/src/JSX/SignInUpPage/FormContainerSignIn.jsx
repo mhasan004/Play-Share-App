@@ -1,16 +1,23 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-// const CryptoJS = require("crypto-js")
-var API_URL = require('../../App').API_URL
-const ROUTE_URL = API_URL+"/api/auth/login"
+// var API_URL = require('../../App').API_URL
+// var {API_URL} = require('../../App')
+var API_URL = "http://localhost:8000"
+const ROUTE_URL = API_URL + "/api/auth/login"
 
-class FormContainerLogin extends React.Component {
+
+class FormContainerSignIn extends React.Component {
     state = {
         username: "",
         password: "",
     }
-    handleInputChange(event){
+    handleInputChangeText(event){
+        this.setState({
+            [event.target.name]: event.target.value.toLowerCase()
+        })
+    }
+    handleInputChangePass(event){
         this.setState({
             [event.target.name]: event.target.value
         })
@@ -18,10 +25,13 @@ class FormContainerLogin extends React.Component {
   
     async handleFormSubmit(event){
         event.preventDefault()                                       // no refresh of screen after submit 
-
-        let resJson = null
+        let resJson
+        let res
+        if (this.state.username === "" || this.state.password === "")
+            return console.log("Need to enter username and password")
+        console.log("Posting to url: "+ROUTE_URL)
         try{
-            const res = await fetch(ROUTE_URL, {
+            res = await fetch(ROUTE_URL, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -33,13 +43,20 @@ class FormContainerLogin extends React.Component {
                     password: this.state.password,
                 })
             })
+        }
+        catch(err){
+            return console.log("couldn't log in from react - failed to post to url: " + ROUTE_URL+ " Err: "+err)
+        }
+        try{
             resJson = await res.json()
         }
-        catch{ 
-            return console.log("couldn't log in from react - posted to api url: " + ROUTE_URL)
-
+        catch(err){
+            console.log("couldn't log in from react - failed to parse json from response url: " + ROUTE_URL+ " Err: "+err)
+            console.log("res: "+res)
+            console.log("resJson: "+resJson)
+            return 
         }
-        
+       
         if (resJson.status === 1){
             // this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
@@ -71,8 +88,8 @@ class FormContainerLogin extends React.Component {
                     </div>
                     <span>{spanText}</span>
 
-                    <input type="text"     value={this.state.username} onChange={e=>this.handleInputChange(e)} name="username" placeholder="Username" ></input>  
-                    <input type="password" value={this.state.password} onChange={e=>this.handleInputChange(e)} name="password" placeholder="Password" ></input>
+                    <input type="text"     value={this.state.username} onChange={e=>this.handleInputChangeText(e)} name="username" placeholder="Username" ></input>  
+                    <input type="password" value={this.state.password} onChange={e=>this.handleInputChangePass(e)} name="password" placeholder="Password" ></input>
                     <a href="#">Forgot your password?</a>
                     <br/>
                     <br/>
@@ -85,4 +102,4 @@ class FormContainerLogin extends React.Component {
 
 
 
-export default withRouter(FormContainerLogin);                  // 3) need to export this class withRouter for redirect to work
+export default withRouter(FormContainerSignIn);                  // 3) need to export this class withRouter for redirect to work

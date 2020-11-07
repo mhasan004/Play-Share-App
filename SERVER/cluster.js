@@ -1,24 +1,21 @@
 var cluster = require('cluster');
-var threadCount = require('os').cpus().length;                                             // Count the machine's threads
+var threadCount = require('os').cpus().length;                                              // Count the machine's threads
 
 
-if (cluster.isMaster) {
-    // Create a worker for each CPU
-    for (var i = 0; i < threadCount; ++i) { 
+if (cluster.isMaster) {                                                                     // parent process
+    for (var i = 0; i < threadCount; ++i) {                                                 // create threads based on thread count
         cluster.fork();
     }
 
-    // See what workers are online
-    cluster.on('online', function (worker) {
-        console.log('Worker ' + worker.process.pid + ' is online');
+    cluster.on('online', function (worker) {                                                // See what children are online
+        console.log('Child Thread ' + worker.process.pid + ' is online');
     });
 
-    // Listen for dying workers
-    cluster.on('exit', (worker, code, signal) => {
-        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
-        console.log('Starting a new worker');
+    cluster.on('exit', (worker, code, signal) => {                                          // Listen for dying workers
+        console.log('Child Thread ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+        console.log('Starting new Child Thread');
         cluster.fork();
     });
 } else {
-    require('./app');                                                                  // our app
+    require('./app');                                                                       // each thread will run out app
 }

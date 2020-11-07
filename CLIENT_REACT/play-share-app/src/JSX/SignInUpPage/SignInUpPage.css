@@ -31,6 +31,8 @@ body{
     /* background: black; */
 }
 #login-register-div{
+    transform: scale(1.2, 1.2); 
+
     /* zoom:1.5; */
     background: var(--background-color);/* rgb(218, 230, 236);rgb(117, 211, 230);*/
     /* background-image: url('htt/ps://i.pinimg.com/originals/27/31/a1/2731a16236abc0447eccb33d9fe87424.gif'); */
@@ -95,8 +97,6 @@ a{
 
 
 .container{
-    transform: scale(1.2, 1.2);
-
     background: var(--form-background-color);
     border-radius: 20px;                            /* round the corners*/
     box-shadow: 0 14px 28px rgb(0, 0, 0, .25), 0 10px 10px rgb(0, 0, 0, 0.2);   /* TIP: MULTI SHADOWS */
@@ -106,12 +106,13 @@ a{
 
     padding: 10px;
     margin: 10px;
-    width: 770px;
-    /* max-width: 100%;                                */
+    width: 768px;
+    max-width: 100%;                                /* cant get larger than width*/
     min-height: 480px;
 }
 
 .container-form form{                               /* Targeting sign in and sign up forms */
+    
     /* background: rgb(112, 147, 228); */
     display: flex;                                  /* center */   
     flex-wrap: wrap; 

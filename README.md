@@ -24,6 +24,7 @@
 * **JWT** - used to authenticate a user - used to make user access and refresh tokens.
 * **Joi** - used to validate client request body.
 * **cookie-parser** - used to parse refresh token cookie data from request.
+* **morgan** - used to log the resonse of endpoint so that I can know where to optimize code. 
 
 # 📋 APPLICATION OVERVIEW:
 * The login and register process is explained in detail in the **APP SECURITY** section.

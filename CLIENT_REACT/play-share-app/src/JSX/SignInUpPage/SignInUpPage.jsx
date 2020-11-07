@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import FormContainerLogin from './FormContainerLogin'
-import FormContainerRegister from './FormContainerRegister'
+import FormContainerSignIn from './FormContainerSignIn'
+import FormContainerSignUp from './FormContainerSignUp'
 import OverlayContainer from './OverlayContainer'
-import './LoginRegisterPage.css'
+import './SignInUpPage.css'
 
-class LoginRegisterPage extends React.Component {
+class SignInUpPage extends React.Component {
     button_signUp_overlay(){          // signup will add the class
         const container = document.querySelector('#container')
         container.classList.add('right-panel-active')
@@ -22,12 +22,12 @@ class LoginRegisterPage extends React.Component {
         return (// **** reg,log,overlay
             <div id="login-register-div">
             <div class="container" id="container">
-                <FormContainerRegister />
-                <FormContainerLogin />          
+                <FormContainerSignUp />
+                <FormContainerSignIn />          
                 <OverlayContainer button_signUp_overlay={this.button_signUp_overlay} button_signIn_overlay={this.button_signIn_overlay}/>                       
             </div>
             </div>
         )
     }
 }
-export default LoginRegisterPage;
+export default SignInUpPage;

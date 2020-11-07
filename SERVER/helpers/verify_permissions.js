@@ -1,14 +1,17 @@
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
+const APP_EXPORTS = require('../app')
 
-exports.verifyApp = (req,res,next) =>                                                                                               // MiddleWare: App Register/login Access
-{                                                                                             
-    if (req.headers['auth-app'] != process.env.APP_AUTH_KEY) {                                                                      // see in the decrypted auth-app header is the one on file, if so, pass
-        console.log("not verified app")
-        return res.status(401).json({status: -1, message: "Access Denied! This app does not have the correct auth-app header"})   
-    }
-    console.log("**Note** Disabling verifyApp middleware")
+exports.checkOrigin = (req,res,next) =>                                                                       
+{
+    console.log(APP_EXPORTS.CLIENT_URL)
+    // if (res.headers.origin != APP_EXPORTS.CLIENT_URL) {
+    //     console.log(`Request tnot made from Client! Only ${APP_EXPORTS.CLIENT_URL} can Access API!`)
+    //     return res.status(401).json({status:-1, message:`Request tnot made from Client! Access Denied`}).end()
+    // } 
+    // const origin = req.get('host')
+    // console.log(origin)
     next()
 }
 
@@ -44,6 +47,7 @@ exports.verifyUser = async (req,res,next) =>                                    
     catch(err){
         return res.status(400).json({status: -1, message: "Access Denied! Invalid Token: " + err}) 
     }
+    next()
 }
 
 
