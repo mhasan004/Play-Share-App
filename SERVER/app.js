@@ -19,14 +19,12 @@ const app  = express()
 // module.exports.CLIENT_URL = CLIENT_URL
 // module.exports = REDIS_CLIENT;
 
-
-
 app.use(cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
     // {origin: CLIENT_URL,
     // credentials: true}
-));                                              
-app.use(helmet())                                                                                   // helmet comes with 11 middleware for basic protecting response (gets rid of reponse headers to give basic security to app)
+));   
 app.use(morgan('dev'))                                                                              // logs response time
+app.use(helmet())                                                                                   // helmet comes with 11 middleware for basic protecting response (gets rid of reponse headers to give basic security to app)
 app.use(express.json())                                                                             // parse request as json
 app.use(cookieParser())                                                                             // to parse cookies
 
@@ -36,7 +34,7 @@ app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from 
 app.use('/api/auth', authRoutes)                                                                    // Register new user, login user (only apps with access key can register or login)
 app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   
-app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404"})}) 
+app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route dont exist or wrong http method!"})}) 
 
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
     .then( () => {

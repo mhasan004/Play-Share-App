@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-var API_URL = require('../../App').API_URL
+// var {API_URL} = require('../../App')
+var API_URL = "http://localhost:8000"
 const ROUTE_URL = API_URL+"/api/auth/register"
 
 class FormContainerSignUp extends React.Component {
@@ -10,7 +11,12 @@ class FormContainerSignUp extends React.Component {
         password: "",
     }
 
-    handleInputChange(event){
+    handleInputChangeText(event){
+        this.setState({
+            [event.target.name]: event.target.value.toLowerCase()
+        })
+    }
+    handleInputChangePass(event){
         this.setState({
             [event.target.name]: event.target.value
         })
@@ -20,6 +26,9 @@ class FormContainerSignUp extends React.Component {
 
         let resJson
         let res
+        if (this.state.username === "" || this.state.password === ""|| this.state.email === "")
+            return console.log("Need to enter username, email, and password")
+        console.log("Posting to url: "+ROUTE_URL)
         try{
             res = await fetch(ROUTE_URL, {
                 method: 'POST',
@@ -42,7 +51,10 @@ class FormContainerSignUp extends React.Component {
             resJson = await res.json()
         }
         catch(err){
-            return console.log("couldn't log in from react - failed to parse json from response url: " + ROUTE_URL+ " Err: "+err)
+            console.log("couldn't log in from react - failed to parse json from response url: " + ROUTE_URL+ " Err: "+err)
+            console.log("res: "+res)
+            console.log("resJson: "+resJson)
+            return 
         }
 
         if (resJson.status === 1){
@@ -72,9 +84,9 @@ class FormContainerSignUp extends React.Component {
                     </div>
                     <span>{spanText}</span>
 
-                    <input value={this.state.username} onChange={e=>this.handleInputChange(e)} type="text"     name="username" placeholder="Username" />
-                    <input value={this.state.email}    onChange={e=>this.handleInputChange(e)} type="email"    name="email"    placeholder="Email" />
-                    <input value={this.state.password} onChange={e=>this.handleInputChange(e)} type="password" name="password" placeholder="Password" />
+                    <input value={this.state.username} onChange={e=>this.handleInputChangeText(e)} type="text"     name="username" placeholder="Username" />
+                    <input value={this.state.email}    onChange={e=>this.handleInputChangeText(e)} type="email"    name="email"    placeholder="Email" />
+                    <input value={this.state.password} onChange={e=>this.handleInputChangePass(e)} type="password" name="password" placeholder="Password" />
                     <button type="submit" id='signUpButton' >Sign Up</button>
                 </form>
             </div>

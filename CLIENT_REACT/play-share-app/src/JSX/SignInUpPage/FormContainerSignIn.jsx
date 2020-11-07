@@ -2,15 +2,22 @@ import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
 // var API_URL = require('../../App').API_URL
-const {API_URL} = require('../../App')
-const ROUTE_URL = API_URL+"/api/auth/login"
+// var {API_URL} = require('../../App')
+var API_URL = "http://localhost:8000"
+const ROUTE_URL = API_URL + "/api/auth/login"
+
 
 class FormContainerSignIn extends React.Component {
     state = {
         username: "",
         password: "",
     }
-    handleInputChange(event){
+    handleInputChangeText(event){
+        this.setState({
+            [event.target.name]: event.target.value.toLowerCase()
+        })
+    }
+    handleInputChangePass(event){
         this.setState({
             [event.target.name]: event.target.value
         })
@@ -18,7 +25,6 @@ class FormContainerSignIn extends React.Component {
   
     async handleFormSubmit(event){
         event.preventDefault()                                       // no refresh of screen after submit 
-
         let resJson
         let res
         if (this.state.username === "" || this.state.password === "")
@@ -82,8 +88,8 @@ class FormContainerSignIn extends React.Component {
                     </div>
                     <span>{spanText}</span>
 
-                    <input type="text"     value={this.state.username} onChange={e=>this.handleInputChange(e)} name="username" placeholder="Username" ></input>  
-                    <input type="password" value={this.state.password} onChange={e=>this.handleInputChange(e)} name="password" placeholder="Password" ></input>
+                    <input type="text"     value={this.state.username} onChange={e=>this.handleInputChangeText(e)} name="username" placeholder="Username" ></input>  
+                    <input type="password" value={this.state.password} onChange={e=>this.handleInputChangePass(e)} name="password" placeholder="Password" ></input>
                     <a href="#">Forgot your password?</a>
                     <br/>
                     <br/>

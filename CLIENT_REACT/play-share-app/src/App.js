@@ -7,7 +7,9 @@ import UserFeed from "./JSX/Feed/UserFeed";
 import './JSX/app.css'
 // export const API_URL = "http://157.230.184.203:8000"; 
 // export var API_URL = "http://localhost:8000"
-let API_URL = "http://localhost:8000"
+// export var getROUTE = function(){
+//     return API_URL
+// }
 
 class App extends Component{  
     logged_user = "mhasan1"
@@ -15,9 +17,9 @@ class App extends Component{
         return (    
             <Router>                             
                 <Switch>
-                    {/* <GlobalFeed path="/globalFeed" exact component={GlobalFeed} logged_user={this.logged_user} /> */}
-                    {/* <MakePost   path="/globalFeed/makePost" exact component={MakePost} logged_user={this.logged_user}/> */}
-                    {/* <UserFeed   path="/userFeed/:username" exact component={UserFeed}/> */}
+                    <GlobalFeed path="/globalFeed" exact component={GlobalFeed} logged_user={this.logged_user} /> 
+                    <MakePost   path="/globalFeed/makePost" exact component={MakePost} logged_user={this.logged_user}/> 
+                    <UserFeed   path="/userFeed/:username" exact component={UserFeed}/>
                     <SignInUpPage path="/" component={SignInUpPage}/>
                 </Switch>
             </Router>      
@@ -27,8 +29,5 @@ class App extends Component{
 
 export default App;
 
-module.exports = {
-    API_URL: API_URL
-}
 
 
