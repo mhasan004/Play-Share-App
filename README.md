@@ -17,7 +17,7 @@
 # 📌 TECHNOLOGIES / DEPENDENCIES:
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
 * The Client side is still in production and is being built with **React**
-* **Redis (async-redis)** - used to cache requests, increasing response times. 
+* **Redis (async-redis)** - used to cache requests, decrease response times. 
 * **helmet.js** - used to give some basic security to REST API application.
 * **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
 * **bcrypt** - used to store hashed passwords and portion of key needed to make JWT into the database.
