@@ -4,7 +4,7 @@ import "./makePost.css"
 
 var API_URL = require('../../App').API_URL
 const ROUTE_URL_p1 = API_URL+"/api/user/"
-const ROUTE_URL_p2 = "/make_post"
+const ROUTE_URL_p2 = "/post"
 
 class MakePost extends React.Component{
     ROUTE_URL = ROUTE_URL_p1 +this.props.logged_user + ROUTE_URL_p2

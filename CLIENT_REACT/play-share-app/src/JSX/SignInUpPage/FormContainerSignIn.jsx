@@ -58,7 +58,7 @@ class FormContainerSignIn extends React.Component {
         }
        
         if (resJson.status === 1){
-            // this.setState({ username: "", password: ""}) 
+            this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
             console.log("**WARNING: storing auth-token in local storage")            
             localStorage.setItem('auth-token', resJson.auth_app);

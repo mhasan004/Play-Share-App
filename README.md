@@ -17,17 +17,19 @@
 # 📌 TECHNOLOGIES / DEPENDENCIES:
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
 * The Client side is still in production and is being built with **React**
+* **Redis** - used to cache requests, increasing response times. 
 * **helmet.js** - used to give some basic security to REST API application.
 * **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
 * **bcrypt** - used to store hashed passwords and portion of key needed to make JWT into the database.
-* **crypto-js** - used to encrypt response and decrypt request using the client's symmetric key (AES).
+* **crypto-js** - (not used if using HTTPS and disabling TLS) used to encrypt response and decrypt request using the client's symmetric key (AES).
 * **JWT** - used to authenticate a user - used to make user access and refresh tokens.
 * **Joi** - used to validate client request body.
 * **cookie-parser** - used to parse refresh token cookie data from request.
 * **morgan** - used to log the resonse of endpoint so that I can know where to optimize code. 
 
 # 📋 APPLICATION OVERVIEW:
-* The login and register process is explained in detail in the **APP SECURITY** section.
+* (In Progress) Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other psots, comment on other user's posts.  
+* The login and registration process is explained in detail in the **APP SECURITY** section.
 * To access the user or admin private routes, the client must supply the valid JWT token in the **auth-token** header (can be sent encrypted with SYMMETRIC_KEY). JWT expire every 10 minutes. Refresh token in cookie can be used to refresh tokens.  
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
@@ -35,7 +37,7 @@
 # 🏠 RUN SERVER LOCALLY:
 1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database. Make sure the keys are long and randomly generated. 
     <details>      
-      <summary> Description of the variables (Will not need most of this when using https)</summary>
+      <summary> Description of the variables</summary>
     
       * `DB_CONNECT`  - Store your MongoDB Connection URL
       * `ADMIN_EMAIL` - This is the email address of the admin account.
@@ -44,8 +46,9 @@
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
     </details>
-2) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
-3) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
+2) `redis-server` - start the redis server for REST API server. May need to downlaod redis.
+3) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
+4) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 <br/>
 
 # 🛡️ APP SECURITY:
@@ -77,8 +80,8 @@
 
   * After successful login, access token and refresh tokens are made. Refresh tokens lets the application silently refresh expired JWT given that the refresh token is valid.
   * **Admin and User's JWTs are created differently:**
-    * User access JWT is created using the user's username and signed with the `USER_ENCRYPTION_KEY` key. 
-    * Admin access JWT uses the same process but signs the token using the AES encryption of `USER_ENCRYPTION_KEY` with the `ADMIN_ENCRYPTION_KEY`.
+    * User access JWT is created using the user's username and signed with the `USER_SECRET_KEY` key. 
+    * Admin access JWT uses the same process but signs the token using the AES encryption of `USER_SECRET_KEY` with the `ADMIN_SECRET_KEY`.
     * Sent to the client in a Authentication Bearer header. Client stores the token in memory. 
   * **Refresh Tokens & Silent Refresh Procedure**: 
     * Refresh JWT is created using the the user's username and email address and signed with the `REFRESH_TOKEN_SECRET` key. It is stored in a database.

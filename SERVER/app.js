@@ -9,21 +9,17 @@ const cookieParser = require('cookie-parser')                                   
 const authRoutes   = require('./routes/auth')
 const adminRoutes  = require('./routes/admin')
 const userRoutes   = require('./routes/user')
-const {verifyUser, verifyAdmin, verifyApp, checkOrigin} = require('./helpers/verify_permissions')                       // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
-const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/Encrypt_Decrypt_Request')       // MIDDLEWARE to decrypt body
+const {verifyUser, verifyAdmin, verifyApp, checkOrigin} = require('./helpers/verifyPermissions')                        // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
+const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/EncryptDecryptRequest')         // MIDDLEWARE to decrypt body
 const CLIENT_URL =  'http://localhost:3000'
 const PORT = process.env.PORT || 8000
 const app  = express()
-
-
 // module.exports.CLIENT_URL = CLIENT_URL
-// module.exports = REDIS_CLIENT;
 
-app.use(cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
-    // {origin: CLIENT_URL,
-    // credentials: true}
-));   
 app.use(morgan('dev'))                                                                              // logs response time
+app.use(cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
+    //{origin: CLIENT_URL, credentials: true}
+));   
 app.use(helmet())                                                                                   // helmet comes with 11 middleware for basic protecting response (gets rid of reponse headers to give basic security to app)
 app.use(express.json())                                                                             // parse request as json
 app.use(cookieParser())                                                                             // to parse cookies
@@ -31,7 +27,7 @@ app.use(cookieParser())                                                         
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
 // app.use('/', initiateCheckHandShake)                                                             // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
 // app.use('/api/auth', decryptBody, decryptSelectedHeader)                                         // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
-app.use('/api/auth', authRoutes)                                                                    // Register new user, login user (only apps with access key can register or login)
+app.use('/api/auth', authRoutes)                                                                    // Register new user, login user 
 app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   
 app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route dont exist or wrong http method!"})}) 
