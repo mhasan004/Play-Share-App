@@ -17,19 +17,18 @@ const app  = express()
 // module.exports.CLIENT_URL = CLIENT_URL
 
 app.use(morgan('dev'))                                                                              // logs response time
-app.use(cors(                                                                                       // Only accept requests from the specific client domain (i hope :/)
-    //{origin: CLIENT_URL, credentials: true}
-));   
+app.use(cors( /*{origin: CLIENT_URL, credentials: true} */));                                       // Only accept requests from the specific client domain (i hope :/)
+
 app.use(helmet())                                                                                   // helmet comes with 11 middleware for basic protecting response (gets rid of reponse headers to give basic security to app)
 app.use(express.json())                                                                             // parse request as json
-app.use(cookieParser())                                                                             // to parse cookies
+app.use(cookieParser(process.env.COOKIE_SECRET))                                                    // to parse cookies. signing cookies
 
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
 // app.use('/', initiateCheckHandShake)                                                             // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
 // app.use('/api/auth', decryptBody, decryptSelectedHeader)                                         // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
 app.use('/api/auth', authRoutes)                                                                    // Register new user, login user 
-app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.use('/api/user/:username', verifyUser, userRoutes)                                              // PRIVATE USER ROUTES   
+app.use('/api/admin', verifyUser, adminRoutes)                                                      // PRIVATE ADMIN ROUTES
 app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route dont exist or wrong http method!"})}) 
 
 mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })

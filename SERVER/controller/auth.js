@@ -7,25 +7,30 @@ const {registerValidation, loginValidationUsername} = require('../model/Validati
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/EncryptDecryptRequest')
 const {redis_client} = require('../helpers/redisDB')
 const JWT_expire_time = '10m'
-const JWT_RT_expire_time = 24*60*60*15  //'15d'                        
-const RT_cookie_expire_time = '15d' 
-const redis_user_expire_time = 24*60*60*1     //'1d'                                                                                                            // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
-
+const JWT_RT_expire_time = 24*60*60*7  //'7d'                        
+const RT_cookie_expire_time = '7d' 
+const redis_user_expire_time = 24*60*60     //'1d'                                                                                                            // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
+const cookieConfig = {
+    maxAge: RT_cookie_expire_time,                                              // expire time in seconds (remove this option and cookie will die when browser is closed)
+    httpOnly: true,                                                             // to disable accessing cookie via client side js
+    signed: true,                                                               // if you use the secret with cookieParser
+    // secure: true,                                                            // only set cookies over https
+    // ephemeral: false                                                         // true = cookie destroyed when browser closes
+    // SameSite: strict, 
+}
 
 // Function to create new JWT
-async function createJWT(username, email) {               
-    const JWT_payload = {id: username}                                                                                          
+async function createJWT(JWT_payload, expire_time = JWT_expire_time) {               
     let token
-    if (email === process.env.ADMIN_EMAIL)
-        token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: JWT_expire_time})    
+    if (JWT_payload.email === process.env.ADMIN_EMAIL)
+        token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: expire_time})    
     else
-        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: JWT_expire_time})  
+        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: expire_time})  
     return token
 }
 // Function to create new refresh token
-async function createStoreRefreshToken(username, email) {
-    const JWT_payload = {username: username, email: email}                                                                                       
-    const refresh_token = jwt.sign(JWT_payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: JWT_RT_expire_time})
+async function createStoreRefreshToken(JWT_payload) {
+    const refresh_token = createJWT(JWT_payload, JWT_RT_expire_time) 
     // Saving Refresh token to Redis Cache
     try{
         await redis_client.set("RT-"+username, refresh_token, 'EX', JWT_RT_expire_time)
@@ -37,17 +42,18 @@ async function createStoreRefreshToken(username, email) {
     return refresh_token
 }
 // Function to find user in either Redis Cache or MongoDB
-async function findUserFromCacheOrDB (username)              // returns 
+exports.findUserFromCacheOrDB = async (username)  =>             // returns {user, isUserCached}
+// async function findUserFromCacheOrDB (username)              // returns 
 {
     let isUserCached = false
     let user
     try{
         if(await redis_client.exists("user-"+username)){
             try{
-                user = await redis_client.get("user-"+username)
-                user = JSON.parse(user)
                 isUserCached = true
                 console.log("Got user from cache!")
+                user = await redis_client.get("user-"+username)
+                user = JSON.parse(user)
                 return {user, isUserCached}
             }
             catch(err){
@@ -138,23 +144,19 @@ exports.login = async (req,res,next) =>
     let token, refresh_token                                                                                                                        // 4) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated
     try{
         [token, refresh_token] = await Promise.all([
-            createJWT(user.username, user.email),
-            createStoreRefreshToken(user.username, user.email),   
+            createJWT({username: user.username, email: user.email}),
+            createStoreRefreshToken({username: user.username, email: user.email})   
         ]);                                        
     }
     catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT or create and store refresh token! Error: "+err}).end()
     }
-    res.cookie('refresh_token', refresh_token, {                                                                                                    // 3) Set refresh token cookie and rend res
-        maxAge: parseInt(RT_cookie_expire_time),
-        httpOnly: true,
-        sameSite: 'strict', 
-        // secure: true,
-    });
+
 
     // 4) Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the header
     // res.set('auth-token', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]))                                                                           // SYMMETRIC_KEY_encrypt() is disabled sinc eim using https                                                                                                             // Send the token with the response
     res.set('auth-token', token)                                                                                                                                                                                    // Send the token with the response
+    res.cookie('refreshToken', refresh_token, cookieConfig)                                                                                                    // 3) Set refresh token cookie and rend res
     res.status(201).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!", auth_app: token} ).end()
     
 
@@ -212,23 +214,17 @@ exports.refresh = async (req,res,next) => {
     let new_jwt_token, new_refresh_token
     try{
         [new_jwt_token, new_refresh_token] = await Promise.all([
-            createJWT(RT_verified.username, RT_verified.email),
-            createStoreRefreshToken(RT_verified.username, RT_verified.email),   
+            createJWT({username: RT_verified.username, email: RT_verified.email}),
+            createStoreRefreshToken({username: RT_verified.username, email: RT_verified.email}),   
         ]);                                        
     }
     catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err}).end()
     }
-    res.cookie('refresh_token', new_refresh_token, {
-        maxAge: RT_cookie_expire_time,
-        httpOnly: true,
-        sameSite: 'strict', 
-        // secure: true,
-    });
+    res.cookie('refreshToken', new_refresh_token, cookieConfig);
     console.log("*** SET COOKIE SECURE FLAG TO TRUE SO WHEN CLIENT USES HTTPS")
     console.log("***REMINDER: PUT JWT IN AUTH HEADER!!!")
     return res.status(201).json({status: 1, message: "Successfully refreshed JWT and refresh token", jwt: new_jwt_token})
 }
-
 
 
