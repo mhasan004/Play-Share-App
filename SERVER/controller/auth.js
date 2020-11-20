@@ -7,7 +7,7 @@ const {registerValidation, loginValidationUsername} = require('../model/Validati
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/EncryptDecryptRequest')
 const {redis_client} = require('../helpers/redisDB')
 const JWT_expire_time = '10m'
-const JWT_RT_expire_time = 24*60*60*7  //'7d'                        
+const JWT_RT_expire_time = 24*60*60*7       //'7d'                        
 const RT_cookie_expire_time = '7d' 
 const redis_user_expire_time = 24*60*60     //'1d'                                                                                                            // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
 const cookieConfig = {
@@ -19,20 +19,27 @@ const cookieConfig = {
     // SameSite: strict, 
 }
 
-// Function to create new JWT
+// Function to create new JWT:
+
 async function createJWT(JWT_payload, expire_time = JWT_expire_time) {               
     let token
-    if (JWT_payload.email === process.env.ADMIN_EMAIL)
-        token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: expire_time})    
+    let admin_secrey_key = process.env.ADMIN_SECRET_KEY
+    let user_secrey_key =  process.env.USER_SECRET_KEY
+    if (expire_time != JWT_expire_time){                                        // If expire time is different -> JWT is a refresh token -> Refreshtoken will also use the REFRESH_TOKEN_SECRET
+        admin_secrey_key += process.env.REFRESH_TOKEN_SECRET            
+        user_secrey_key  += process.env.REFRESH_TOKEN_SECRET
+    }
+
+    if (JWT_payload.username === process.env.ADMIN_USERNAME)
+        token = jwt.sign(JWT_payload, admin_secrey_key, {expiresIn: expire_time})    
     else
-        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: expire_time})  
+        token = jwt.sign(JWT_payload, user_secrey_key, {expiresIn: expire_time})  
     return token
 }
 // Function to create new refresh token
 async function createStoreRefreshToken(JWT_payload) {
     const refresh_token = createJWT(JWT_payload, JWT_RT_expire_time) 
-    // Saving Refresh token to Redis Cache
-    try{
+    try{                                                                                                                    // Saving Refresh token to Redis Cache
         await redis_client.set("RT-"+username, refresh_token, 'EX', JWT_RT_expire_time)
     }
     catch(err){
@@ -42,8 +49,8 @@ async function createStoreRefreshToken(JWT_payload) {
     return refresh_token
 }
 // Function to find user in either Redis Cache or MongoDB
-exports.findUserFromCacheOrDB = async (username)  =>             // returns {user, isUserCached}
 // async function findUserFromCacheOrDB (username)              // returns 
+exports.findUserFromCacheOrDB = async (username)  =>             // returns {user, isUserCached}
 {
     let isUserCached = false
     let user
@@ -118,9 +125,10 @@ exports.registerNewUser = async (req,res,next) =>
 
 
 /*  Input Fields: username, password
-    JWT_payload: {id: user.username}
-    user token  = jwt.sign(JWT_payload, USER_SECRET_KEY,  {expiresIn: '1h'})    
-    admin token = jwt.sign(JWT_payload, ADMIN_SECRET_KEY, {expiresIn: '1h'})   -----  JWT_admin_key = encrypt USER_SECRET_KEY with ADMIN_SECRET_KEY 
+    JWT_payload: {username: user.username}
+    user token  = jwt.sign(JWT_payload, USER_SECRET_KEY,  {expiresIn: '10m'})    
+    admin token = jwt.sign(JWT_payload, ADMIN_SECRET_KEY, {expiresIn: '10m'})  
+    refresh tokens =  jwt.sign(JWT_payload, ADMIN_SECRET_KEY or USER_SECRET_KEY + REFRESH_TOKEN_SECRET, {expiresIn: '7d'})  
 */
 exports.login = async (req,res,next) => 
 {    
@@ -144,8 +152,8 @@ exports.login = async (req,res,next) =>
     let token, refresh_token                                                                                                                        // 4) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated
     try{
         [token, refresh_token] = await Promise.all([
-            createJWT({username: user.username, email: user.email}),
-            createStoreRefreshToken({username: user.username, email: user.email})   
+            createJWT({username: user.username}),
+            createStoreRefreshToken({username: user.username})   
         ]);                                        
     }
     catch(err){
@@ -214,8 +222,8 @@ exports.refresh = async (req,res,next) => {
     let new_jwt_token, new_refresh_token
     try{
         [new_jwt_token, new_refresh_token] = await Promise.all([
-            createJWT({username: RT_verified.username, email: RT_verified.email}),
-            createStoreRefreshToken({username: RT_verified.username, email: RT_verified.email}),   
+            createJWT({username: RT_verified.username}),
+            createStoreRefreshToken({username: RT_verified.username}),   
         ]);                                        
     }
     catch(err){

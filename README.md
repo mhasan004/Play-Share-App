@@ -40,7 +40,7 @@
       <summary> Description of the variables</summary>
     
       * `DB_CONNECT`  - Store your MongoDB Connection URL
-      * `ADMIN_EMAIL` - This is the email address of the admin account.
+      * `ADMIN_USERNAME` - This is the email address of the admin account.
       * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
