@@ -3,91 +3,82 @@ const CryptoJS = require("crypto-js");
 const User = require('../model/User')
 const APP_EXPORTS = require('../app')
 
+function verifyToken(token){
+    try{
+        return jwt.verify(token, process.env.USER_SECRET_KEY)                                                                       // See if a right user is trying to access this router
+    }                       
+    catch(err){
+        try{
+            return jwt.verify(token, process.env.ADMIN_SECRET_KEY)                                                                  // See if if the admin is trying to access this router
+        }            
+        catch{
+            throw err
+        }                                                                                                                           // If neither the admin or the right user, throw error        
+    }
+}
 exports.checkOrigin = (req,res,next) =>                                                                       
 {
     console.log(APP_EXPORTS.CLIENT_URL)
-    // if (res.headers.origin != APP_EXPORTS.CLIENT_URL) {
-    //     console.log(`Request tnot made from Client! Only ${APP_EXPORTS.CLIENT_URL} can Access API!`)
-    //     return res.status(401).json({status:-1, message:`Request tnot made from Client! Access Denied`}).end()
-    // } 
-    // const origin = req.get('host')
-    // console.log(origin)
+    /*if (res.headers.origin != APP_EXPORTS.CLIENT_URL) {
+            console.log(`Request tnot made from Client! Only ${APP_EXPORTS.CLIENT_URL} can Access API!`)
+            return res.status(401).json({status:-1, message:`Request tnot made from Client! Access Denied`}).end()
+        } 
+        const origin = req.get('host')
+        console.log(origin)
+    */
     next()
 }
-exports.verifyUser = async (req,res,next) =>                                                                                        // MiddleWare: Private Unique User Route
-{                                                                              
-    const user = await User.findOne({username: req.originalUrl.split('/')[3]})
-    const recieved_token = req.headers['auth-token'] 
-    // const auth_header = req.headers['authorization']
-    // const recieved_token = auth_header && auth_header.split(' ')[1]
 
-    if(!recieved_token || !user ) 
+
+exports.verifyUser = async (req,res,next) =>                                                                                        // MiddleWare: Private Unique User Route
+{           
+    let user_url = req.params.username
+    // let user_url = req.originalUrl.split('/')[3]                                                                                              //await User.findOne({username: })
+    if (!user_url)
+        if (req.originalUrl.split('/')[2] === "admin") 
+            user_url = process.env.ADMIN_USERNAME
+    // 1) Get RT from cookie and Access Token from header
+    const recieved_RT = req.signedCookies.refreshToken;
+    const recieved_access_token = req.headers['auth-token'] 
+    // const auth_header = req.headers['authorization']
+    // const recieved_access_token = auth_header && auth_header.split(' ')[1]
+    if(!recieved_access_token || !recieved_RT) 
         return res.status(401).json({status: -1, message: `Access Denied! Wrong auth-token Header, user not found, or user not logged in!`}) 
           
-    // VERIFY the user by checking if correct JWT 
-    let verified = null
-    try{
+
+
+    // 2) VERIFY the user by checking if correct JWT 
+    let verified_rt = null
+    let verified_access = null
+    try{        
+        // 2.1) Verify Refresh Token Token -> If error return with -1 prompting user to relogin 
         try{
-            verified = jwt.verify(recieved_token, process.env.USER_SECRET_KEY)                                                      // See if a right user is trying to access this router
-        }                       
-        catch(err){
-            try{
-                verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_KEY)                                                 // See if if the admin is trying to access this router
-            }            
-            catch{
-                throw err
-            }                                                                                                        // If neither the admin or the right user, throw error        
+            verified_rt = verifyToken(recieved_RT)
         }
-        req.jwtPayload = verified                                                                                                         // req.jwtPayload = JWT payload
-        if (verified.username != user.username)
-            return res.status(401).json({status: -1, message: "Access Denied! Invalid User!"})  
-        next()
+        catch(err){
+            return res.status(401).json({status: -1, message: "Access Denied! Invalid RT! Need to Login. Error: "+err}).end() 
+        }
+
+        // 2.2) Verify Access Token -> If error return with -2, indicating, refresh token is ok but acces token expired so need to refresh
+        try{
+            verified_access = verifyToken(recieved_access_token)
+        }
+        catch(err){
+            return res.status(401).json({status: -2, message: "Access Denied! May need to refresh Access Token from /refresh endpoint. Error: "+err}).end()
+        }
     }
     catch(err){
-        return res.status(400).json({status: -1, message: "Access Denied! Invalid Token! Error: " + err}) 
+        return res.status(401).json({status: -1, message: "Access Denied! Invalid Token! Error: " + err}).end() 
     }
+
+    // 3) See if name payloads are the same
+    if (verified_access.username !== verified_rt.username || verified_access.username !== user_url)
+        return res.status(401).json({status: -1, message: "Access Denied! Invalid User! RT and Access Token Mismatch!"}).end() 
+
+    // 4) see if user is in DB
+    req.username = verified_access.username                                                                                                         // passing the logged user tot he next middleware
     next()
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-/* Admin In DEV
-exports.verifyAdmin = async (req,res,next) => {                                                                             // MiddleWare: Private Admin Route
-    const userType = req.baseUrl.split('/')[2]                                                                              // Get the user type: admin or user
-    const user = await User.findOne({username: "admin"})
-    const encryption_input = (user._id+user.email+user.username+user.password).toString()
-
-    const recieved_token = req.header('auth-token')                                                                // 1) Get the token from the header  of the request
-    if(!recieved_token) 
-        return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header"})   
-    const bytes = CryptoJS.AES.decrypt(recieved_token, process.env.CLIENT_ENCRYPTION_KEY);                         // DECRYPT TOKEN
-    const recieved_token = bytes.toString(CryptoJS.enc.Utf8);
-    
-    const bytes_token = CryptoJS.AES.decrypt(encryption_input, process.env.USER_SECRET_KEY);                             // DECRYPT USER
-    const user_secret_key = bytes_token.toString(CryptoJS.enc.Utf8);    // salted hashed secret key is stored in db. can create the prehash code using user data + .env key. So if we cant calcumlate the hash stored in db with this, then wrong user               
-
-    const unique_user_secret_key = await bcrypt.hash(encryption_input, process.env.USER_SECRET_KEY)      
-    try{
-        let verified = null
-        if (userType === "admin") 
-            verified = jwt.verify(recieved_token, process.env.ADMIN_SECRET_KEY+unique_user_secret_key)                      // 2) (returns _id doc of verified user in DB) Verify the user by checkign to see if the tokens in header with otu secret token
-        else{throw err}
-        req.user = verified                                                                                                 // 3) req.user = JWT object
-        next()
-    }
-    catch(err){
-        return res.status(400).json({status: -1, message: "Invalid Token Error: " +err})                                    // If wrong JWT token, will throw an error
-    }
-}
-*/

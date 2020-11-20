@@ -40,10 +40,11 @@
       <summary> Description of the variables</summary>
     
       * `DB_CONNECT`  - Store your MongoDB Connection URL
-      * `ADMIN_EMAIL` - This is the email address of the admin account.
+      * `ADMIN_USERNAME` - This is the email address of the admin account.
       * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
+      * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
       * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
     </details>
 2) `redis-server` - start the redis server for REST API server. May need to downlaod redis.

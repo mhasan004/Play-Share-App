@@ -5,21 +5,6 @@ const public_key = key.exportKey('public')              // public key ------> se
 const private_key = key.exportKey('private')            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
-// const {redis_client} = require("../app")
-// set data to redis cache:  redis.setex(key, expiration in secs, value)
-// get data to redis cache by makign a cache middle ware
-// cache middleware
-// function cache(req,res, next){
-//     const SYMMETRIC_KEY_DICT = 
-//     redis_client(key, (err, data)={if err throiw err} if (data !== null) res.json....daat;
-// }
- 
-
-
-
-
-
-
 
 const encrypted_headers = [
     "auth-token"
