@@ -1,0 +1,2 @@
+Redis DB Key:
+    "user-<username>" - all user data in redis related to this user has this key

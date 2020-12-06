@@ -24,8 +24,10 @@ app.use(express.json())                                                         
 app.use(cookieParser(process.env.COOKIE_SECRET))                                                                                // to parse cookies. signing cookies
 
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
-// app.use('/', initiateCheckHandShake)                                                                                         // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
-// app.use('/api/auth', decryptBody, decryptSelectedHeader)                                                                     // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
+if (env.process.USE_TLS === true){
+    app.use('/', initiateCheckHandShake)                                                                                        // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
+    app.use('/api/auth', decryptBody, decryptSelectedHeader)                                                                    // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
+}
 app.use('/api/auth', authRoutes)                                                                                                // Register new user, login user 
 app.use('/api/user/:username', verifyUser, userRoutes)                                                                          // PRIVATE USER ROUTES   
 app.use('/api/admin', verifyUser, adminRoutes)                                                                                  // PRIVATE ADMIN ROUTES
