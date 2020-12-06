@@ -94,7 +94,6 @@ exports.decryptSelectedHeader = async (req,res,next) =>
     let err_obj = null
     encrypted_headers.forEach(field=> {
         if (req.headers[field] == null){                                // if there is no encrypted header to decrypt, move on
-            // return res.status(400).json({status:-1, message: "Might be missing header"+field}).end() 
             return
         }
         try{
@@ -106,18 +105,13 @@ exports.decryptSelectedHeader = async (req,res,next) =>
                 err_output_location: "DecryptBody Middleware"
             }
             console.log(err_obj.message+" \n\t\terr_output_location: "+err_obj.err_output_location)
-            // return res.status(400).json({status:-1, message: err_obj}).end() 
         }
     })
     next()
 }
 
 exports.SYMMETRIC_KEY_encrypt = (data, handshake_index) =>{
-    // return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[handshake_index]).toString(); 
-    return data
+    return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[handshake_index]).toString(); 
 }
 
-// exports.public_key = public_key;
-// exports.private_key = private_key;
-// exports.RSA_private_key = RSA_private_key;
 exports.SYMMETRIC_KEY_DICT = SYMMETRIC_KEY_DICT;

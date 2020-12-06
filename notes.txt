@@ -1,2 +1,0 @@
-redis Key:
-    "user-<username>" - user data form db

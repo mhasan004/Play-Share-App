@@ -45,9 +45,11 @@
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
       * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
-      * `SALT_NUM = 10`    - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change the hashing algorithm of these fields.
+      * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
+      the hashing algorithm of these fields.
+      * `USE_TLS` = false  - Do you want to use the TLS handshake? false = TLS diabled (do this when using https). true = enabled. 
     </details>
-2) `redis-server` - start the redis server for REST API server. May need to downlaod redis.
+2) `redis-server` - start the redis server for REST API server. May need to downlOAd redis.
 3) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
 4) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
 <br/>
@@ -80,18 +82,18 @@
 ## Authentication via JWT and Refresh Tokens:
 
   * After successful login, access token and refresh tokens are made. Refresh tokens lets the application silently refresh expired JWT given that the refresh token is valid.
-  * **Admin and User's JWTs are created differently:**
-    * User access JWT is created using the user's username and signed with the `USER_SECRET_KEY` key. 
-    * Admin access JWT uses the same process but signs the token using the AES encryption of `USER_SECRET_KEY` with the `ADMIN_SECRET_KEY`.
-    * Sent to the client in a Authentication Bearer header. Client stores the token in memory. 
+  * **Admin and User's JWTs :**
+    * Access JWT is created using the user's username and signed with the `USER_SECRET_KEY` key or the `ADMIN_SECRET_KEY` depending on if the user is admin or not. 
+    * 10 minute expire time.
+    * Access JWT is sent to the client in a Authentication Bearer header. Client stores the token in memory. 
   * **Refresh Tokens & Silent Refresh Procedure**: 
-    * Refresh JWT is created using the the user's username and email address and signed with the `REFRESH_TOKEN_SECRET` key. It is stored in a database.
-    * It is stored in httpOnly cookie with `httpOnly=true`, `sameSite: 'strict'`, `secure: true` flags set so that it cannot be accessed by the client. 
-    * If JWT expires, client will send a request to the `/auth/refresh` endpoint along with the httpOnly cookie that contains the refresh token. 
+    * Refresh JWT is created using the the user's username signed with the concatenation of `REFRESH_TOKEN_SECRET` key along with either the `USER_SECRET_KEY` or `ADMIN_SECRET_KEY`. 
+    * 7 day expire time for the JWT and cookie.
+    * It is stored in httpOnly cookie with `httpOnly=true`, `sameSite: 'strict'`, `secure: true` flags set so that it cannot be accessed in the client. 
+    * If JWT expires, client will send a request to the `/auth/refresh` endpoint. The refresh token stored in the httpOnly cookie will also be sent along with the request.
       * If the token is valid and exists in the database, a new refresh token will be created and will replace the old refresh token in the database.
-      * A new access JWT is created and these are sent to the client. 
+      * A new access JWT is also created and are sent to the client. 
   
-
  * <details>      
       <summary> SUMMARY </summary>
 
