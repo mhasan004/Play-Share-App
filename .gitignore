@@ -1,5 +1,6 @@
-CLIENT_REACT/play-share-app/node_modules
-SERVER/node_modules/
-/Trash Bin
-
+node_modules
+TrashBin
 .env
+.gitignore
+dump.rdb
+Notes

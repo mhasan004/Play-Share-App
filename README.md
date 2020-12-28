@@ -39,19 +39,19 @@
     <details>      
       <summary> Description of the variables</summary>
     
-      * `DB_CONNECT`  - Store your MongoDB Connection URL
-      * `ADMIN_USERNAME` - This is the email address of the admin account.
+      * `DB_CONNECT`  - Store your MongoDB Connection
+      * `ADMIN_USERNAME` - Email address of the admin account.
       * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
       * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
       the hashing algorithm of these fields.
-      * `USE_TLS` = false  - Do you want to use the TLS handshake? false = TLS diabled (do this when using https). true = enabled. 
+      * `USE_TLS = false` - Can keep this as is. Do you want to use the TLS handshake? false = diable TLS (do this when using https). true = enable TLS. 
     </details>
-2) `redis-server` - start the redis server for REST API server. May need to downlOAd redis.
-3) `npm install` on the ***CLIENT_REACT*** and ***SERVER*** directories
-4) `npm start` on the ***CLIENT_REACT*** and ***SERVER*** directories to run the client and server 
+2) `redis-server` - download redis and start the redis server for REST API server.
+3) `npm install` on the **CLIENT** & **SERVER** directories
+4) `npm start` on the **CLIENT** & **SERVER** directories to run the client and server 
 <br/>
 
 # 🛡️ APP SECURITY:
@@ -101,8 +101,8 @@
         1. Correct access JWT for user (expires every 10 minutes and logout),
         2. (optional if using TLS) Valid `SYMMETRIC_KEY` (or else it will remake one through TLS handshake), deleted during logout.
       * (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
-      * Access JWT expires 10 minuts. Sent to client in Authentication Bearer header. JWT is stored in memory in react client. 
-      * Refresh JWT expires in 15 days. It is stored in httpOnly cookie and other lfags to ensure the client cannot read its contents. 
+      * Access JWT expires 10 minutes. Sent to client in Authentication Bearer header. JWT is stored in memory in react client. 
+      * Refresh JWT expires in 7 days. It is stored in httpOnly cookie and other lfags to ensure the client cannot read its contents. 
       * Silent Refresh: If JWT expires, client will send a request to the `/auth/refresh` with the refresh cookie and a new JWT and refresh token will be made if valid. 
       * **Cors** and **helmet.js** middlewares to provide some basic security to server.
       * The encryption keys needed to make JWT and hash passwords are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
@@ -115,9 +115,9 @@
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers** Send encrypted authentication code to server through the header
   * To make any requests to the server, the application needs to have the valid access key.
-  * Header `auth-token` = encrypt (with AES and the symmetric key) the JWT given by the server during login. This lets you access user routes.
-  * Header `Content-Type` = `application/json`
-  * (optional if using TLS) Header `handshake` =  
+  * `Content-Type` = `application/json`
+  * `auth-token` = the Access JWT to let client access user routes. Will be enrypted if using TLS.
+  * (optional if using TLS) `handshake` =  
     * nothing - to initiate TLS handshake
     * `0` - to  say sending client's symmetric key to server 
     * `handshake_index` - this is sent by server after successful TLS handshake 
