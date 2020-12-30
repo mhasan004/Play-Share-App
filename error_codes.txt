@@ -1,10 +1,26 @@
+ 0  ongoing request, need a response from client
+
+ 1  request successful
 -1  request failed
-1   request successful
-0   ongoing request, need a response from client
--2  need user to send request toi /refresh to refresh tokens
+
+-2  need client to send request to refresh endpoint
+ 2  new refresh and jwt tokens successfully made. user needs to restore jwt
+
+
+
+
+
+
+
+
+
+
 
 
 NOTES:
-verifyUser middleware will add two more fileds to the request object so that next middlewares can use:
+verifyUser middleware will add two more fields to the request object so that next middlewares can use:
     username = username of verified/loggedin user                                                                                                
-    user_role = "User" or "Admin" - role of the verified user
+    role = "user" or "admin" - role of the verified user
+    
+
+do:  user = user object from mongodb
