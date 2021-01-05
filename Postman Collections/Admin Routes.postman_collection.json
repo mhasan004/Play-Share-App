@@ -1,0 +1,45 @@
+{
+	"info": {
+		"_postman_id": "ff6976d4-ac34-4491-8732-a90575f0a717",
+		"name": "Admin Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Users",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"description": "need to have admin username or access is denied",
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"description": "need to have admin auth token or access is denied",
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjQ4NCwiaWF0IjoxNjA5MjkzMDMyLCJleHAiOjE2MTE4ODUwMzJ9.crDf3s1zqjp0O3H1wo917yeUeKakj_LeG0ZkTdVZdOY"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/admin/users/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"admin",
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

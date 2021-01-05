@@ -27,15 +27,28 @@ function loginValidationUsername(data)
 function postValidation(data)
 {
     const validationSchema = Joi.object({        
-        username: Joi.string().alphanum().min(3).max(11).required(),
         group: Joi.string().min(1).max(15),
         group_type: Joi.string().min(1).max(20),
         title: Joi.string().min(2).max(75).required(),
-        content: Joi.string().max(250),//.required(),             //***VALIDATE URL
+        content: Joi.string().max(250),                                                     //.required(),                                       //***VALIDATE URL
         isURL: Joi.boolean(),
     })
     return validationSchema.validate(data)                                                 
 }
+
+// Edit A Post validation
+function editPostValidation(data)
+{
+    const validationSchema = Joi.object({                                                   // no username chnage
+        group: Joi.string().min(1).max(15),
+        group_type: Joi.string().min(1).max(20),
+        title: Joi.string().min(2).max(75).required(),
+        content: Joi.string().max(250),                                                   
+        isURL: Joi.boolean(),
+    })
+    return validationSchema.validate(data)                                                 
+}
+
 
 // Post validation
 function postLikeDislikeValidation(data)
@@ -55,6 +68,5 @@ function postLikeDislikeValidation(data)
 module.exports.registerValidation = registerValidation
 module.exports.loginValidationUsername = loginValidationUsername
 module.exports.postValidation = postValidation
+module.exports.editPostValidation = editPostValidation
 module.exports.postLikeDislikeValidation = postLikeDislikeValidation
-
-// VALIDATE URL

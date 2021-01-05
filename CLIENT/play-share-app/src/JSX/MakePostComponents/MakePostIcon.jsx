@@ -1,6 +1,7 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
 import "./makePostsIcon.css"
+
 function MakePostIcon({history}){
     function handleClick(){
         console.log("make psot")
@@ -21,7 +22,7 @@ function MakePostIcon({history}){
     }
     function handleClick(){
         history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
-            pathname: `/globalFeed/makePost`,
+            pathname: `/post`,
         });
     }
 

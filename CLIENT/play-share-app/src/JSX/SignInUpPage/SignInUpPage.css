@@ -17,11 +17,8 @@
     --overlay-text-color: white;
     --overlay-button-border-color: white;
 
-    --timing: 0.3s;
+    --timing: 0.15s;
 }
-
-
-
 
 *{
     box-sizing: border-box; 
