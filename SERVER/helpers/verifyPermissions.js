@@ -27,42 +27,47 @@ function verifyToken(token, type = "access", role = "user"){
 exports.verifyUser = async (req,res,next) =>                                                                                                    // MiddleWare: Private Unique User Route. Passed user object, role, username to request so the next middleware can use it
 {           
     // 1) Get username and access token from header and verify if they exist. Get RT from cookie
-    let role
     let username_in = req.headers['username']                                                                                                          
     if (!username_in)
-        return res.status(400).json({status: -1, message: "Not username header! Who is the user?"}) 
-    if (username_in == process.env.ADMIN_USERNAME)
-        role = "admin"
+        return res.status(400).json({status: -1, message: "No username header! Who is the user?"}) 
+    if (username_in === process.env.ADMIN_USERNAME)
+        req.role = "admin"
     else        
-        role = "user"
+        req.role = "user"
     const recieved_access_token = req.headers['auth-token']                                                                                     // AUTHORIZATION HEADER: const auth_header = req.headers['authorization']; const recieved_access_token = auth_header && auth_header.split(' ')[1]
     const recieved_RT = req.signedCookies.refreshToken;
-    if(!recieved_access_token || !recieved_RT) 
-        return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header or RF Cookie!"}) 
+    if(!recieved_access_token) 
+        return res.status(401).json({status: -1, message: "Access Denied! No auth-token Header!"}) 
+    if(!recieved_RT) 
+        return res.status(401).json({status: -1, message: "Access Denied! No RF Cookie!"}) 
         
     // 2) (a) Verify if access is valid. If valid, move on to (b). If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access matches the username. (c) for admin usernames, check also if rf payload match. 
-    let verified_rt, verified_access
+    let verified_access, verified_rt
     try{
-        verified_access = verifyToken(recieved_access_token, "access", role)                                                                    // 2.a.1) Verify Access Token -> Valid: 1. Invalid: check validity of refresh token
+        verified_access = verifyToken(recieved_access_token, "access", req.role)                                                                    // 2.a.1) Verify Access Token -> Valid: 1. Invalid: check validity of refresh token
+        if (username_in === process.env.ADMIN_USERNAME){
+            try{
+                verified_rt = verifyToken(recieved_RT, "refresh") 
+            }
+            catch(err){
+                return res.status(401).json({status: -1, message: "Access Denied! Invalid Admin RF! Error: "+err}).end()
+            }
+        }
     }
     catch(err){
         try{
             verified_rt = verifyToken(recieved_RT, "refresh")                                                                                   // 2.a.2) Verify Refresh Token Token -> Valid: -2; access token is invalid but refresh token is valid, need to refresh tokens from /refresh. Invalid: -1; both tokens are invalid so need to login
         }
         catch(err2){
-            return res.status(401).json({status: -1, message: "Access Denied! Incorrect Tokens! Error: "+err2}).end()
+            return res.status(401).json({status: -1, message: "Access Denied! Invalid Tokens! Error: "+err2}).end()
         }
-        return res.status(401).json({status: -2, message: "Access Denied! Incorrect Access Token! Send request to /refresh. Error: "+err, action_needed: "refresh"}).end() 
+        return res.status(401).json({status: -2, message: "Access Denied! Invalid Access Token! Send request to /auth/refresh. Error: "+err}).end() 
     }
     if (verified_access.username !== username_in)                                                                                               // 2.b) Access Token Payload name Check. If payload name of the access tokens != username --> then somethings fishy!
-        return res.status(401).json({status: -1, message: "Access Denied! Invalid User! Token Mismatch!"}).end() 
-    if (username_in === process.env.ADMIN_USERNAME){                                                                                            // 2.c) RF Token Payload Name Check (for Admins only)
+        return res.status(401).json({status: -1, message: "Access Denied! Incorrect User! Token Mismatch!"}).end() 
+    if (username_in === process.env.ADMIN_USERNAME)                                                                                             // 2.c) RF Token Payload Name Check (for Admins only)
         if (verified_rt.username !== process.env.ADMIN_USERNAME)
-            return res.status(401).json({status: -1, message: "Access Denied! Not Admin RT!"}).end()  
-        req.role = "admin"
-    }   
-    else
-        req.role = "user"
+            return res.status(401).json({status: -1, message: "Access Denied! Incorrect Admin RT! Token Mismatch!"}).end()  
 
     // 3) See if username exists in db. If so, can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
     try{                                                                                                                                        

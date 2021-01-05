@@ -27,7 +27,6 @@ function loginValidationUsername(data)
 function postValidation(data)
 {
     const validationSchema = Joi.object({        
-        username: Joi.string().alphanum().min(3).max(11).required(),
         group: Joi.string().min(1).max(15),
         group_type: Joi.string().min(1).max(20),
         title: Joi.string().min(2).max(75).required(),

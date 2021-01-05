@@ -3,7 +3,11 @@ import Posts from "../Components/Posts";
 import MakePostIcon from "../MakePostComponents/MakePostIcon"
 import './globalFeed.css'
 // import Post from "../Components/Post";
-import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
+import { withRouter } from 'react-router-dom';                      
+
+import MakeRequest from '../../MakeRequest';                                  // This will be used to make requests to the server and handle silent refresh if needed
+import VARIABLES from "../../Variables"
+const ROUTE_URL = VARIABLES.API_BASE_URL + "user/feed/"
 
 
 class GlobalFeed extends React.Component{
@@ -14,18 +18,65 @@ class GlobalFeed extends React.Component{
         mhasan2 can like 1. two his, 
         mhasan3 can like any cus he never posted
     */
+    state = {
+        posts: []
+    }
+
+    async componentDidMount() {
+        let resJson
+        const reqObject = {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'username': this.props.loggedUser,
+                'auth-token': this.props.accessToken,
+            },
+        }
+
+        try{
+            const requestObj =  await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
+            resJson = requestObj.resJson            
+        }
+        catch(err){
+            return console.log(err)
+        }
+
+        if (!resJson)
+            return console.log("Improper Response!")
+        if (resJson.status === 1){
+            this.setState({
+                posts: resJson.posts
+            })
+            console.log('Got Feed Posts!')
+        }
+        else if (resJson.status === -1)
+            return alert("Failed to get Feed! " + resJson.message )
+        else if (resJson.status === -3){
+            this.props.history.push({                                              
+                pathname: VARIABLES.PATHS.SignInUpPage,
+            });
+        }
+    }
 
     render(){
-        let posts = [
-            {postID: 1, username: "mhasan1", handle: "@mhasan1", title: "This is my game play 1, we won 30 battles but lost 55 but that is ok because", content: "https://i.imgur.com/fiAqUmu.jpeg", group:"longGameGroupNa",group_type:"game", date:"Posted 5 min ago", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan2"], user_disliked: [], isURL:1},
-            {postID: 2, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", content: "https://i.imgur.com/fiAqUmu.jpeg", group:"Doom",group_type:"game", date:"Posted Dec 22, 2020", likes:0, dislikes:1, total_likes: -1,  user_liked: [],          user_disliked: ["mhasan1"], isURL:1 },
-            {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", content: "https://i.imgur.com/fiAqUmu.jpeg", group:"Doom",group_type:"game", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:1 },
-            {postID: 3, username: "mhasan2", handle: "@mhasan2", title: "This is my game play 2, we won 30 battles but lost 55 but that is ok because", date:"Posted 2423 min agodsf", likes:1, dislikes:0, total_likes: 1,   user_liked: ["mhasan1"], user_disliked: [], isURL:0 },
-        ]
+        if (this.props.accessToken.length < 1){
+            this.props.history.push({                                  
+                pathname: VARIABLES.PATHS.SignInUpPage,
+            });
+        }                           
+
         return (
             <div class="global-feed-body">
+                <span class="global-feed-nav">
+                    <h1> Hello {this.props.loggedUser}</h1>
+                    <a> Logout</a>
+                </span>
+
                 <div class="global-feed-posts">
-                    <Posts posts={posts} logged_user={this.props.logged_user} />
+                    <Posts posts={this.state.posts} logged_user={this.props.loggedUser} />
                 </div>
                 <div class="global-feed-MakePostIcon">
                     <MakePostIcon history={this.props.history}  />

@@ -22,6 +22,10 @@ exports.getAllPosts = async (req,res,next) =>
 exports.makePost = async (req,res,next) => 
 {
     const username = req.username                                                                    
+    if(!req.body.group) 
+        req.body.group = 'None'
+    if(!req.body.group_type) 
+        req.body.group_type = 'None'
     const {error} = postValidation(req.body)                                                                // 1) VALIDATE the POST request:              
     if(error)
         return res.status(400).json({status:-1, message: error.details[0].message}) 
@@ -50,6 +54,7 @@ exports.makePost = async (req,res,next) =>
 
 exports.getAPost = async (req,res,next) => 
 {   
+    console.log("!!! Need to limit user to only get their post! Currently, they can  get any!")
     const post = await Post.findOne({_id: req.headers["post-id"]})
     if (!post)
         return res.status(401).json({status: -1, message: "This Post Doesn't Exist!"})       
@@ -89,8 +94,9 @@ exports.deleteAPost = async (req,res,next) =>
 
 exports.getFeed = async (req,res,next) => {
     try{
-        const posts = await Post.find().sort([['date', -1]]).exec()
-        return res.status(200).json({status: 1, feed: posts})    
+        let posts = await Post.find()                                                           //Post.find().sort([['date', -1]]).exec()
+        posts = posts.reverse()
+        return res.status(200).json({status: 1, posts})    
     }
     catch{
         return  res.status(400).json({status: -1, message: "Failed to get post feed: "+err})    

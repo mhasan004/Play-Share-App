@@ -5,18 +5,10 @@ const jwt = require('jsonwebtoken')
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                                  // Import the Joi Validation functions
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/EncryptDecryptRequest')
 const {redis_client} = require('../helpers/redisDB')
+const {cookieConfig} = require("../config")
 const JWT_expire_time        = '10m'                                            // Access token expire time: 10 min 
 const JWT_RT_expire_time     = 86400*15                                         // RF token expire time:    15 days                      
-const RT_cookie_expire_time  = 86400*15                                         // RF cookie expire time:   15 days 
 const redis_user_expire_time = 86400                                            // Redis user expire time:   1 day                                          // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
-const cookieConfig = {
-    maxAge: RT_cookie_expire_time,                                                                                                                          // expire time in seconds (remove this option and cookie will die when browser is closed)
-    httpOnly: true,                                                                                                                                         // to disable accessing cookie via client side js
-    signed: true,                                                                                                                                           // if you use the secret with cookieParser
-    // secure: true,                                                                                                                                        // only set cookies over https
-    // ephemeral: false                                                                                                                                     // true = cookie destroyed when browser closes
-    // SameSite: strict, 
-}
 
 function randomNum(min=0, max=1000){                                                                                                                        // Function to generate a random id
     return (Math.random() * (max - min + 1) ) << 0
@@ -118,8 +110,7 @@ exports.registerNewUser = async (req,res,next) =>
 /*  Input Fields: username, password. JWT_payload: {username: user.username, id: randomNum()}  
     user token     = jwt.sign(JWT_payload, USER_SECRET_KEY,      {expiresIn: '10m'})    
     admin token    = jwt.sign(JWT_payload, ADMIN_SECRET_KEY,     {expiresIn: '10m'})  
-    refresh tokens = jwt.sign(JWT_payload, REFRESH_TOKEN_SECRET, {expiresIn: '15d'})  
-*/
+    refresh tokens = jwt.sign(JWT_payload, REFRESH_TOKEN_SECRET, {expiresIn: '15d'})  */
 exports.login = async (req,res,next) => 
 {    
     let token                                                                                                                                      
@@ -152,9 +143,8 @@ exports.login = async (req,res,next) =>
         return res.status(400).json({status:-1, message: "Either failed to create JWT or create and store refresh token! Error: "+err}).end()
     } 
     token = token[0]    
-    res.set("auth-token", token) 
-    // 5) Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the 
     res.set('auth-token', token)                                                                                                                            // Send the token with the response
+    // 5) Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the 
     if (process.env.USE_TLS === true)
         res.set('auth-token', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]))                                                                       // SYMMETRIC_KEY_encrypt() is disabled if using https                                                                                                             // Send the token with the response
     res.status(201).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!"} ).end()
@@ -184,7 +174,7 @@ exports.login = async (req,res,next) =>
 exports.logout = async (req,res,next) => 
 { 
     try{
-        await redis_client.del("RT-"+req.username+'-'+req.tokenId)                                                                               // Delete RT from redis
+        await redis_client.del("RT-"+req.username+'-'+req.tokenId)                                                                                          // Delete RT from redis
         return res.status(200).json({status:1, message: "Successfully logged out!"})
     }
     catch(err){
@@ -195,7 +185,7 @@ exports.logout = async (req,res,next) =>
 // Middleware to renew JWT and Refresh Token given valid old refresh token
 exports.refresh = async (req,res,next) => {
     let RT_verified                                                                                                                                         
-    const old_RT = req.signedCookies.refreshToken;                                       // get signed refreshToken cookie
+    const old_RT = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
     if (!old_RT){
         return res.status(401).json({status: -1, message: "No refresh-token cookie sent with request! Need to login again!"})
     }
@@ -231,6 +221,7 @@ exports.refresh = async (req,res,next) => {
     console.log("(DEL) REMINDER: PUT JWT IN AUTH HEADER!!!")
     console.log("(DEL) ACCESS:\n    "+new_token)
     console.log("(TODO) Refresh tokens are stored in redis. But i need to store in MongoDB so its permanent. Also need to cache it")
+    console.log('REFRESHED TOKEN RESPONSE SENT!')
     return res.status(201).json({status: 2, message: "Successfully refreshed JWT and refresh token"}).end()
 }
 
