@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-import VARIABLES from "../../Variables"
-const ROUTE_URL = VARIABLES.API_BASE_URL + "auth/register"
+import CONFIG from "../../utils/config"
+const ROUTE_URL = CONFIG.API_BASE_URL + "auth/register"
 
 class FormContainerSignUp extends React.Component {
     state = {
@@ -63,7 +63,7 @@ class FormContainerSignUp extends React.Component {
             this.setState({ username: "", email: "",  password: ""}) 
             console.log("REGISTERED!")
             this.props.history.push({                                                                                       // 2) getting history form the props react router passed down. redirecting to global feed
-                pathname: VARIABLES.PATHS.GlobalFeed,
+                pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
         else{

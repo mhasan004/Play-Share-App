@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import FormContainerSignIn from './FormContainerSignIn'
 import FormContainerSignUp from './FormContainerSignUp'
 import OverlayContainer from './OverlayContainer'
-import './SignInUpPage.css'
+import '../../css/signInUpPage.css'
 
 class SignInUpPage extends React.Component {
     button_signUp_overlay(){          // signup will add the class

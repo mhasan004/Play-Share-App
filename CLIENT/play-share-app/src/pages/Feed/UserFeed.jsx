@@ -1,6 +1,5 @@
 import React from "react";
 
-
 function UserFeed({username}) {
     return (
         <div >

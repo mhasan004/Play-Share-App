@@ -186,6 +186,7 @@ exports.logout = async (req,res,next) =>
 exports.refresh = async (req,res,next) => {
     let RT_verified                                                                                                                                         
     const old_RT = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
+    const username_in = req.headers['username']   
     if (!old_RT){
         return res.status(401).json({status: -1, message: "No refresh-token cookie sent with request! Need to login again!"})
     }
@@ -195,6 +196,9 @@ exports.refresh = async (req,res,next) => {
     catch(err){ 
         return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again!"}).end()
     }
+    if (username_in !== RT_verified.username)
+        return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"}).end()
+
     if (!await redis_client.exists("RT-"+RT_verified.username+'-'+RT_verified.id))                                                                          // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
         return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"}).end()
     try{

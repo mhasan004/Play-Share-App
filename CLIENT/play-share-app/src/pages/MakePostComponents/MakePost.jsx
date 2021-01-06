@@ -1,15 +1,16 @@
 import React, {Component} from 'react'
-import { withRouter } from 'react-router-dom';                                  // redirect to feed after login
-import "./makePost.css"
-import  MakeRequest  from '../../MakeRequest';                                  // This will be used to make requests to the server and handle silent refresh if needed
-import VARIABLES from "../../Variables"
-const ROUTE_URL = VARIABLES.API_BASE_URL + "user/post"
+import { withRouter } from 'react-router-dom';                                          // redirect to feed after login
+import  MakeRequest  from '../../utils/MakeRequest';                                    // This will be used to make requests to the server and handle silent refresh if needed
+import CONFIG from "../../utils/config"
+import "../../css/makePost.css"
+
+const ROUTE_URL = CONFIG.API_BASE_URL + "user/post"
 
 class MakePost extends React.Component{
     state = {
         title: "",
         content: "",
-        formTab: "post",                                                        // post, imgvid, link, 
+        formTab: "post",                                                                // post, imgvid, link, 
     }
 
     handleFormPick(e){
@@ -28,11 +29,10 @@ class MakePost extends React.Component{
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'username': this.props.loggedUser,
+                'username': localStorage.getItem("username"),
                 'auth-token': this.props.accessToken,
             },
             body: JSON.stringify({
-                username: this.props.logged_user,
                 title: this.state.title,
                 content: this.state.content,
                 // group: "",
@@ -41,8 +41,8 @@ class MakePost extends React.Component{
         }
 
         try{
-            const requestObj = await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
-            resJson = requestObj.resJson
+            console.log(this.props.authToken)
+            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
         }
         catch(err){
             return console.log(err)
@@ -50,7 +50,7 @@ class MakePost extends React.Component{
         if (resJson.status === 1){
             console.log("Posted!")
             this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
-                pathname: VARIABLES.PATHS.GlobalFeed,
+                pathname: CONFIG.PATHS.GlobalFeed,
             });
             this.setState({
                 title: "",
@@ -65,7 +65,7 @@ class MakePost extends React.Component{
                 accessToken: ""
             })
             this.props.history.push({                                               // Need to login
-                pathname: VARIABLES.PATHS.SignInUpPage,
+                pathname: CONFIG.PATHS.SignInUpPage,
             });
         }
 
@@ -115,7 +115,7 @@ class MakePost extends React.Component{
     render(){
         if (this.props.accessToken.length < 1){
             this.props.history.push({                                  
-                pathname: VARIABLES.PATHS.SignInUpPage,
+                pathname: CONFIG.PATHS.SignInUpPage,
             });
         }
         return(

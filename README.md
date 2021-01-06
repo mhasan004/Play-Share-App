@@ -9,9 +9,9 @@
 ![Login & Register Page Demo](/PicturesGifs/login_register_demo2.gif)
 
 <div style="text-align:center;   font-style: italic;">
-    Fig 1:  Login & Registration Demo 
+    Fig 1:  Login & Registration Demo (Old Version)
 
-  (Changes from demo: Database will only indicate if user is logged in or not. 'secret_key' as seen in the demo is no longer stored )
+  (Update: 'secret_key' as seen in the demo is not stored in database )
 </div>
 
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
@@ -21,7 +21,7 @@
 * **helmet.js** - used to give some basic security to REST API application.
 * **express-rate-limit** - used to limit how many requests can be made to the server in a specified time by the same IP
 * **JWT** - used to authenticate a user - used to make user access and refresh tokens.
-* **Joi** - used to validate client request body.
+* **Joi** - used to validate request body.
 * **cookie-parser** - used to parse refresh token signed cookie data from request.
 * **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
 * **bcrypt** - used to store hashed passwords into the database.
@@ -31,8 +31,9 @@
 # 📋 APPLICATION OVERVIEW:
 * (In Progress) Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other psots, comment on other user's posts.  
 * The login and registration process is explained in detail in the **APP SECURITY** section.
-* To access the user or admin private routes, the client must supply the valid JWT token in the **auth-token** header (can be sent encrypted with SYMMETRIC_KEY). JWT expire every 10 minutes. Refresh token in httpOnly cookie can be used to refresh tokens.  
-* Multiple checks to ensure that the user is who they say they are. 
+* To access the user or admin private routes, the client must supply the valid JWT token in the **auth-token** header (can be sent encrypted with SYMMETRIC_KEY). JWT expire every 10 minutes. Refresh token in httpOnly cookie can be used to silently refresh tokens.  
+* Multiple checks to authenticate user.
+* Rate limiter: If requests exceed a certain number within a period of time, the IP is blocked. 
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
 

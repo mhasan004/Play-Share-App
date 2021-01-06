@@ -28,7 +28,7 @@ body{
     /* background: black; */
 }
 #login-register-div{
-    transform: scale(1.2, 1.2); 
+    /* transform: scale(1.2, 1.2);  */
 
     /* zoom:1.5; */
     background: var(--background-color);/* rgb(218, 230, 236);rgb(117, 211, 230);*/
@@ -69,7 +69,7 @@ body{
     align-items: center;
     height: 100vh;
 
-    margin: 5px 0 2px;                          /* Margins to center it more: up by 5, down by 2, 0 on sides */
+    /* margin: 5px 0 2px;                          Margins to center it more: up by 5, down by 2, 0 on sides */
 }
 h1{
     font-weight: bold;
