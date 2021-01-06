@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import FormContainerSignIn from './FormContainerSignIn'
 import FormContainerSignUp from './FormContainerSignUp'
 import OverlayContainer from './OverlayContainer'
-import './SignInUpPage.css'
+import '../../css/signInUpPage.css'
 
 class SignInUpPage extends React.Component {
     button_signUp_overlay(){          // signup will add the class
@@ -15,7 +15,6 @@ class SignInUpPage extends React.Component {
         const container = document.querySelector('#container')
         container.classList.remove('right-panel-active')
         console.log("sign in ")
-
     }
 
     render(){
@@ -23,7 +22,7 @@ class SignInUpPage extends React.Component {
             <div id="login-register-div">
             <div class="container" id="container">
                 <FormContainerSignUp />
-                <FormContainerSignIn />          
+                <FormContainerSignIn setAppState={this.props.setAppState}/>          
                 <OverlayContainer button_signUp_overlay={this.button_signUp_overlay} button_signIn_overlay={this.button_signIn_overlay}/>                       
             </div>
             </div>

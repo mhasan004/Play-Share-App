@@ -1,13 +1,10 @@
 import React, {Component} from "react"
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'            
-// import { faArrowUp } from '@fortawesome/free-solid-svg-icons'              // Get icons: https://fontawesome.com/        fa-arrow-up -> faArrowUp
-// import { Link } from 'react-router-dom';
-import './post.css'
+import '../../css/post.css'
 
 class Post extends React.Component{
-    logged_user = this.props.logged_user
+    loggedUser = localStorage.getItem("username")
     state = {
-        postId: this.props.post.postID,
+        postId: this.props.post._id,
         username: this.props.post.username,
         handle: this.props.post.handle,
         date: this.props.post.date,
@@ -26,36 +23,36 @@ class Post extends React.Component{
     }
 
     async likeHandler(event) {
-        if (this.state.username === this.logged_user)                                                                           // cant vote on own post
+        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
             return
     
         // I hit like again, so remove like
-        if (this.state.user_liked.includes(this.logged_user) && !this.state.user_disliked.includes(this.logged_user)){          // if already liked, remove it
+        if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){          // if already liked, remove it
             this.setState({
                 like: this.state.like - 1,
                 total_likes: this.state.total_likes - 1,
-                user_liked: this.state.user_liked.filter(usrs => usrs !== this.logged_user),
+                user_liked: this.state.user_liked.filter(usrs => usrs !== this.loggedUser),
             })  
             return
         }
 
         // I disliked it but now switching to like it
-        if (this.state.user_disliked.includes(this.logged_user) && !this.state.user_liked.includes(this.logged_user) ){         // if I had it in dislike, remove dislike and add like
+        if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser) ){         // if I had it in dislike, remove dislike and add like
             let new_user_liked = this.state.user_liked
-            new_user_liked.push(this.logged_user)
+            new_user_liked.push(this.loggedUser)
             this.setState({
                 like: this.state.like + 2,
                 dislike: this.state.like - 1,
                 user_liked: new_user_liked,
-                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.logged_user),
+                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.loggedUser),
                 total_likes: this.state.total_likes + 2,            
             })
             return
         }
 
-        if (!this.state.user_disliked.includes(this.logged_user) && !this.state.user_liked.includes(this.logged_user)){         // if I hadn't it voted
+        if (!this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){         // if I hadn't it voted
             let new_user_liked = this.state.user_liked
-            new_user_liked.push(this.logged_user)
+            new_user_liked.push(this.loggedUser)
             this.setState({
                 like: this.state.like + 1,
                 user_liked: new_user_liked,
@@ -65,36 +62,36 @@ class Post extends React.Component{
         }
     }
     async dislikeHandler(event) {    
-        if (this.state.username === this.logged_user)                                                                           // cant vote on own post
+        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
             return
     
         // I hit dislike again, so remove dislike
-        if (this.state.user_disliked.includes(this.logged_user) && !this.state.user_liked.includes(this.logged_user)){          // if already disliked, remove it
+        if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){          // if already disliked, remove it
             this.setState({
                 dislike: this.state.dislike + 1,
                 total_likes: this.state.total_likes + 1,
-                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.logged_user),
+                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.loggedUser),
             })  
             return
         }
 
         // I liked it but now switching to dislike it
-        if (this.state.user_liked.includes(this.logged_user) && !this.state.user_disliked.includes(this.logged_user) ){         // if I had it in like, removelike and add dislike
+        if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser) ){         // if I had it in like, removelike and add dislike
             let new_user_disliked = this.state.user_disliked
-            new_user_disliked.push(this.logged_user)
+            new_user_disliked.push(this.loggedUser)
             this.setState({
                 dislike: this.state.dislike + 2,
                 like: this.state.dislike - 1,
                 user_disliked: new_user_disliked,
-                user_liked: this.state.user_liked.filter(usrs => usrs !== this.logged_user),
+                user_liked: this.state.user_liked.filter(usrs => usrs !== this.loggedUser),
                 total_likes: this.state.total_likes - 2,            
             })
             return
         }
 
-        if (!this.state.user_liked.includes(this.logged_user) && !this.state.user_disliked.includes(this.logged_user)){         // if I hadn't it voted
+        if (!this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){         // if I hadn't it voted
             let new_user_disliked = this.state.user_disliked
-            new_user_disliked.push(this.logged_user)
+            new_user_disliked.push(this.loggedUser)
             this.setState({
                 dislike: this.state.dislike + 1,
                 user_disliked: new_user_disliked,
@@ -110,7 +107,7 @@ class Post extends React.Component{
         this.props.deleteHandler(this.state.postId)
     }
     commentHandler(event) {
-        console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.logged_user+"         indisliked?: "+this.state.user_disliked.includes(this.logged_user))
+        console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.loggedUser+"         indisliked?: "+this.state.user_disliked.includes(this.loggedUser))
     }
     likeChangeHandler(event){
         console.log(event.target.value)
@@ -135,18 +132,18 @@ class Post extends React.Component{
 
     
 
-        if (this.state.user_liked.includes(this.logged_user)){
+        if (this.state.user_liked.includes(this.loggedUser)){
             svg_up_arrow_color   = "#2BB3FF"
             svg_down_arrow_color = "#A5A3A3"
         }
-        else if (this.state.user_disliked.includes(this.logged_user)){
+        else if (this.state.user_disliked.includes(this.loggedUser)){
             svg_up_arrow_color   = "#A5A3A3"
             svg_down_arrow_color = "#FF4B2B"
         }
             
 
 
-        if (this.state.username === this.logged_user){
+        if (this.state.username === this.loggedUser){
             show_actions = true
         }
 

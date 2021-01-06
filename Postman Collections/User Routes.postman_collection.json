@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "22c79242-c56a-4997-932e-fd28f7fe22b0",
+		"name": "User Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Posts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "username",
+						"value": "hasan",
+						"type": "text"
+					},
+					{
+						"key": "auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjQ4NCwiaWF0IjoxNjA5MjkzMDMyLCJleHAiOjE2MTE4ODUwMzJ9.crDf3s1zqjp0O3H1wo917yeUeKakj_LeG0ZkTdVZdOY",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get A Post",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjE1NiwiaWF0IjoxNjA5Mjg5NDkwLCJleHAiOjE2MTE4ODE0OTB9.amRerZC8tzF7ex9kimzrwjLon1JwBvKl7Lq8sD-X6uQ"
+					},
+					{
+						"key": "post-id",
+						"value": "5f9915e4bd91ab53c47f6357",
+						"description": "mongoDB objectID",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/post/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"post",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Feed",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjE1NiwiaWF0IjoxNjA5Mjg5NDkwLCJleHAiOjE2MTE4ODE0OTB9.amRerZC8tzF7ex9kimzrwjLon1JwBvKl7Lq8sD-X6uQ"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/feed/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"feed",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Make a Post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "username",
+						"value": "hasan",
+						"type": "text"
+					},
+					{
+						"key": "auth-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjUxNCwiaWF0IjoxNjA5Mjg2NDY0LCJleHAiOjE2MTE4Nzg0NjR9.7mL3BLz5w-JrJf3GvfkUe6FkUn3B-drdi-2p3dXR6Hw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"hasan\",\r\n    \"title\": \"This is Post A1\",\r\n    \"content\": \"Blablabla\",\r\n    \"group\": \"None\",\r\n    \"group_type\": \"None\",\r\n    \"isURL\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit A Post",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjE1NiwiaWF0IjoxNjA5Mjg5NDkwLCJleHAiOjE2MTE4ODE0OTB9.amRerZC8tzF7ex9kimzrwjLon1JwBvKl7Lq8sD-X6uQ"
+					},
+					{
+						"description": "mongoDB objectID",
+						"key": "post-id",
+						"type": "text",
+						"value": "5f9915e4bd91ab53c47f6357"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"This is Post A1\",\r\n    \"content\": \"editing title\",\r\n    \"group\": \"None\",\r\n    \"group_type\": \"None\",\r\n    \"isURL\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/post/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"post",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Like/Dislike A Post feed",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjE1NiwiaWF0IjoxNjA5Mjg5NDkwLCJleHAiOjE2MTE4ODE0OTB9.amRerZC8tzF7ex9kimzrwjLon1JwBvKl7Lq8sD-X6uQ"
+					},
+					{
+						"description": "mongoDB objectID",
+						"key": "post-id",
+						"type": "text",
+						"value": "5f9915e4bd91ab53c47f6357"
+					},
+					{
+						"key": "like-dislike",
+						"value": "dislike",
+						"description": "like or dislike",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"This is Post A1\",\r\n    \"content\": \"editing title 2\",\r\n    \"group\": \"None\",\r\n    \"group_type\": \"None\",\r\n    \"isURL\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/feed/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"feed",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete A Post",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "username",
+						"type": "text",
+						"value": "hasan"
+					},
+					{
+						"key": "auth-token",
+						"type": "text",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imhhc2FuIiwiaWQiOjE1NiwiaWF0IjoxNjA5Mjg5NDkwLCJleHAiOjE2MTE4ODE0OTB9.amRerZC8tzF7ex9kimzrwjLon1JwBvKl7Lq8sD-X6uQ"
+					},
+					{
+						"description": "mongoDB objectID",
+						"key": "post-id",
+						"type": "text",
+						"value": "5f99166bbd91ab53c47f6359"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/v1/user/post/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"post",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

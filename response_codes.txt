@@ -1,0 +1,9 @@
+ 0  ongoing request, need a response from client
+
+ 1  request successful
+-1  request failed
+
+-2  need client to send request to refresh endpoint
+ 2  new refresh and jwt tokens successfully made. user needs to restore jwt
+
+

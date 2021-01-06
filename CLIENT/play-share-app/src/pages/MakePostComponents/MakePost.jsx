@@ -1,17 +1,16 @@
 import React, {Component} from 'react'
-import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-import "./makePost.css"
+import { withRouter } from 'react-router-dom';                                          // redirect to feed after login
+import  MakeRequest  from '../../utils/MakeRequest';                                    // This will be used to make requests to the server and handle silent refresh if needed
+import CONFIG from "../../utils/config"
+import "../../css/makePost.css"
 
-var API_URL = require('../../App').API_URL
-const ROUTE_URL_p1 = API_URL+"/api/user/"
-const ROUTE_URL_p2 = "/post"
+const ROUTE_URL = CONFIG.API_BASE_URL + "user/post"
 
 class MakePost extends React.Component{
-    ROUTE_URL = ROUTE_URL_p1 +this.props.logged_user + ROUTE_URL_p2
     state = {
         title: "",
         content: "",
-        formTab: "post",       //post, imgvid, link, 
+        formTab: "post",                                                                // post, imgvid, link, 
     }
 
     handleFormPick(e){
@@ -21,45 +20,56 @@ class MakePost extends React.Component{
         this.setState({[e.target.name]: e.target.value})
     }
     async handleFormSubmit(e){
-        e.preventDefault()                                       // no refresh of screen after submit 
-        let resJson = null
-        try{
-            const res = await fetch(this.ROUTE_URL, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'auth-token': localStorage.getItem('auth-token'),
-                    'credentials': 'include'                              // says to inslude read onyl cookies
-                },
-                body: JSON.stringify({
-                    username: this.props.logged_user,
-                    title: this.state.title,
-                    content: this.state.content,
-                })
+        e.preventDefault()                                                      
+        let resJson
+        const reqObject = {
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'username': localStorage.getItem("username"),
+                'auth-token': this.props.accessToken,
+            },
+            body: JSON.stringify({
+                title: this.state.title,
+                content: this.state.content,
+                // group: "",
+                // group_type: ""
             })
-            const resJson = await res.json()
-            if (resJson.status === 1){
-                alert("Successfully Created Post!")
-                this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
-                    pathname: `/globalFeed`,
-                });
-            }
-            else
-                alert("Failed to Make Post!")
-
         }
-        catch{
-            return "Couldn't make post from react!"
+
+        try{
+            console.log(this.props.authToken)
+            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
         }
-        
+        catch(err){
+            return console.log(err)
+        }
+        if (resJson.status === 1){
+            console.log("Posted!")
+            this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
+                pathname: CONFIG.PATHS.GlobalFeed,
+            });
+            this.setState({
+                title: "",
+                content: "",
+            })
+        }
+        else if (resJson.status === -1)
+            return alert("Failed to Post! " + resJson.message )
+        else if (resJson.status === -3){
+            this.props.setAppState({
+                loggedUser: "",
+                accessToken: ""
+            })
+            this.props.history.push({                                               // Need to login
+                pathname: CONFIG.PATHS.SignInUpPage,
+            });
+        }
 
-
-
-
-        // this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
-        //     pathname: `/globalFeed`,
-        // });
+            
     }
     tabClicked(e){
         let tabTextSelected = e.target;
@@ -98,12 +108,16 @@ class MakePost extends React.Component{
         //     contentBox.style.height = "200px"
         // }
         // else{
-            
         // }
     }
             
     
     render(){
+        if (this.props.accessToken.length < 1){
+            this.props.history.push({                                  
+                pathname: CONFIG.PATHS.SignInUpPage,
+            });
+        }
         return(
             <div class="make-post-div" >
                 <form class="post-form-div" onSubmit={e=>this.handleFormSubmit(e)}>

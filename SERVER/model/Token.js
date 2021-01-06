@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 
-const tokenSchema = new mongoose.Schema({
+const RFTokenSchema = new mongoose.Schema({
     refreshToken: {
         type: String,
         required: true,
     },
 })
 
-module.exports = mongoose.model('Token', tokenSchema)
+module.exports = mongoose.model('RFToken', RFTokenSchema)

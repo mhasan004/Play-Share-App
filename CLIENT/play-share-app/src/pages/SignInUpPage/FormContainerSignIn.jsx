@@ -1,16 +1,14 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-// var API_URL = require('../../App').API_URL
-// var {API_URL} = require('../../App')
-var API_URL = "http://localhost:8000"
-const ROUTE_URL = API_URL + "/api/auth/login"
-
+import { withRouter } from 'react-router-dom';                                                                                      // 1) will use this to redirect to feed after login
+import CONFIG from "../../utils/config"
+const ROUTE_URL = CONFIG.API_BASE_URL + "auth/login"
 
 class FormContainerSignIn extends React.Component {
     state = {
         username: "",
         password: "",
+        errorMessage: ""
     }
     handleInputChangeText(event){
         this.setState({
@@ -24,19 +22,20 @@ class FormContainerSignIn extends React.Component {
     }
   
     async handleFormSubmit(event){
-        event.preventDefault()                                       // no refresh of screen after submit 
-        let resJson
-        let res
-        if (this.state.username === "" || this.state.password === "")
+        event.preventDefault()                                                                                                          // no refresh of screen after submit 
+        let resJson, res
+        if (this.state.username === "" || this.state.password === ""){
+            this.setState({ errorMesage: "Need to enter username and password"}) 
             return console.log("Need to enter username and password")
+        }
         console.log("Posting to url: "+ROUTE_URL)
         try{
             res = await fetch(ROUTE_URL, {
                 method: 'POST',
+                credentials: 'include',                                                                                                 // says to inslude read onyl cookies
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'credentials': 'include'                              // says to inslude read onyl cookies
                 },
                 body: JSON.stringify({
                     username: this.state.username,
@@ -45,12 +44,14 @@ class FormContainerSignIn extends React.Component {
             })
         }
         catch(err){
+            this.setState({ errorMessage: "Failed to log in! "+err}) 
             return console.log("couldn't log in from react - failed to post to url: " + ROUTE_URL+ " Err: "+err)
         }
         try{
             resJson = await res.json()
         }
         catch(err){
+            this.setState({ errorMessage: "Failed to log in! "+err}) 
             console.log("couldn't log in from react - failed to parse json from response url: " + ROUTE_URL+ " Err: "+err)
             console.log("res: "+res)
             console.log("resJson: "+resJson)
@@ -58,18 +59,20 @@ class FormContainerSignIn extends React.Component {
         }
        
         if (resJson.status === 1){
+            this.props.setAppState({
+                accessToken: res.headers.get("auth-token")
+            })
+            localStorage.setItem('username', this.state.username);
             this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
-            console.log("**WARNING: storing auth-token in local storage")            
-            localStorage.setItem('auth-token', resJson.auth_app);
-            console.log(localStorage.getItem('auth-token'))
-
-            this.props.history.push({                                   // 2) getting history form the props react router passed down. redirecting to global feed
-                pathname: `/globalFeed`,
+            this.props.history.push({                                                                                                   // getting history form the props react router passed down. redirecting to global feed
+                pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
-        else
+        else{
+            this.setState({ errorMessage: resJson.message}) 
             return console.log(resJson.message) 
+        }
     }
     
     render(){
@@ -90,10 +93,11 @@ class FormContainerSignIn extends React.Component {
 
                     <input type="text"     value={this.state.username} onChange={e=>this.handleInputChangeText(e)} name="username" placeholder="Username" ></input>  
                     <input type="password" value={this.state.password} onChange={e=>this.handleInputChangePass(e)} name="password" placeholder="Password" ></input>
+                    <span color="red" >{this.state.errorMessage}</span>
+                    {/* <br/> */}
                     <a href="#">Forgot your password?</a>
-                    <br/>
-                    <br/>
                     <button type="submit" id='signInButton'>Sign In</button> 
+
                 </form>
             </div>
         );
@@ -102,4 +106,4 @@ class FormContainerSignIn extends React.Component {
 
 
 
-export default withRouter(FormContainerSignIn);                  // 3) need to export this class withRouter for redirect to work
+ export default withRouter(FormContainerSignIn);                                                                     // 3) need to export this class withRouter for redirect to work

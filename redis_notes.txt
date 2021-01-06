@@ -1,0 +1,3 @@
+Redis DB Key:
+    "user-<username>" - all user data in redis related to this user has this key
+    "RT-<username>"   - refresh token session storage. need to store this in mongodb + add numbers so users can login from multiple devices  
