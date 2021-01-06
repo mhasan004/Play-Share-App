@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import { withRouter } from 'react-router-dom';                                                                                      // 1) will use this to redirect to feed after login
-import VARIABLES from "../../Variables"
-const ROUTE_URL = VARIABLES.API_BASE_URL + "auth/login"
+import CONFIG from "../../utils/config"
+const ROUTE_URL = CONFIG.API_BASE_URL + "auth/login"
 
 class FormContainerSignIn extends React.Component {
     state = {
@@ -60,14 +60,13 @@ class FormContainerSignIn extends React.Component {
        
         if (resJson.status === 1){
             this.props.setAppState({
-                loggedUser: this.state.username,
                 accessToken: res.headers.get("auth-token")
             })
             localStorage.setItem('username', this.state.username);
             this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")
             this.props.history.push({                                                                                                   // getting history form the props react router passed down. redirecting to global feed
-                pathname: VARIABLES.PATHS.GlobalFeed,
+                pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
         else{
@@ -107,4 +106,4 @@ class FormContainerSignIn extends React.Component {
 
 
 
-export default withRouter(FormContainerSignIn);                                                                     // 3) need to export this class withRouter for redirect to work
+ export default withRouter(FormContainerSignIn);                                                                     // 3) need to export this class withRouter for redirect to work

@@ -1,10 +1,10 @@
 import React from 'react'
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-import "./makePostsIcon.css"
+import "../../css/makePostsIcon.css"
 
 function MakePostIcon({history}){
     function handleClick(){
-        console.log("make psot")
+        console.log("make post")
     }
     function handleOffHoverCircle(e){
         let children = Array.from(e.target.children)

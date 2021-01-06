@@ -1,6 +1,6 @@
-var VARIABLES = {
+var CONFIG = {
     API_BASE_URL: "http://localhost:8000/api/v1/",
-    PATHS: {
+    PATHS: {                                                        // Paths of each component. Can easily change from here 
         // Auth: "/a",
         SignInUpPage: "/",
         GlobalFeed: "/feed",
@@ -10,4 +10,4 @@ var VARIABLES = {
     }
 }
   
-export default VARIABLES;
+export default CONFIG;

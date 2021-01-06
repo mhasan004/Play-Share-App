@@ -1,11 +1,8 @@
 import React, {Component} from "react"
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'            
-// import { faArrowUp } from '@fortawesome/free-solid-svg-icons'              // Get icons: https://fontawesome.com/        fa-arrow-up -> faArrowUp
-// import { Link } from 'react-router-dom';
-import './post.css'
+import '../../css/post.css'
 
 class Post extends React.Component{
-    loggedUser = this.props.loggedUser
+    loggedUser = localStorage.getItem("username")
     state = {
         postId: this.props.post._id,
         username: this.props.post.username,
