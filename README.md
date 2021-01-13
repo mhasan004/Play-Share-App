@@ -11,7 +11,6 @@
 <div style="text-align:center;   font-style: italic;">
     Fig 1: App demo so far (App still in development!)
 
-  (Update: 'secret_key' as seen in the demo is not stored in database )
 </div>
 
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
