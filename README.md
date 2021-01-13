@@ -29,7 +29,7 @@
 * **morgan** - used to log endpoint resonse times to optimize code. 
 
 # 📋 APPLICATION OVERVIEW:
-  ![Silent Refresh](/PicturesGifs/Basic_Response.png)
+  ![Silent Refresh](/PicturesGifs/Basic_Response.PNG)
     <div style="text-align:center;   font-style: italic;">
       <center> Fig 2: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. <center>
     </div>
