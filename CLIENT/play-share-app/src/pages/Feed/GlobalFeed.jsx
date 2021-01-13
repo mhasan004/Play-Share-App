@@ -1,43 +1,24 @@
 import React from "react";
+import { withRouter } from 'react-router-dom';   
 import Posts from "../Components/Posts";
 import MakePostIcon from "../MakePostComponents/MakePostIcon"
-import { withRouter } from 'react-router-dom';   
-import SilentRefresh from "../../utils/SilentRefresh"
-import MakeRequest from '../../utils/MakeRequest';                                  // This will be used to make requests to the server and handle silent refresh if needed
-import CONFIG from "../../utils/config"
+import MakeRequest from '../../utils/MakeRequest';                                          // This will be used to make requests to the server and handle silent refresh if needed
+import { isAuth, Logout} from "../../utils/Auth"                                            // isAuth - Check if user is logged in or not
+import CONFIG from "../../config"
 import '../../css/globalFeed.css'
-const ROUTE_URL = CONFIG.API_BASE_URL + "user/feed/"
+const ROUTE_URL = CONFIG.API_BASE_URL + "/user/feed/"
 
 class GlobalFeed extends React.Component{
     state = {
-        loggedUser: localStorage.getItem('username'),
         posts: []
     }
 
     async componentDidMount() {
-        // Silent Refreshing to stay loged in:
-        if (localStorage.getItem("username") && !this.props.accessToken){
-            const refresh = await SilentRefresh()
-            if (refresh.status === -1){
-                this.props.history.push({                                              
-                    pathname: CONFIG.PATHS.SignInUpPage,
-                });
-            }
-            else if (refresh.status === 2){
-                this.props.setAppState({
-                    accessToken: refresh.authToken                                                    
-                })
-            }
-        }
-        if (!localStorage.getItem("username") || !this.props.accessToken){
-            return this.props.history.push({                                              
-                pathname: CONFIG.PATHS.SignInUpPage,
-            });
-        }
+        if (!await isAuth(this.props))                                                      // Check if user is logged in, can refresh tokens here:
+            return
 
-        // Getting Feed:
         let resJson
-        const reqObject = {
+        const reqObject = {                                                                 // Feed request object
             method: 'GET',
             mode: 'cors',
             credentials: 'include', 
@@ -45,14 +26,14 @@ class GlobalFeed extends React.Component{
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'username': localStorage.getItem("username"),
-                'auth-token': this.props.accessToken,
             },
         }
         try{
-            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
+            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props)                   // Making get feed request
         }
         catch(err){
-            return console.log(err)
+            console.log("Couldnt make request to API! "+err)
+            return await Logout(this.props)
         }
         if (!resJson)
             return console.log("Improper Response!")
@@ -61,12 +42,17 @@ class GlobalFeed extends React.Component{
                 posts: resJson.posts
             })
         }
-        else if (resJson.status === -1)
-            return alert("Failed to get Feed! " + resJson.message )
+        else if (resJson.status === -1){
+            alert("Failed to get Feed! " + resJson.message )
+            return await Logout(this.props)
+        }
         else if (resJson.status === -3){
-            this.props.history.push({                                              
-                pathname: CONFIG.PATHS.SignInUpPage,
-            });
+            console.log("status -3")
+            return await Logout(this.props)
+        }
+        else{
+            console.log("Improper or no API response!")
+            return await Logout(this.props)
         }
     }
 
@@ -75,7 +61,7 @@ class GlobalFeed extends React.Component{
             <div class="global-feed-body">
                 <span class="global-feed-nav">
                     <h1> Hello {localStorage.getItem("username")}</h1>
-                    <a> Logout</a>
+                    <a onClick={e=> Logout(this.props)}> Logout </a>
                 </span>
 
                 <div class="global-feed-posts">

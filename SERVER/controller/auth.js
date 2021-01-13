@@ -5,26 +5,29 @@ const jwt = require('jsonwebtoken')
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                                  // Import the Joi Validation functions
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/EncryptDecryptRequest')
 const {redis_client} = require('../helpers/redisDB')
-const {cookieConfig} = require("../config")
-const JWT_expire_time        = '10m'                                            // Access token expire time: 10 min 
-const JWT_RT_expire_time     = 86400*15                                         // RF token expire time:    15 days                      
-const redis_user_expire_time = 86400                                            // Redis user expire time:   1 day                                          // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
+const {cookieConfigRefresh, cookieConfigAccess} = require("../config")
+const JWT_expire_time        = 300                                                  // Access token expire time:  5 min 
+const JWT_RT_expire_time     = 1296000                                              // RF token expire time:     15 days  (86400*15)                    
+const redis_user_expire_time = 86400                                                // Redis user expire time:    1 day                                     // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
 
-function randomNum(min=0, max=1000){                                                                                                                        // Function to generate a random id
+function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
 }
-async function createJWT(JWT_payload, type = "access") {                                                                                                    // Function to create new JWT: Input: {payload}, expiration time. Output: JWT Token 
+function createJWT(res, JWT_payload, type = "access") {                                                                                                     // Function to create new JWT acess token and store it in a cookie (if the jwt creation type isnt "refresh"). Returns token if jwt creation type is "refresh"
     let token
+    res.set('access-token-exp', new Date().getTime()+60000*JWT_expire_time);                                                                                // so client can guess if it needs to refresh tokens
     if (type === "refresh")
-        token = jwt.sign(JWT_payload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: JWT_RT_expire_time})    
+        return jwt.sign(JWT_payload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: JWT_RT_expire_time})    
     else if (JWT_payload.username === process.env.ADMIN_USERNAME)
         token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: JWT_expire_time})    
     else
         token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: JWT_expire_time})  
-    return token
+    res.cookie('accessToken', token, cookieConfigAccess); 
+    if (process.env.USE_TLS === "true")
+        res.cookie('accessToken', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]), cookieConfigAccess);                                              // Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the. SYMMETRIC_KEY_encrypt() is disabled if using https    
 }
-async function createStoreRefreshToken(res, JWT_payload) {                                                                                                  // Function to create new refresh token: Input: {payload}. Output: JWT Refresh Token 
-    const refresh_token = await createJWT(JWT_payload, "refresh") 
+async function createStoreRefreshToken(res, JWT_payload) {                                                                                                  // Function to create a new JWT refresh token and store the refresh token in a cookie
+    const refresh_token = createJWT(res, JWT_payload, "refresh") 
     try{
         await redis_client.set("RT-"+JWT_payload.username+"-"+JWT_payload.id, refresh_token, 'EX', JWT_RT_expire_time)                                      // Saving Refresh token to Redis Cache
     }
@@ -32,9 +35,9 @@ async function createStoreRefreshToken(res, JWT_payload) {                      
         console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
         throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
     } 
-    res.cookie('refreshToken', refresh_token, cookieConfig);
+    res.cookie('refreshToken', refresh_token, cookieConfigRefresh);
 }
-findUserFromCacheOrDB = async (username)  =>                                                                                                                // Function to find user in either Redis Cache or MongoDB.  returns {user, isUserCached}                                                                    
+findUserFromCacheOrDB = async (username)  =>                                                                                                                // Function to find user in either Redis Cache or MongoDB.  returns {user: Object, isUserCached: Boolean}                                                                    
 {
     let isUserCached = false
     let user
@@ -81,14 +84,18 @@ exports.registerNewUser = async (req,res,next) =>
         ])
     }
     catch(err){
-        return res.status(400).json( {status: -1, message: "Database find error: couldn't search database! Err: "+err } ).end() 
+        return res.status(400).json( {status: -1, message: "Database find error: couldn't search database! Err: "+err }).end() 
     }
     if (user_exists || email_exists)   
-        return res.status(400).json( {status: -1, message: "This Username or Email Address is Already Registered!" } ).end() 
+        return res.status(400).json( {status: -1, message: "This Username or Email Address is Already Registered!" }).end() 
     const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)                                                                                              // 1c) HASH THE PASSWORD FOR STORAGE!    leave salt as 10 and every year increase it by 1 to make cracking uyr passwords difficult                                                                     
     let hashed_password = null
-    try{  hashed_password = await bcrypt.hash(password, salt)}
-    catch{ return res.status(401).json( {status: -1, message: "Failed to hash password!" } ).end()}
+    try{  
+        hashed_password = await bcrypt.hash(password, salt)
+    }
+    catch{ 
+        return res.status(401).json( {status: -1, message: "Failed to hash password!" } ).end()
+    }
     const new_user = new User({                                                                                                                             // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the D                                                                                                         
         username: username,
         handle: "@"+username, 
@@ -96,14 +103,20 @@ exports.registerNewUser = async (req,res,next) =>
         email: email,
         password: hashed_password,
     })        
-    let added_user = null                                                                                                                                   // 3) Add the user to the DB                                                                                                                                                                            
-    try{ added_user = await new_user.save()}
-    catch(err){ return res.status(400).json({status: -1, message:"Error adding user to DB: " + err}).end()} 
-    try{
-        console.log("registered: "+added_user.username)
-        return res.status(201).json( {status: 1, added_user: added_user}.end())
+    let user = null                                                                                                                                   // 3) Add the user to the DB                                                                                                                                                                            
+    try{ 
+        user = await new_user.save()
     }
-    catch(err){  return res.status(400).json({status: -1, message:"Error Encrypting db user id to send to client. Error: " + err}).end()} 
+    catch(err){ 
+        return res.status(400).json({status: -1, message:"Error adding user to DB: " + err}).end()
+    } 
+    try{
+        console.log("registered user: "+user.username)
+        res.status(201).json({status: 1, message: "Succesfuly added user! Check 'user' property", user}).end()
+    }
+    catch(err){ 
+        return res.status(400).json({status: -1, message:"Registeration Error - Error Encrypting db user id to send to client. Error: " + err}).end()
+    } 
 }
 
 
@@ -113,7 +126,6 @@ exports.registerNewUser = async (req,res,next) =>
     refresh tokens = jwt.sign(JWT_payload, REFRESH_TOKEN_SECRET, {expiresIn: '15d'})  */
 exports.login = async (req,res,next) => 
 {    
-    let token                                                                                                                                      
     const {username, password} = req.body                                                                                                                   // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
     const {error} = loginValidationUsername(req.body)                                                                                       
     if(error) 
@@ -134,21 +146,15 @@ exports.login = async (req,res,next) =>
     // 4) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated
     try{
         const payload = {username: user.username, id: randomNum()}     
-        token = await Promise.all([                                                                                                                 
-            createJWT(payload),
-            createStoreRefreshToken(res, payload)   
-        ]);                                                            
+        createJWT(res, payload)
+        await createStoreRefreshToken(res, payload)   
     }
     catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT or create and store refresh token! Error: "+err}).end()
     } 
-    token = token[0]    
-    res.set('auth-token', token)                                                                                                                            // Send the token with the response
-    // 5) Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the 
-    if (process.env.USE_TLS === true)
-        res.set('auth-token', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]))                                                                       // SYMMETRIC_KEY_encrypt() is disabled if using https                                                                                                             // Send the token with the response
-    res.status(201).json( {status: 1, message: "Logged In! Set header 'auth-token' with token to access private routes!"} ).end()
-    // 6) After sending response - Add user to redis cache so that we cna use it later for the session
+    res.status(201).json( {status: 1, message: "Logged In!"} ).end()
+    
+    // 5) After sending response - Add user to redis cache so that we cna use it later for the session
     if (!isUserCached){
         try{
             await redis_client.set("user-"+username,JSON.stringify(user), 'EX', redis_user_expire_time)                                                     // set refresh token in redis cache as a key. no value. 
@@ -164,66 +170,82 @@ exports.login = async (req,res,next) =>
     catch(err){
         console.log("Failed to update login status of user! Error: "+err)
     }
-    console.log("(DEL) Set cookie secure flag to true so when client uses https! ")                                                     
-    console.log("(DEL) Sending auth-token in res body. Had issues reading header from React!")
-    console.log("Logged In: " + user.username)
-    console.log("(DEL) ACCESS:\n    "+token)
+    console.log("    (DEL) Set cookie secure flag to true so when client uses https! ")                                                     
+    console.log("    Logged In: " + user.username)
     return 
 }
 
 exports.logout = async (req,res,next) => 
 { 
+    const rfCookie = req.signedCookies.refreshToken;   
+    res.clearCookie("refreshToken")    
+    res.clearCookie("accessToken")    
+    let verified_RF                                                                                                                                                                                           
+    if (!rfCookie){
+        return res.status(400).json({status: -1, message: "No refresh-token cookie sent with request! Couldn't delete rf from db!"})
+    }
     try{
-        await redis_client.del("RT-"+req.username+'-'+req.tokenId)                                                                                          // Delete RT from redis
-        return res.status(200).json({status:1, message: "Successfully logged out!"})
+        verified_RF = jwt.verify(rfCookie, process.env.REFRESH_TOKEN_SECRET)                                                                                 
+    }
+    catch(err){ 
+        return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Couldn't delete rf from db!"})
+    }
+    try{
+        await redis_client.del("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                          // Delete RT from redis
+        return res.status(200).json({status:1, message: "Successfully logged out and cookie deleted!"})
     }
     catch(err){
         return res.status(400).json({status:-1, message: "Failed to logout! Error: "+err})
     }
+
+    /* Logout with username - weak security, users can pose as other uses and invalidate logged in users who didnt want to logout
+        try{
+            await redis_client.del("RT-"+req.username+'-'+req.tokenId)                                                                                         
+            res.clearCookie("refreshToken")
+            return res.status(200).json({status:1, message: "Successfully logged out!"})
+        }
+        catch(err){
+            res.clearCookie("refreshToken")
+            return res.status(400).json({status:-1, message: "Failed to logout! Error: "+err})
+        }*/
 }
 
 // Middleware to renew JWT and Refresh Token given valid old refresh token
 exports.refresh = async (req,res,next) => {
-    let RT_verified                                                                                                                                         
-    const old_RT = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
+    let verified_RF                                                                                                                                         
+    const old_RF = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
     const username_in = req.headers['username']   
-    if (!old_RT){
+    if (!old_RF){
         return res.status(401).json({status: -1, message: "No refresh-token cookie sent with request! Need to login again!"})
     }
     try{
-        RT_verified = jwt.verify(old_RT, process.env.REFRESH_TOKEN_SECRET)                                                                                  // 1) check if token expired - if it is expired, it will be deleted from db anyways
+        verified_RF = jwt.verify(old_RF, process.env.REFRESH_TOKEN_SECRET)                                                                                  // 1) check if token expired - if it is expired, it will be deleted from db anyways
     }
     catch(err){ 
         return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again!"}).end()
     }
-    if (username_in !== RT_verified.username)
+    if (username_in !== verified_RF.username)
         return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"}).end()
 
-    if (!await redis_client.exists("RT-"+RT_verified.username+'-'+RT_verified.id))                                                                          // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
+    if (!await redis_client.exists("RT-"+verified_RF.username+'-'+verified_RF.id))                                                                          // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
         return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"}).end()
     try{
-        await redis_client.del("RT-"+RT_verified.username+'-'+RT_verified.id)                                                                               // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
+        await redis_client.del("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                               // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
     }
     catch{
         return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"}).end()
     }
 
-    let new_token
     try{
-        const payload = {username: RT_verified.username, id: randomNum()}   
-        new_token = await Promise.all([     
-            createJWT(payload),
-            createStoreRefreshToken(res, payload),   
-        ]);            
+        const payload = {username: verified_RF.username, id: randomNum()}   
+        createJWT(res, payload)
+        await createStoreRefreshToken(res, payload)   
     }
     catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err}).end()
     }
-    new_token = new_token[0]   
-    res.set("auth-token", new_token)  
     console.log("(DEL) SET COOKIE SECURE FLAG TO TRUE SO WHEN CLIENT USES HTTPS")
     console.log("(DEL) REMINDER: PUT JWT IN AUTH HEADER!!!")
-    console.log("(DEL) ACCESS:\n    "+new_token)
     console.log("(TODO) Refresh tokens are stored in redis. But i need to store in MongoDB so its permanent. Also need to cache it")
     console.log('REFRESHED TOKEN RESPONSE SENT!')
     return res.status(201).json({status: 2, message: "Successfully refreshed JWT and refresh token"}).end()

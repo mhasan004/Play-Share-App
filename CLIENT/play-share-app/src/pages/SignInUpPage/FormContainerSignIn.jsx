@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import { withRouter } from 'react-router-dom';                                                                                      // 1) will use this to redirect to feed after login
-import CONFIG from "../../utils/config"
-const ROUTE_URL = CONFIG.API_BASE_URL + "auth/login"
+import CONFIG from "../../config"
+const ROUTE_URL = CONFIG.API_BASE_URL + "/auth/login"
 
 class FormContainerSignIn extends React.Component {
     state = {
@@ -23,7 +23,7 @@ class FormContainerSignIn extends React.Component {
   
     async handleFormSubmit(event){
         event.preventDefault()                                                                                                          // no refresh of screen after submit 
-        let resJson, res
+        let res, resJson
         if (this.state.username === "" || this.state.password === ""){
             this.setState({ errorMesage: "Need to enter username and password"}) 
             return console.log("Need to enter username and password")
@@ -59,9 +59,7 @@ class FormContainerSignIn extends React.Component {
         }
        
         if (resJson.status === 1){
-            this.props.setAppState({
-                accessToken: res.headers.get("auth-token")
-            })
+            localStorage.setItem("access-token-exp", res.headers.get("access-token-exp"))
             localStorage.setItem('username', this.state.username);
             this.setState({ username: "", password: ""}) 
             console.log("LOGGEDIN!")

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { withRouter } from 'react-router-dom';                      // 1) will use this to redirect to feed after login
-import CONFIG from "../../utils/config"
-const ROUTE_URL = CONFIG.API_BASE_URL + "auth/register"
+import CONFIG from "../../config"
+const ROUTE_URL = CONFIG.API_BASE_URL + "/auth/register"
 
 class FormContainerSignUp extends React.Component {
     state = {
@@ -22,7 +22,7 @@ class FormContainerSignUp extends React.Component {
         })
     }
     async handleFormSubmit(event){
-        event.preventDefault()                          // no refresh of screen after submit 
+        event.preventDefault()                                                                                              // No refresh of screen after submit 
         let resJson, res
         if (this.state.username === "" || this.state.password === ""|| this.state.email === ""){
             this.setState({ errorMessage: "Need to enter username, email, and password"}) 
@@ -35,7 +35,7 @@ class FormContainerSignUp extends React.Component {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'credentials': 'include'                              // says to inslude read onyl cookies
+                    'credentials': 'include'                                                                                // Says to inslude read onyl cookies
                 },
                 body: JSON.stringify({
                     username: this.state.username,
@@ -50,6 +50,7 @@ class FormContainerSignUp extends React.Component {
         }
         try{
             resJson = await res.json()
+            console.log(resJson)
         }
         catch(err){
             this.setState({ errorMessage: "Failed to Signup!"+err}) 
@@ -62,12 +63,12 @@ class FormContainerSignUp extends React.Component {
         if (resJson.status === 1){
             this.setState({ username: "", email: "",  password: ""}) 
             console.log("REGISTERED!")
-            this.props.history.push({                                                                                       // 2) getting history form the props react router passed down. redirecting to global feed
+            this.props.history.push({                                                                                       // Getting history form the props react router passed down. redirecting to global feed
                 pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
         else{
-            this.setState({ errorMessage: "Failed to Signup!"+resJson}) 
+            this.setState({ errorMessage: resJson.message}) 
             console.log(resJson)
         }
     }
