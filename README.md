@@ -64,7 +64,7 @@
 # 🛡️ APP SECURITY:
 
 ## A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessions:
-  ![Silent Refresh](/PicturesGifs/Silent_Refresh2.png)
+  ![Silent Refresh](/PicturesGifs/Silent_Refresh.png)
     <div style="text-align:center;   font-style: italic;">
       <center> Fig 2: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. <center>
     </div>
