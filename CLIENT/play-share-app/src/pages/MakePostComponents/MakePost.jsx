@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import { withRouter } from 'react-router-dom';                                          // redirect to feed after login
 import  MakeRequest  from '../../utils/MakeRequest';                                    // This will be used to make requests to the server and handle silent refresh if needed
-import CONFIG from "../../utils/config"
+import { isAuth } from "../../utils/Auth"                                                 // Check if user is logged in
+import CONFIG from "../../config"
 import "../../css/makePost.css"
-
-const ROUTE_URL = CONFIG.API_BASE_URL + "user/post"
+const ROUTE_URL = CONFIG.API_BASE_URL + "/user/post/"
 
 class MakePost extends React.Component{
     state = {
@@ -13,6 +13,11 @@ class MakePost extends React.Component{
         formTab: "post",                                                                // post, imgvid, link, 
     }
 
+    async componentDidMount() {
+        if (!await isAuth(this.props))                                                  // Check if user is logged in, can refresh tokens here:
+            return
+    }
+         
     handleFormPick(e){
         this.setState({content: "Text (option)"})
     }
@@ -30,7 +35,6 @@ class MakePost extends React.Component{
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'username': localStorage.getItem("username"),
-                'auth-token': this.props.accessToken,
             },
             body: JSON.stringify({
                 title: this.state.title,
@@ -41,35 +45,23 @@ class MakePost extends React.Component{
         }
 
         try{
-            console.log(this.props.authToken)
-            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props.setAppState)
+            resJson = await MakeRequest(ROUTE_URL, reqObject, this.props)
         }
         catch(err){
             return console.log(err)
         }
         if (resJson.status === 1){
             console.log("Posted!")
-            this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
-                pathname: CONFIG.PATHS.GlobalFeed,
-            });
             this.setState({
                 title: "",
                 content: "",
             })
-        }
-        else if (resJson.status === -1)
-            return alert("Failed to Post! " + resJson.message )
-        else if (resJson.status === -3){
-            this.props.setAppState({
-                loggedUser: "",
-                accessToken: ""
-            })
-            this.props.history.push({                                               // Need to login
-                pathname: CONFIG.PATHS.SignInUpPage,
+            this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
+                pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
-
-            
+        else if (resJson.status === -1)
+            return alert("Failed to Post! " + resJson.message )      
     }
     tabClicked(e){
         let tabTextSelected = e.target;
@@ -113,11 +105,6 @@ class MakePost extends React.Component{
             
     
     render(){
-        if (this.props.accessToken.length < 1){
-            this.props.history.push({                                  
-                pathname: CONFIG.PATHS.SignInUpPage,
-            });
-        }
         return(
             <div class="make-post-div" >
                 <form class="post-form-div" onSubmit={e=>this.handleFormSubmit(e)}>

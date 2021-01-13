@@ -1,9 +1,10 @@
-import CONFIG from "./config"
-const REFRESH_URL = CONFIG.API_BASE_URL + "auth/refresh"
+import CONFIG from "../config"
+const REFRESH_URL = CONFIG.API_BASE_URL + "/auth/refresh"
 
-// Returns: {status, message, accessToken} - status: -1 or 2, accessToken added if status = 2
+// Function to refresh tokens.
+// Returns: {status: -1 or 2, message: API message}. If status == 2, it means silent refresh was successful, it will store new expire time of jwt in localStorage
 async function SilentRefresh(){
-console.log("...Starting silent refresh...")
+    console.log("...Starting silent refresh...")
     let refreshRes, refreshResJson
     try{
         refreshRes = await fetch(REFRESH_URL, {                                                
@@ -23,7 +24,7 @@ console.log("...Starting silent refresh...")
     try{
         refreshResJson = await refreshRes.json()
         if (refreshResJson.status === 2)
-            refreshResJson.authToken = refreshRes.headers.get("auth-token") 
+            localStorage.setItem("access-token-exp", refreshRes.headers.get("access-token-exp") )                              
         return refreshResJson
     }
     catch(err){
@@ -34,3 +35,4 @@ console.log("...Starting silent refresh...")
 }
  
 export default SilentRefresh
+

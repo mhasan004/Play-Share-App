@@ -6,4 +6,6 @@
 -2  need client to send request to refresh endpoint
  2  new refresh and jwt tokens successfully made. user needs to restore jwt
 
+ -3 Fishy behavior, refresh cookie is revoked, user need to login again
+
 

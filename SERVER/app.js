@@ -15,14 +15,15 @@ const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./
 const PORT = process.env.PORT || 8000
 const app  = express()
 
-// Processing Requests + Setting Up Security Middlewares
+// Setting Up Security Middlewares + Request Processing
 app.use(morgan('dev'))                                                                                                                  // logs response time
-app.use(cors(corsOptions));                                                                                                             // Only accept requests from the specific client domain (i hope :/)
+app.use(cors(corsOptions));                                                                                                             // Only accept requests from the specific client domain
 app.set('trust proxy', 1);                                                                                                              // (for rate limiter) enable when behind a reverse proxy 
-app.use(rateLimiter);                                                                                                                   // rate limiter    
+app.use(rateLimiter);                                                                                                                   // (for rate limiter) to accpept reverse proxy
 app.use(helmet())                                                                                                                       // helmet comes with 11 middleware for basic protecting     ponse (gets rid of reponse headers to give basic security to app)
+app.use(cookieParser(process.env.COOKIE_SECRET))                                                                                        // To parse signed cookies
 app.use(express.json())                                                                                                                 // parse request as json
-app.use(cookieParser(process.env.COOKIE_SECRET))                                                                                        // to parse cookies. signing cookies
+
 if (process.env.USE_TLS === "True"){
     app.use('/', initiateCheckHandShake)                                                                                                // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
     app.use('/', decryptBody, decryptSelectedHeader)                                                                                    // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
