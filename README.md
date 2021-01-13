@@ -1,8 +1,8 @@
 # Play Share App
 * This is a Reddit/Imgur-like app where gamers can share short clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
 * Server: REST API built with Node, Express, MongoDB. Will migrate database to PostgresSQL. Client: Currently being built with React
-* Implemented various security features to secure HTTP requests and responses. (Didn't use HTTPS on purpose to have fun implementing security features). This implementation can easily be disabled by disabling the middleware. 
-* Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. https://playshare.cloud/
+* Implemented various security features. Access tokena nd refresh tokens are stored in HttpOnly cookies. User sessions are presisted suing silent refreshes. Rate limmiting blocks an IP for serveral minutes if they make too many requests. 
+* Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. https://playshare.cloud/ (currently disabled) 
 
 <br/>
 
@@ -11,7 +11,6 @@
 <div style="text-align:center;   font-style: italic;">
     Fig 1: App demo so far (App still in development!)
 
-  (Update: 'secret_key' as seen in the demo is not stored in database )
 </div>
 
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
@@ -38,7 +37,7 @@
 * Rate limiter: If requests exceed a certain number within a period of time, the IP is blocked. 
 * Multiple checks to authenticate user: validating acces and refresh token. Mataching token payloads with username header. Checking if refresh token is in database (only for admin and refresh token routes)
 * To access the user or admin private routes, the client must have the valid HttpOnly access token cookie or the valid HttpOnly refresh token cookie.
-(can be sent encrypted with SYMMETRIC_KEY). access token JWT expire every 10 minutes. Refresh token JWT expires in 15 days. Username heade4r must also be supplied. With valid username and refresh token, tokens can be refreshed.  
+* Access token expires every 5 minutes. Refresh token JWT expires in 15 days. Username heade4r must also be supplied. With valid username and refresh token, tokens can be refreshed.  
 * Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
 * Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
 
@@ -64,8 +63,8 @@
 
 # 🛡️ APP SECURITY:
 
-## A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessiosns:
-  ![Silent Refresh](/PicturesGifs/Silent_Refresh.png)
+## A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessions:
+  ![Silent Refresh](/PicturesGifs/Silent_Refresh2.png)
     <div style="text-align:center;   font-style: italic;">
       <center> Fig 2: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. <center>
     </div>
@@ -80,7 +79,7 @@
     * The payload of the refresh token is user's username along with the same random number used in the access token. This random number helps to store the refresh tokens in a key-value database for the purpose of silent refresh. It helps to retrieve the specific refresh token in O(1) instead of querying for the user's specific token.
     * 15 day expire time for the token and cookie.
   * **Access and Refresh Tokens stored in HttpOnly cookies**
-    * Both tokens are stored in HttpOnly cookie with `httpOnly=true`, `secure: true`, and expiration flags set so that they cannot be accessed in the client via javascript. 
+    * Both tokens are stored in HttpOnly cookie with `httpOnly=true`, `secure=true`, and expiration flags set so that they cannot be accessed in the client via javascript. 
     * If token expires, client will send a request to the `/auth/refresh` endpoint. The refresh token stored in the httpOnly cookie will also be sent along with the request.
       * If the token is valid and exists in the database, a new refresh token will be created and will replace the old refresh token in the database.
       * A new access token is also created and is sent to the client. 
@@ -90,18 +89,19 @@
 
       * Application can keep users logged in if the client supplies the correct refresh token HttpOnly cookie and the correct username in header. 
       * (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
-      * Access token expires 10 minutes. Sent to client in Authentication Bearer header. JWT is stored in react state. 
-      * Refresh token and cookie expires in 15 days. It is stored in httpOnly cookie which flags set to `httpOnly=true`, `secure: true` to ensure the client cannot read its contents. 
+      * Access token expires 5 minutes and cookie expires in 1 day. 
+      * Refresh token and cookie expires in 15 days. 
+      * token coockies are HttpOnly cookies with flags set to `httpOnly=true`, `secure=true` to ensure the client cannot read its contents. 
       * Silent Refresh: If access token expires or doesn't exist, client will send a request to the `/auth/refresh` with the refresh token cookie and a new access token and refresh token will be created. 
       * **Cors** and **helmet.js** middlewares to provide some basic security to server.
       * **express-rate-limit** is used to guard against simple DDOS attacks by rating how many requests can be made in a specific time by the same IP.
-      * The encryption keys needed to make JWT and hash passwords are over 400 characters long and are stored in the **.env** file. The encryption keys are concatenations of several randomly generated hashes. 
+      * The secret keys needed to make tokens, cookies, and hash passwords are 700-1200 characters long and are stored in the **.env** file. The keys are created using concatenations of several randomly generated hashes. 
       * During registration and login phase, all user inputs are validated using **Joi**.
       * During registration, passwords are hashed and stored in the database. 
       </details>
 
 ## B) TLS handshake (optional, disabled by default since using https):
-  ![TLS Handshake](/PicturesGifs/TLS_Handshake.png)
+  ![TLS Handshake](/PicturesGifs/TLS_Handshake2.png)
   <div style="text-align:center;   font-style: italic;">
     <center> Fig 3:  TLS Handshake I implemented on the server. Client in development. <center>
   </div>
@@ -123,7 +123,6 @@
     7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
 
     </details>
-<br/>
 
 # 📐 USABILITY (CLIENT REQUESTS):
 * **Client Headers** Send encrypted authentication code to server through the header

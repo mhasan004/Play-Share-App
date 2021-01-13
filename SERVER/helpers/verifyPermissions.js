@@ -24,6 +24,7 @@ function verifyToken(token, type = "access", role = "user"){
     }
 }
 
+// This fucntion adds to req object: (1) user: user object from db, (2) isUserCached = if user is cache sin redis or not (3) username, (4) tokenId: random toklenid to find refreshtoken with username-tokenId,
 exports.verifyUser = async (req,res,next) =>                                                                                                        // MiddleWare: Private Unique User Route. Passed user object, role, username to request so the next middleware can use it
 {           
     // 1) Get username and access token from header and verify if they exist. Get RT from cookie
@@ -75,13 +76,41 @@ exports.verifyUser = async (req,res,next) =>                                    
             return res.status(401).json({status: -3, message: "Access Denied! Fishy Behavior! Token Mismatch!"}).end()  
         }
     }
-    // 3) See if username exists in db. If so, can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
+    // 3) See if username exists in redis cache, if not, find in db and add to cache. then, we can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
     try{                                                                                                                                        
-        const user_obj = await User.findOne({username: username_in})
-        req.user = user_obj
+        if(await redis_client.exists("user-"+username)){
+            req.isUserCached = true
+            try{
+                let user = await redis_client.get("user-"+username)
+                req.user = JSON.parse(user)
+            }
+            catch{
+                throw "Redis Get Fail"
+            }     
+        }
+        else{
+            try{
+                req.user = await User.findOne({username: username_in})
+                req.isUserCached = false
+            }
+            catch{ 
+                throw "DB Find Fail"
+            }
+        }
     }    
-    catch{
-        return res.status(401).json({status: -1, message: "User Doesn't Exist!"}).end() 
+    catch(err){
+        if (err === "DB Find Fail")
+            return res.status(401).json({status: -1, message: "User Doesn't Exist!"}).end() 
+        if (err !== "DB Find Fail"){
+            try{
+                req.user = await User.findOne({username: username_in})
+                req.isUserCached = false
+            }
+            catch(err){ 
+                return res.status(401).json({status: -1, message: err}).end() 
+            }
+        }
+        return res.status(401).json({status: -1, message: err}).end() 
     }    
     req.username = verified_access.username       
     req.tokenId = verified_access.id                                                         
@@ -94,3 +123,6 @@ exports.verifyAdmin = async (req,res,next) =>                                   
         return res.status(401).json({status: -1, message: "Access Denied! Not Admin!"}).end() 
     next()
 }
+
+
+
