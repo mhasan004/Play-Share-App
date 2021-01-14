@@ -4,24 +4,21 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const {registerValidation, loginValidationUsername} = require('../model/ValidationSchema')                                                                  // Import the Joi Validation functions
 const {SYMMETRIC_KEY_encrypt} = require('../helpers/EncryptDecryptRequest')
-const {redis_client} = require('../helpers/redisDB')
-const {cookieConfigRefresh, cookieConfigAccess} = require("../config")
-const JWT_expire_time        = 300                                                  // Access token expire time:  5 min 
-const JWT_RT_expire_time     = 1296000                                              // RF token expire time:     15 days  (86400*15)                    
-const redis_user_expire_time = 86400                                                // Redis user expire time:    1 day                                     // storing logged in user's data so that we dont have to make a user data fetch to db when user does ost req, etc. if user resets pass, it will rewrite redis entry of "user-<username>"
+const {redis_client} = require('../helpers/RedisDB')
+const {cookieConfigRefresh, cookieConfigAccess, REDIS_USER_CACHE_EXP, REDIS_TOKEN_CACHE_EXP, JWT_EXP} = require("../config")                                         
 
 function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
 }
 function createJWT(res, JWT_payload, type = "access") {                                                                                                     // Function to create new JWT acess token and store it in a cookie (if the jwt creation type isnt "refresh"). Returns token if jwt creation type is "refresh"
     let token
-    res.set('access-token-exp', new Date().getTime()+60000*JWT_expire_time);                                                                                // so client can guess if it needs to refresh tokens
+    res.set('access-token-exp', new Date().getTime()+60000*JWT_EXP);                                                                                        // so client can guess if it needs to refresh tokens
     if (type === "refresh")
-        return jwt.sign(JWT_payload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: JWT_RT_expire_time})    
+        return jwt.sign(JWT_payload, process.env.REFRESH_TOKEN_SECRET, {expiresIn: REDIS_TOKEN_CACHE_EXP})    
     else if (JWT_payload.username === process.env.ADMIN_USERNAME)
-        token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: JWT_expire_time})    
+        token = jwt.sign(JWT_payload, process.env.ADMIN_SECRET_KEY, {expiresIn: JWT_EXP})    
     else
-        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: JWT_expire_time})  
+        token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: JWT_EXP})  
     res.cookie('accessToken', token, cookieConfigAccess); 
     if (process.env.USE_TLS === "true")
         res.cookie('accessToken', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]), cookieConfigAccess);                                              // Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the. SYMMETRIC_KEY_encrypt() is disabled if using https    
@@ -29,7 +26,7 @@ function createJWT(res, JWT_payload, type = "access") {                         
 async function createStoreRefreshToken(res, JWT_payload) {                                                                                                  // Function to create a new JWT refresh token and store the refresh token in a cookie
     const refresh_token = createJWT(res, JWT_payload, "refresh") 
     try{
-        await redis_client.set("RT-"+JWT_payload.username+"-"+JWT_payload.id, refresh_token, 'EX', JWT_RT_expire_time)                                      // Saving Refresh token to Redis Cache
+        await redis_client.set("RT-"+JWT_payload.username+"-"+JWT_payload.id, refresh_token, 'EX', REDIS_TOKEN_CACHE_EXP)                                   // Saving Refresh token to Redis Cache
     }
     catch(err){
         console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
@@ -157,7 +154,7 @@ exports.login = async (req,res,next) =>
     // 5) After sending response - Add user to redis cache so that we cna use it later for the session
     if (!isUserCached){
         try{
-            await redis_client.set("user-"+username,JSON.stringify(user), 'EX', redis_user_expire_time)                                                     // set refresh token in redis cache as a key. no value. 
+            await redis_client.set("user-"+username,JSON.stringify(user), 'EX', REDIS_USER_CACHE_EXP)                                                       // set refresh token in redis cache as a key. no value. 
             console.log("Cached user data to Redis for 1 Day")
         }
         catch(err){

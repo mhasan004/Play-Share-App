@@ -1,9 +1,9 @@
+
+////////////////
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
-const {redis_client} = require('./redisDB')
-const {REDIS_USER_CACHE_EXP} = require("../config")                                         
-
+const {redis_client} = require('./RedisDB')
 
 // Function to verify user access tokens, admin access tokens, and refresh tokens 
 function verifyToken(token, type = "access", role = "user"){
@@ -74,46 +74,43 @@ exports.verifyUser = async (req,res,next) =>                                    
         }
     }
     // 3) See if username exists in redis cache, if not, find in db and add to cache. then, we can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
-    req.isUserCached = false  
-    try{
-        if(await redis_client.exists("user-"+username_in))
-            req.isUserCached = true  
-    }
-    catch{
-        console.log("     Verify User Error: user not found in redis! - delete this catch??")
-    }
-    if (!req.isUserCached){
-        try{
-            const user = await User.findOne({username: username_in})
-            req.user = user
+    try
+    {                                                                                                                                        
+        if(await redis_client.exists("user-"+username)){
+            req.isUserCached = true
             try{
-                await redis_client.set("user-"+username_in, user, 'EX', REDIS_USER_CACHE_EXP)                                                       // Saving Refresh token to Redis Cache
-            }
-            catch(err){
-                console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
-                throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
-            } 
-
-        }
-        catch(err){
-            return res.status(401).json({status: -1, message: "Failed to get user from DB! " + err}).end() 
-        }
-    }
-    if (req.isUserCached){
-        try{
-            const user = await redis_client.get("user-"+username)
-            req.user = JSON.parse(user)
-        }
-        catch{
-            req.isUserCached = false  
-            try{
-                req.user = await User.findOne({username: username_in})
+                let user = await redis_client.get("user-"+username)
+                req.user = JSON.parse(user)
             }
             catch{
-                return res.status(401).json({status: -1, message: "Failed to get user from DB! " + err}).end() 
+                throw "Redis Get Fail"
+            }     
+        }
+        else{
+            try{
+                req.user = await User.findOne({username: username_in})
+                req.isUserCached = false
+            }
+            catch{ 
+                throw "DB Find Fail"
             }
         }
-    }
+    }    
+    catch(err)
+    {
+        if (err === "DB Find Fail")
+            return res.status(401).json({status: -1, message: "User Doesn't Exist!"}).end() 
+        if (err !== "DB Find Fail"){
+            try{
+                req.user = await User.findOne({username: username_in})
+                req.isUserCached = false
+            }
+            catch(err){ 
+                return res.status(401).json({status: -1, message: err}).end() 
+            }
+        }
+        return res.status(401).json({status: -1, message: err}).end() 
+    }    
     req.username = verified_access.username       
     req.tokenId = verified_access.id                                                         
     next()

@@ -1,0 +1,261 @@
+/* @import url('https://fonts.google.com/specimen/Quicksand?selection.family=Montserrat:wght@400;800&sidebar.open=true&query=quicksand'); */
+/* FONT qUICKSAND: added <link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>to indexhtml */
+
+.post-body{
+    zoom: .75; 
+    /* -moz-transform: scale(3); 
+    -moz-transform-origin: 0 0; */
+
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-left: 37px;
+    padding-right: 37px;
+    width: 885px;
+
+    background: #ffffff;
+    border-radius: 20px;
+
+    display: flex; 
+    flex-direction: column; 
+}
+
+.post-rows{
+    display: flex; 
+    flex-direction: column; 
+    position: relative;
+}
+
+
+
+.post-top-container{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    background: white;
+
+    height: 70px;
+    width: 800px;
+
+}
+.post-top-container-left{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    /* margin-right: 100px */
+    
+}
+.post-top-handle{    
+    font-size: 2.2rem;
+    line-height: 2.9rem;
+    font-weight: normal;
+    color: #818080;
+
+    padding-right: 10px;
+
+}
+.post-top-date{    
+    font-size: 1.4rem;
+    line-height: 1.5rem;
+    font-weight: normal;
+    color: #a1a1a1;
+    padding-right: 20px;
+    margin-top: 3px;
+} 
+
+
+
+ .post-top-container-right{     
+    position: absolute;
+    display: flex; 
+    flex-direction: row; 
+
+    margin-top: 5px;
+    margin-left: 465.4px;
+}
+.post-top-groupName{
+    position: absolute;
+    font-family: Quicksand;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 35px;
+    line-height: 45px;
+
+    color: white;
+}
+
+
+
+
+
+
+
+
+.post-title-content-container{
+    position: relative;
+    z-index: 1;
+}
+.post-title{
+    width: 810px;
+    height: 95px;
+    margin-left: 10px;
+
+    font-size: 30px;
+    line-height: 45px;
+    font-weight: normal;
+
+    margin-bottom: 15px;
+    color: #000000;
+}
+.post-content-img{
+    width: 810px;
+    height: 400px;
+    /* margin-left: 15px; */
+    background-size:cover;
+    background-repeat:no-repeat;
+
+    margin-bottom: 15px;
+    border-radius: 20px;
+}
+.post-content-text{
+    /* width: 810px;
+    height: 400px; */
+    /* margin-left: 15px; */
+    /* margin-top: 15px; */
+
+    margin-bottom: 15px;
+    border-radius: 20px;
+}
+
+
+
+
+
+
+
+
+
+.post-actions-constainer{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    margin-bottom: 15px;
+    margin-left: 15px;
+}
+.post-actions-left{
+    position: relative;
+    display: flex; 
+    flex-direction: row; 
+    /* width: 400px; */
+}
+.post-total-likes-text-div{
+    position: relative;
+    margin-left: 10px;
+    margin-right: 10px; 
+}
+
+.post-total-likes-text{
+    font-family: Quicksand;
+    Font-size: 2.5rem;
+    line-height: 2.5rem;
+    font-style: normal;
+    font-weight: normal; 
+} 
+.post-arrows{
+    width: 2.5rem;
+    height: 2.5rem;
+}
+.post-arrow-up{
+    margin-left: 0px;
+}
+.post-arrow-down{
+    margin-right: 20px;
+}
+.post-actions-left-background{
+    position: absolute;
+    margin-left: -30px;
+}
+.post-actions-left-background rect{
+    fill:white; 
+} 
+
+
+
+
+
+
+.post-comment{
+    position: absolute;
+    left: 46%;
+}
+.post-actions-right{
+    position: absolute;
+
+    display: flex; 
+    flex-direction: row; 
+    left: 85%;
+}
+.post-edit{
+    margin-right: 10px;
+}
+.post-delete{
+    margin-right: 10px;
+}
+
+.post-comment:hover {
+    transform: scale(1.2);
+}
+.post-edit:hover {
+    transform: scale(1.2);
+}
+.post-delete:hover {
+    transform: scale(1.2);
+}
+
+.post-arrows:hover {
+    transform: scale(1.2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center-vertically {
+    /* margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%); */
+    display: flex;
+
+    justify-content: center;
+    align-items: center; 
+}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }

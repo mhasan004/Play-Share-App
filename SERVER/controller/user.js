@@ -9,6 +9,7 @@ Date.prototype.formatMMDDYYYY = function(){
 
 exports.getAllPosts = async (req,res,next) => 
 {
+    console.log("     HITTED GET ALL!-----------------------------------")
     const username = req.username
     try{
         const user_posts = await Post.find({username: username})

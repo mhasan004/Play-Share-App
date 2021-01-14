@@ -1,27 +1,29 @@
 const jwt = require('jsonwebtoken')
 const CryptoJS = require("crypto-js");
 const User = require('../model/User')
-const {redis_client} = require('./redisDB')
-const {REDIS_USER_CACHE_EXP} = require("../config")                                         
+const {redis_client} = require('./RedisDB')
 
-
-// Function to verify user access tokens, admin access tokens, and refresh tokens 
 function verifyToken(token, type = "access", role = "user"){
     if (type === "refresh"){
-        try{ return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET) }                                                                           // Verify refresh token                     
+        try{
+            return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET)                                                                              // Verify refresh token 
+        }                       
         catch(err){ throw err }
     }
     else if (role === "user"){
-        try{ return jwt.verify(token, process.env.USER_SECRET_KEY) }                                                                                // Try to verify token if its a user              
+        try{
+            return jwt.verify(token, process.env.USER_SECRET_KEY)                                                                                   // Try to vberify jwt if its a user
+        }                       
         catch(err){ throw err }
     }
     else if (role === "admin"){
-        try{ return jwt.verify(token, process.env.ADMIN_SECRET_KEY) }                                                                               // Try to verify token if its an admin                  
+        try{
+            return jwt.verify(token, process.env.ADMIN_SECRET_KEY)                                                                                  // Try to vberify jwt if its an admin
+        }                       
         catch(err){ throw err }
     }
 }
 
-// Middleware authenticates the user and adds to req  object: (1) user: user object from db, (2) isUserCached = if user is cached in redis or not (3) username, (4) tokenId: random toklenid to find refreshtoken with username-tokenId,
 exports.verifyUser = async (req,res,next) =>                                                                                                        // MiddleWare: Private Unique User Route. Passed user object, role, username to request so the next middleware can use it
 {           
     // 1) Get username and access token from header and verify if they exist. Get RT from cookie
@@ -37,7 +39,7 @@ exports.verifyUser = async (req,res,next) =>                                    
     if(!recieved_RF) 
         return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
         
-    // 2) (a) Verify if access token is valid. If valid, move on to b. If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access token matches the username in header. (c) for admin usernames, check also if rf payload match. 
+    // 2) (a) Verify if access is valid. If valid, move on to (b). If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access matches the username. (c) for admin usernames, check also if rf payload match. 
     let verified_access, verified_rf
     try{
         verified_access = verifyToken(recieved_access_token, "access", req.role)                                                                    // 2.a.1) Verify Access Token -> Valid: 1. Invalid: check validity of refresh token
@@ -73,47 +75,14 @@ exports.verifyUser = async (req,res,next) =>                                    
             return res.status(401).json({status: -3, message: "Access Denied! Fishy Behavior! Token Mismatch!"}).end()  
         }
     }
-    // 3) See if username exists in redis cache, if not, find in db and add to cache. then, we can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
-    req.isUserCached = false  
-    try{
-        if(await redis_client.exists("user-"+username_in))
-            req.isUserCached = true  
-    }
+    // 3) See if username exists in db. If so, can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
+    try{                                                                                                                                        
+        const user_obj = await User.findOne({username: username_in})
+        req.user = user_obj
+    }    
     catch{
-        console.log("     Verify User Error: user not found in redis! - delete this catch??")
-    }
-    if (!req.isUserCached){
-        try{
-            const user = await User.findOne({username: username_in})
-            req.user = user
-            try{
-                await redis_client.set("user-"+username_in, user, 'EX', REDIS_USER_CACHE_EXP)                                                       // Saving Refresh token to Redis Cache
-            }
-            catch(err){
-                console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
-                throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
-            } 
-
-        }
-        catch(err){
-            return res.status(401).json({status: -1, message: "Failed to get user from DB! " + err}).end() 
-        }
-    }
-    if (req.isUserCached){
-        try{
-            const user = await redis_client.get("user-"+username)
-            req.user = JSON.parse(user)
-        }
-        catch{
-            req.isUserCached = false  
-            try{
-                req.user = await User.findOne({username: username_in})
-            }
-            catch{
-                return res.status(401).json({status: -1, message: "Failed to get user from DB! " + err}).end() 
-            }
-        }
-    }
+        return res.status(401).json({status: -1, message: "User Doesn't Exist!"}).end() 
+    }    
     req.username = verified_access.username       
     req.tokenId = verified_access.id                                                         
     next()
@@ -125,6 +94,3 @@ exports.verifyAdmin = async (req,res,next) =>                                   
         return res.status(401).json({status: -1, message: "Access Denied! Not Admin!"}).end() 
     next()
 }
-
-
-

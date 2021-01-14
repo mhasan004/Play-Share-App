@@ -43,7 +43,9 @@ class GlobalFeed extends React.Component{
             })
         }
         else if (resJson.status === -1){
-            alert("Failed to get Feed! " + resJson.message )
+            alert("Failed to get Feed! ")
+            console.log("Failed to get Feed!...")
+            console.log(resJson.message )
             return await Logout(this.props)
         }
         else if (resJson.status === -3){

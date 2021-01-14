@@ -4,3 +4,5 @@ TrashBin
 .gitignore
 dump.rdb
 Notes
+server_run.txt
+client_run.txt
