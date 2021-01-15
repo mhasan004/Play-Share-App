@@ -1,6 +1,5 @@
 import React, {Component} from "react"
 import Post from "./Post"
-import '../../css/post.css'
 
 class Posts extends React.Component{
     deleteHandler(postId){

@@ -1,17 +1,27 @@
 # Play Share App
-* This is a Reddit/Imgur-like app where gamers can share short clips of their game plays. Users can join different game groups just like reddit. App will feature an hierarchical commenting system
-* Server: REST API built with Node, Express, MongoDB. Will migrate database to PostgresSQL. Client: Currently being built with React
-* Implemented various security features. Access tokena nd refresh tokens are stored in HttpOnly cookies. User sessions are presisted suing silent refreshes. Rate limmiting blocks an IP for serveral minutes if they make too many requests. 
+# 📋 APP OVERVIEW:
+
+* This is a Reddit/Imgur-like app where gamers can share short clips of their gameplays. Users can join different game groups just like reddit and follow users. App will feature an hierarchical commenting system and I have plans to add a messaging feature in the future.
+  * **SERVER:** REST API built with Node, Express, MongoDB, Redis. Will migrate database to PostgresSQL in the future. 
+  * **CLIENT:** Currently being built with React.
+* **FEATURES:** implemented various security features which are explained in **APP SECURITY** section. Some features include: 
+  * **Rate Limiting** to protect agaisnt basic DDOS attacks: blocking an IP for serveral minutes if they make too many requests. 
+  * **Session Persistance:** Keeping users logged in by silently refreshing tokens
+  * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them. 
+  * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) 
+  * **Some Others:** Caching data for frequent endpoints, Input validation, Password hashing, etc
 * Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. https://playshare.cloud/ (currently disabled) 
+* (In Progress) Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other psots, comment on other user's posts.  
+* **User & Admin Actions:**    
+  * *Users* can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
+  * *Admin* can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
 
 <br/>
 
-![App demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
-
-<div style="text-align:center;   font-style: italic;">
-    Fig 1: App demo so far (App still in development!)
-
-</div>
+![App security demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
+<p align="center" style="font-style: italic">
+    Fig 1: App security demo so far (App still in development)
+</p>
 
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
@@ -27,19 +37,11 @@
 * **crypto-js** - (not used if using HTTPS and disabling TLS) used to encrypt response and decrypt request using the client's symmetric key (AES).
 * **morgan** - used to log endpoint resonse times to optimize code. 
 
-# 📋 APPLICATION OVERVIEW:
+# 🚑 SERVER RESPONSE CODES:
   ![Silent Refresh](/PicturesGifs/Basic_Response.PNG)
-    <div style="text-align:center;   font-style: italic;">
-      <center> Fig 2: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. <center>
-    </div>
-* (In Progress) Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other psots, comment on other user's posts.  
-* The login and registration and session persistance processes are explained in detail in the **APP SECURITY** section.
-* Rate limiter: If requests exceed a certain number within a period of time, the IP is blocked. 
-* Multiple checks to authenticate user: validating acces and refresh token. Mataching token payloads with username header. Checking if refresh token is in database (only for admin and refresh token routes)
-* To access the user or admin private routes, the client must have the valid HttpOnly access token cookie or the valid HttpOnly refresh token cookie.
-* Access token expires every 5 minutes. Refresh token JWT expires in 15 days. Username heade4r must also be supplied. With valid username and refresh token, tokens can be refreshed.  
-* Users can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
-* Admin can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
+  <p align="center" style="font-style: italic">
+    Fig 2: Responses of the API Server: 1, -1, -2, 2, -3
+  </p>
 
 # 🏠 RUN SERVER LOCALLY:
 1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database. Make sure the keys are long and randomly generated. 
@@ -58,53 +60,73 @@
     </details>
 2) `redis-server` - download redis and start the redis server for REST API.
 3) `npm install` on the **CLIENT** & **SERVER** directories
-4) `npm start` on the **CLIENT/play-share-app** & **SERVER** directories to run the client and server 
+4) `npm start` on the **CLIENT** & **SERVER** directories to run the client and server 
 <br/>
 
 # 🛡️ APP SECURITY:
+<details>      
+  <summary> APP SECURITY SUMMARY </summary>
 
-## A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessions:
+  * **Rate Limiting** Limited requests to 100 requests every 10 minutes. This will guard against simple DDOS attacks by rating how many requests can be made in a specific time by the same IP.
+  * **Input Validation** with **Joi**.
+  * **Passwords hashed in Database:**
+  * **Long Secret Keys:** The secret keys needed to make tokens, cookies, and hash passwords are 700-1200 characters long and are stored in the **.env** file. The keys are created using concatenations of several randomly generated hashes. 
+  * **Session Persistence:** Application can keep users logged in if the client supplies the correct refresh token HttpOnly cookie and the correct `username` header. 
+  * **Cors & Helmet Protectiosn:** **Cors** and **helmet.js** middlewares provide some basic security to server.
+  * **HttpOnly Cookies:** Token cookies are HttpOnly cookies with flags set to `httpOnly=true`, `secure=true` to ensure the client cannot read its contents. 
+  * **Token Expire Times:** Access token expires 5 minutes and cookie expires in 1 day. Refresh token and cookie expires in 15 days. 
+  * **TLS:** (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
+  </details>
+  </br>
+
+  ## 🍪 A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessions:
   ![Silent Refresh](/PicturesGifs/Silent_Refresh.png)
-    <div style="text-align:center;   font-style: italic;">
-      <center> Fig 2: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. <center>
-    </div>
+  <p align="center" style="font-style: italic">
+    Fig 3: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. 
+  </p>
 
-  * After successful login, access token and refresh tokens are made and stored in a HttpOnly cookie. valid refresh tokens and username header lets the application silently refresh tokens.
-  * **Admin and User's JWTs :**
-    * Access token is signed with the `USER_SECRET_KEY` key or the `ADMIN_SECRET_KEY` key depending on if the user is admin or not. 
-    * The payload of the access token is the user's username along with a randomly generated number. 
-    * 10 minute expire time for the token and 1 day expire time for the cookie.
-  * **Refresh Tokens & Silent Refresh Procedure**: 
-    * Refresh token is signed with the `REFRESH_TOKEN_SECRET` key. The token will be stored in a httpOnly cookie and will be signed by `COOKIE_SECRET`.
-    * The payload of the refresh token is user's username along with the same random number used in the access token. This random number helps to store the refresh tokens in a key-value database for the purpose of silent refresh. It helps to retrieve the specific refresh token in O(1) instead of querying for the user's specific token.
-    * 15 day expire time for the token and cookie.
-  * **Access and Refresh Tokens stored in HttpOnly cookies**
-    * Both tokens are stored in HttpOnly cookie with `httpOnly=true`, `secure=true`, and expiration flags set so that they cannot be accessed in the client via javascript. 
-    * If token expires, client will send a request to the `/auth/refresh` endpoint. The refresh token stored in the httpOnly cookie will also be sent along with the request.
-      * If the token is valid and exists in the database, a new refresh token will be created and will replace the old refresh token in the database.
-      * A new access token is also created and is sent to the client. 
+  * After successful login, access token and refresh tokens are made and stored in a signed HttpOnly cookie so that they cannot be accessed in the client. Can silently refresh tokens to persist sessions with: (1) valid refresh token, and (2) corresponding username in the `username` header of the request. 
+  * 🍪 **Token & Cookie Creation + Expiration Times:** <details>      
+    <summary > Click to expand secton </summary>
+
+    * **Secret Keys:** 
+      * **Access token** is signed with the `USER_SECRET_KEY` key if its a user or the `ADMIN_SECRET_KEY` key if it is an admin. 
+      * **Refresh token** is signed with the `REFRESH_TOKEN_SECRET` key.
+      * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`.
+    * **Token Payload:** The payload of the tokens is the username along with a randomly generated number. Example: `{username: 'Tom', id: '1234'}`
+    * **Expiration Times:** 
+      * **Access token** expiration time: 5 minutes
+      * **Refresh tokens** expiration time: 15 days
+      * **Access tokens HttpOnly cookie** expiration time: 1 day 
+      * **Refresh token HttpOnly cookie** expiration time: 15 days
+    </details> 
+   
+  * 🤫 **Silent Refresh Procedure to Persist Sessions (Figure 3)**: <details>      
+    <summary > Click to expand secton </summary>
+
+    1) When a request has an invalid access token, the server will verify if the refresh token is valid. If it is valid, the server will respond with status code `-2`. 
+    2) Client will send a GET request to the `/auth/refresh` endpoint. 
+    3) Server will decrypt the refresh token and will get the `username` and `id` fields from the payload. It will fetch the value of `username-id` from the database. If the incomming refresh token matches the token saved in the database and the `username` header matches the `username` field of the tokenServer will try to refresh.
+    4) If the server successfully refreshed the tokens, it will respond with status code `2` and will delete the token from the database and will add the new token to the database. If unsuccessful, server will respond with `-1`.
+    </details>  
+
+  * **Authentication & Authorization** <details>      
+    <summary > Click to expand secton </summary>
+
+    * Multiple checks to authenticate user: 
+    1) Validating access and refresh tokens. 
+    2) Matching token payloads with username header to ensure that the correct user is using the token. 
+    3) Checking if user is in the database
+    4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshign tokens, or when access token is invalid)
+  </details>
+
   
- * <details>      
-      <summary> SUMMARY </summary>
 
-      * Application can keep users logged in if the client supplies the correct refresh token HttpOnly cookie and the correct username in header. 
-      * (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
-      * Access token expires 5 minutes and cookie expires in 1 day. 
-      * Refresh token and cookie expires in 15 days. 
-      * token coockies are HttpOnly cookies with flags set to `httpOnly=true`, `secure=true` to ensure the client cannot read its contents. 
-      * Silent Refresh: If access token expires or doesn't exist, client will send a request to the `/auth/refresh` with the refresh token cookie and a new access token and refresh token will be created. 
-      * **Cors** and **helmet.js** middlewares to provide some basic security to server.
-      * **express-rate-limit** is used to guard against simple DDOS attacks by rating how many requests can be made in a specific time by the same IP.
-      * The secret keys needed to make tokens, cookies, and hash passwords are 700-1200 characters long and are stored in the **.env** file. The keys are created using concatenations of several randomly generated hashes. 
-      * During registration and login phase, all user inputs are validated using **Joi**.
-      * During registration, passwords are hashed and stored in the database. 
-      </details>
-
-## B) TLS handshake (optional, disabled by default since using https):
+## 🤝 B) TLS handshake (optional, disabled by default since using https):
   ![TLS Handshake](/PicturesGifs/TLS_Handshake2.png)
-  <div style="text-align:center;   font-style: italic;">
-    <center> Fig 3:  TLS Handshake I implemented on the server. Client in development. <center>
-  </div>
+  <p align="center" style="font-style: italic">
+    Fig 4: TLS Handshake I implemented on the server. Client in development.
+  </p>
 
   * TLS handshake can be performed but is not needed since server and client will communicate over https. Implemented basic version of TLS for fun
     <details>      
@@ -124,8 +146,11 @@
 
     </details>
 
+
 # 📐 USABILITY (CLIENT REQUESTS):
-* **Client Headers** Send encrypted authentication code to server through the header
+* **Client Headers** Send encrypted authentication code to server through the header <details>      
+    <summary > Click to expand secton </summary>
+
   * To make any requests to the server, the application needs to have the valid access key.
   * `Content-Type` = `application/json`
   * `username` = username. this username will be compared to the username in the tokens to authenticate user
@@ -136,6 +161,9 @@
     * `0` - to  say sending client's symmetric key to server 
     * `handshake_index` - this is sent by server after successful TLS handshake 
   * (optional if using TLS) AES encrypt the post request body with the symmetric key
+
+  </details>  
+
 
   
   

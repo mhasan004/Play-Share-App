@@ -37,11 +37,10 @@ class GlobalFeed extends React.Component{
         }
         if (!resJson)
             return console.log("Improper Response!")
-        if (resJson.status === 1){
+        if (resJson.status === 1)
             this.setState({
                 posts: resJson.posts
             })
-        }
         else if (resJson.status === -1){
             alert("Failed to get Feed! ")
             console.log("Failed to get Feed!...")
@@ -58,7 +57,7 @@ class GlobalFeed extends React.Component{
         }
     }
 
-    render(){                
+    render(){          
         return (
             <div class="global-feed-body">
                 <span class="global-feed-nav">

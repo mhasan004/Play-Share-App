@@ -1,25 +1,12 @@
 import React, {Component} from "react"
-import '../../css/TestPost.css'
+// import '../../css/TestPost.css'
 
 class TestPost extends React.Component{
     loggedUser = localStorage.getItem("username")
-    state = {
-        postId: this.props.post._id,
-        username: this.props.post.username,
-        handle: this.props.post.handle,
-        date: this.props.post.date,
+    state = this.props.post
 
-        title: this.props.post.title,
-        content: this.props.post.content,
-        group: this.props.post.group,
-        group_type: this.props.post.group_type,
-        isURL: this.props.post.isURL,
-
-        like: this.props.post.likes,
-        dislike: this.props.post.dislikes,
-        user_liked:  this.props.post.user_liked,
-        user_disliked:  this.props.post.user_disliked,
-        total_likes: this.props.post.total_likes,
+    componentDidMount() {
+ 
     }
 
     async likeHandler(event) {
@@ -103,9 +90,7 @@ class TestPost extends React.Component{
     editHandler(event) {
         console.log("edit")
     }
-    deleteHandler(event) {
-        this.props.deleteHandler(this.state.postId)
-    }
+   
     commentHandler(event) {
         console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.loggedUser+"         indisliked?: "+this.state.user_disliked.includes(this.loggedUser))
     }
@@ -211,12 +196,12 @@ class TestPost extends React.Component{
 
                     {show_actions ? (
                         <span class="post-actions-right">
-                              <svg class="post-edit" onClick={e=>this.editHandler(e)} width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <svg class="post-edit"  width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4.5 31.05L0 45L13.95 40.5L4.5 31.05Z" fill="#BFBFBF"/>
                                 <path d="M29.6157 5.86141L7.66046 27.8167L17.2063 37.3625L39.1615 15.4072L29.6157 5.86141Z" fill="#BFBFBF"/>
                                 <path d="M44.325 6.975L38.025 0.675C37.125 -0.225 35.775 -0.225 34.875 0.675L32.85 2.7L42.3 12.15L44.325 10.125C45.225 9.225 45.225 7.875 44.325 6.975Z" fill="#BFBFBF"/>
                             </svg>
-                            <svg class="post-delete" onClick={e=>this.deleteHandler(e)} width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="post-delete" width="45" height="40" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17.6663 2.71637H27.3337V3.98186H30.825V2.53922C30.8254 1.13915 29.362 0 27.5632 0H17.4368C15.638 0 14.1746 1.13915 14.1746 2.53922V3.98186H17.6663V2.71637Z" fill="#BFBFBF"/>
                                 <path d="M38.8878 14.7437H6.11213C5.21405 14.7437 4.50707 15.3397 4.57944 16.0363L7.31957 42.3952C7.47227 43.8667 9.04997 45 10.9454 45H34.0541C35.9495 45 37.5272 43.8667 37.6799 42.3949L40.42 16.0363C40.4929 15.3397 39.7859 14.7437 38.8878 14.7437ZM14.0483 42.1885C14.0117 42.1902 13.9751 42.1913 13.9389 42.1913C13.0236 42.1913 12.2553 41.6368 12.1983 40.9165L10.4812 19.2772C10.422 18.5284 11.1542 17.884 12.1162 17.838C13.0752 17.7927 13.9071 18.3609 13.9662 19.11L15.683 40.7493C15.7425 41.4981 15.0104 42.1422 14.0483 42.1885ZM24.2652 40.8331C24.2652 41.5829 23.4837 42.1909 22.5194 42.1909C21.5551 42.1909 20.7735 41.5829 20.7735 40.8331V19.1935C20.7735 18.4433 21.5551 17.8353 22.5194 17.8353C23.4832 17.8353 24.2652 18.4433 24.2652 19.1935V40.8331ZM34.5188 19.2735L32.8793 40.9127C32.825 41.6344 32.0553 42.1909 31.1383 42.1909C31.1039 42.1909 31.069 42.1902 31.0341 42.1889C30.0716 42.1446 29.3373 41.5019 29.3942 40.7531L31.0332 19.1135C31.0897 18.3647 31.9132 17.7934 32.8784 17.8377C33.8409 17.8816 34.5753 18.5247 34.5188 19.2735Z" fill="#BFBFBF"/>
                                 <path d="M44.925 10.5524L43.7785 7.87857C43.4762 7.17373 42.628 6.69823 41.6725 6.69823H3.32702C2.37201 6.69823 1.52336 7.17373 1.2215 7.87857L0.0749643 10.5524C-0.146135 11.068 0.141603 11.594 0.678685 11.8563C0.897577 11.9631 1.15663 12.0273 1.44128 12.0273H43.5587C43.8434 12.0273 44.1029 11.9631 44.3213 11.856C44.8584 11.5937 45.1461 11.0677 44.925 10.5524Z" fill="#BFBFBF"/>

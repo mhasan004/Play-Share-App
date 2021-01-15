@@ -3,24 +3,23 @@ import '../../css/post.css'
 
 class Post extends React.Component{
     loggedUser = localStorage.getItem("username")
-    state = {
-        postId: this.props.post._id,
-        username: this.props.post.username,
-        handle: this.props.post.handle,
-        date: this.props.post.date,
+    state = this.props.post
+        // postId: this.props.post._id,
+        // username: this.props.post.username,
+        // handle: this.props.post.handle,
+        // date: this.props.post.date,
 
-        title: this.props.post.title,
-        content: this.props.post.content,
-        group: this.props.post.group,
-        group_type: this.props.post.group_type,
-        isURL: this.props.post.isURL,
+        // title: this.props.post.title,
+        // content: this.props.post.content,
+        // group: this.props.post.group,
+        // group_type: this.props.post.group_type,
+        // isURL: this.props.post.isURL,
 
-        like: this.props.post.likes,
-        dislike: this.props.post.dislikes,
-        user_liked:  this.props.post.user_liked,
-        user_disliked:  this.props.post.user_disliked,
-        total_likes: this.props.post.total_likes,
-    }
+        // like: this.props.post.likes,
+        // dislike: this.props.post.dislikes,
+        // user_liked:  this.props.post.user_liked,
+        // user_disliked:  this.props.post.user_disliked,
+        // total_likes: this.props.post.total_likes,
 
     async likeHandler(event) {
         if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
