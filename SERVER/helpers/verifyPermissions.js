@@ -119,12 +119,18 @@ exports.verifyUser = async (req,res,next) =>                                    
     next()
 }
 
-exports.verifyAdmin = async (req,res,next) =>                                                                                                       // MiddleWare: Admin Route. See if req.role is admin or not
+exports.isAdmin = async (req,res,next) =>                                                                                                       // MiddleWare: Admin Route. See if req.role is admin or not
 {
     if (req.role !== "admin")
         return res.status(401).json({status: -1, message: "Access Denied! Not Admin!"}).end() 
     next()
 }
 
+exports.isUser = async (req,res,next) =>                                                                                                       // MiddleWare: Admin Route. See if req.role is admin or not
+{
+    if (req.role !== "user")
+        return res.status(401).json({status: -1, message: "Access Denied! Not User! If Admin, try admin routes instead!"}).end() 
+    next()
+}
 
 
