@@ -8,9 +8,10 @@
 # 💎 FEATURES:
   * **Rate Limiting** to protect against basic DDOS attacks: blocking an IP for several minutes if they make too many requests. 
   * **Session Persistence:** Keeping users logged in by silently refreshing tokens
-  * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them. 
+  * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks. 
   * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) 
-  * **Some Others:** Caching data for frequent endpoints, Input validation, Password hashing, etc
+  * **Clean URLS** so that attackers can't query requests too easily. Query parameters are passed via headers.
+  * **Some Others:** Caching data for frequently used endpoints, input validation, password hashing, etc
 
 # DEMO:
 
@@ -62,6 +63,7 @@
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
       * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
+      * `JWT_PAYLOAD_ENCRYPTION_KEY` - Used to encrypt the JWT payload. Paylaod doesn't contains the username and a random number, which together, lets us find the refresh key value in the database. 
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
       the hashing algorithm of these fields.
       * `USE_TLS = false` - Can keep this as is. Do you want to use the TLS handshake? false = disable TLS (do this when using https). true = enable TLS. 
@@ -81,7 +83,7 @@
   * **Long Secret Keys:** The secret keys needed to make tokens, cookies, and hash passwords are 700-1200 characters long and are stored in the **.env** file. The keys are created using concatenations of several randomly generated hashes. 
   * **Session Persistence:** Application can keep users logged in if the client supplies the correct refresh token HttpOnly cookie and the correct `username` header. 
   * **Cors & Helmet Protections:** **Cors** and **helmet.js** middlewares provide some basic security to server.
-  * **HttpOnly Cookies:** Token cookies are HttpOnly cookies with flags set to `httpOnly=true`, `secure=true` to ensure the client cannot read its contents. 
+  * **HttpOnly Cookies:** Token cookies are HttpOnly cookies with flags set to `httpOnly:true`, `secure:true`, `sameSite:strict` to ensure the client cannot read its contents and cookies can only be transmitted via https and can only send to the same domain to guard against CSRF attacks. 
   * **Token Expire Times:** Access token expires 5 minutes and cookie expires in 1 day. Refresh token and cookie expires in 15 days. 
   * **TLS:** (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
   </details>
@@ -99,7 +101,7 @@
     * **Secret Keys:** 
       * **Access token** is signed with the `USER_SECRET_KEY` key if its a user or the `ADMIN_SECRET_KEY` key if it is an admin. 
       * **Refresh token** is signed with the `REFRESH_TOKEN_SECRET` key.
-      * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`.
+      * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`. Can only be sent via HTTPS and to the same domain/subdomain. 
     * **Token Payload:** The payload of the tokens is the username along with a randomly generated number. Example: `{username: 'Tom', id: '1234'}`
     * **Expiration Times:** 
       * **Access token** expiration time: 5 minutes

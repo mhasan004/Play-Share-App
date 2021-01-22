@@ -8,7 +8,7 @@ export async function isAuth(props){                                        // R
         await Logout(props)
         return false
     } 
-    if (localStorage.getItem("username") && (new Date().getTime() >= localStorage.getItem("access-token-exp"))){
+    if ( !localStorage.getItem("access-token-exp") || (localStorage.getItem("username") && (new Date().getTime() >= localStorage.getItem("access-token-exp"))) ){ // Client cant access tokens, so... if the expiration time of token set in local storage is less than the current time, token (if there is one) is expired, so refresh
         let refresh
         try{
             refresh = await SilentRefresh()

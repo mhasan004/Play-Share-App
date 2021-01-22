@@ -6,9 +6,7 @@ const private_key = key.exportKey('private')            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
 
-const encrypted_headers = [
-    "auth-token"
-]
+const encrypted_headers = []
 let SYMMETRIC_KEY_DICT = {}
 let MAX_CLIENT_CONNECTIONS = 10
 
@@ -52,8 +50,7 @@ exports.initiateCheckHandShake =  (req,res,next) =>
             SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
             return res.status(200).json({status:1, handshake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'handshake' = ${empty_index} for future requests (see handshake_index field)`}).end() 
-        }        
-        catch(err){
+        } catch(err){
             console.log("Failed to get Client's SYMMETRIC_KEY!")
             return res.status(400).json({status:-1 , message: "Couldnt decrypt client's SYMMETRIC_KEY with server's public key, 1) client may not have encrypted SYMMETRIC_KEY with server's public key. 2) no TLS has been made. Two options: 1) key = base64(public_key_encypt(SYMMETRIC_KEY)), handshake = handsake index. 2) handshake = 0  to reinitiate TLS handshake. Error: "+err}).end() 
         }
@@ -72,8 +69,7 @@ exports.decryptBody = async (req,res,next) =>
     for (let field in req.body){
         try{
             req.body[field] = RSA_private_key.decrypt(req.body[field], 'utf8')  
-        }
-        catch(err){
+        } catch(err){
             field_array.push(field)
             error_array.push(err)
         }

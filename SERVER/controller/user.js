@@ -14,8 +14,7 @@ exports.getAllPosts = async (req,res,next) =>
     try{
         const user_posts = await Post.find({username: username})
         return res.status(200).json({status: 1, message: "Successfully retrieved all posts. See user_posts field!", user_posts})                                                     
-    }
-    catch{
+    }catch{
         return res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
     }
 }
@@ -44,8 +43,7 @@ exports.makePost = async (req,res,next) =>
         const added_post = await post.save()
         console.log("Post made")
         return res.status(200).json({status: 1, added_post_id: added_post._id})
-    }       
-    catch(err){
+    } catch(err){
         console.log("failed to make post")
         console.log(Date.now)
         console.log((new Date()).toLocaleDateString('en-US'))
@@ -74,8 +72,7 @@ exports.editAPost = async (req,res,next) =>
     try{
         const edited_post = await Post.updateOne({_id: post._id}, updated_fields)
         return res.status(200).json({status: 1, edited_post: edited_post})    
-    }       
-    catch(err){
+    } catch(err){
         return res.status(400).json({status: -1, message: "Failed to edit post: "+err})    
     }
 }
@@ -87,8 +84,7 @@ exports.deleteAPost = async (req,res,next) =>
     try{
         const deleted_post = await Post.deleteOne({ _id: post_to_del._id })
         return res.status(200).json({status: 1, deleted_post: deleted_post})    
-    }
-    catch(err){
+    } catch(err){
         return res.status(400).json({status: -1, message: "Failed to delete post: "+err})    
     }
 }
@@ -98,8 +94,7 @@ exports.getFeed = async (req,res,next) => {
         let posts = await Post.find()                                                           //Post.find().sort([['date', -1]]).exec()
         posts = posts.reverse()
         return res.status(200).json({status: 1, posts})    
-    }
-    catch{
+    } catch{
         return  res.status(400).json({status: -1, message: "Failed to get post feed: "+err})    
     }
 }
@@ -126,8 +121,7 @@ exports.likeFeedPost = async (req,res,next) => {
         else{
             return res.status(400).json({status: -1, message: "Wrong url or cant downvote past 0. URL: /like/ or /dislike/"})    
         }
-    }       
-    catch(err){
+    } catch(err){
         return res.status(400).json({status: -1, message: "Failed to increase or decrease like: "+err})    
     }
 }

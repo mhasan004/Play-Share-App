@@ -7,5 +7,8 @@ var CONFIG = {
         UserFeed:     "/user/:username",
     }
 }
-  
+
 export default CONFIG;
+
+
+

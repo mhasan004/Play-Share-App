@@ -12,7 +12,7 @@ const rateLimit = require("express-rate-limit");                                
 module.exports = {
     JWT_EXP: 300,
     REDIS_USER_CACHE_EXP: 86400,                                                                        // How long to cache the user data in redis - 1 day
-    REDIS_TOKEN_CACHE_EXP: 1296000,                                                                     // How long to cache the token data in redis - 1 day
+    REDIS_TOKEN_CACHE_EXP: 86400,                                                                       // How long to cache the token data in redis - 1 day
 
     corsOptions: {
         origin: 'http://localhost:3000',                                                                // Access-Control-Allow-Origin
@@ -28,17 +28,17 @@ module.exports = {
         maxAge: 1296000,                                                                                // Cookie expires in 15 days (86400*15 s) 
         httpOnly: true,                                                                                 // to disable accessing cookie via client side js
         signed: true,                                                                                   // if you use the secret with cookieParser
+        sameSite: "strict",                                                                             // cookies won't be sent if not the same domain (guard against CSRF)
         // secure: true,                                                                                // only set cookies over https
         // ephemeral: false                                                                             // true = cookie destroyed when browser closes
-        // SameSite: strict,                                                                            // disable because of not same origin, cookies wont be sent
     },
     cookieConfigAccess: {                                                                               // Cookie expires in 1 day (86400 s) 
         maxAge: 86400,                                                                 
         httpOnly: true,                                                                                
-        signed: true,                                                                                   
+        signed: true,  
+        sameSite: "strict",                                                                                                                                                             
         // secure: true,                                                                               
         // ephemeral: false                                                                            
-        // SameSite: strict,                                                                            
     },
 }
  

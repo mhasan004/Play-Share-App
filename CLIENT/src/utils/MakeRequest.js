@@ -29,7 +29,7 @@ var MakeRequest = async (ROUTE_URL, reqObject, props) => {
       return resJson
    }
    else if (resJson.status === -1){                                                             // B) Failure: just return res and resJson
-      console.log("MakeRequest status = -1 "+resJson.message)
+      console.log("MakeRequest status = -1. Error: "+resJson.message)
       performedRequest = false
       performedRefresh = false
       return resJson
@@ -73,7 +73,7 @@ async function RefreshAndRequest(ROUTE_URL, reqObject, resJson, props){
    if (refresh.status === -1){
       console.log("MakeRequest refresh status = -1")
       refresh.status = "Failed to refresh"
-      console.log("Failed to Refresh Tokens! Need to Redirect to Login") 
+      console.log("Failed to Refresh Tokens! Need to Redirect to Login. Error: "+refresh.message) 
       return refresh
    }
    // C3) Refresh endpoint returns 2 --> meaning silent refresh successful so redo original request
