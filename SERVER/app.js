@@ -10,7 +10,7 @@ const authRoutes   = require('./routes/auth')
 const adminRoutes  = require('./routes/admin')
 const userRoutes   = require('./routes/user')
 const {corsOptions, rateLimiter} = require('./config')
-const {verifyUser, isAdmin, isUser} = require('./helpers/VerifyPermissions')                                                            // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
+const {verifyUser, isAdmin} = require('./helpers/VerifyPermissions')                                                                    // PRIVATE ROUTE MIDDLEWARE: Import the Private Routes Middleare      
 const {decryptBody, decryptSelectedHeader, initiateCheckHandShake} = require('./helpers/EncryptDecryptRequest')                         // MIDDLEWARE to decrypt body
 const PORT = process.env.PORT || 8000
 const app  = express()
@@ -24,7 +24,7 @@ app.use(helmet())                                                               
 app.use(cookieParser(process.env.COOKIE_SECRET))                                                                                        // To parse signed cookies
 app.use(express.json())                                                                                                                 // parse request as json
 
-if (process.env.USE_TLS === "True"){
+if (process.env.USE_TLS === "true"){
     app.use('/', initiateCheckHandShake)                                                                                                // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key       
     app.use('/', decryptBody, decryptSelectedHeader)                                                                                    // (Can disable when using HTTPS) My MIDDLEWARES to decrypt body and some headers for login and request
 }
@@ -32,7 +32,7 @@ if (process.env.USE_TLS === "True"){
 // Routes
 app.get('/', (req,res,next) => {res.send(JSON.stringify("<h1>MY API SERVER from Node Cluster PID:"+process.pid+"</h1>"))}) 
 app.use('/api/v1/auth',  authRoutes)                                                                                                    // Register new user, login user 
-app.use('/api/v1/user',  verifyUser, userRoutes)                                                                               // PRIVATE USER ROUTES   
+app.use('/api/v1/user',  verifyUser, userRoutes)                                                                                        // PRIVATE USER ROUTES   
 app.use('/api/v1/admin', verifyUser, isAdmin, adminRoutes)                                                                              // PRIVATE ADMIN ROUTES
 app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route dont exist or wrong http method!"})}) 
 

@@ -1,10 +1,8 @@
 const User = require('../model/User')
-const Token = require('../model/Token')
 const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
 const { registerValidation, loginValidationUsername } = require('../model/ValidationSchema')                                                                // Joi validation functions
 const { redis_client } = require('../helpers/RedisDB')
-const { createJWT, createStoreRefreshToken, verifyToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                                                           // Geting Access and Refresh token creation fucntions
+const { createJWT, createStoreRefreshToken, verifyToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
 const { findUserFromCacheOrDB } = require('../helpers/CachingFunctions')
 const { REDIS_USER_CACHE_EXP } = require("../config")                                         
 
@@ -12,29 +10,53 @@ function randomNum(min=0, max=1000000000000){                                   
     return (Math.random() * (max - min + 1) ) << 0
 }
 
-// Input Fields: display_name, username, email, password
-exports.registerNewUser = async (req,res,next) =>                                                                       
-{
-    const {username, email, password} = req.body                                                                                                            // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema     
-    const {error} = registerValidation(req.body)                                                                                                      
-    if(error){ return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message}).end() }
-    let user_exists, email_exists                                                                                                                           // 1b) VALIDATE the POST request: See if user and email already exists in DB
+async function doesUsernameEmailExist(res, username, email){                                                                                                // Fucntion that checks if username or email exists in database - used for registration. Returns true if it does, response will be sent out. false if there is no username/email                                                            
+    let user_exists, email_exists                                                                                                                                        
     try{
         [user_exists, email_exists] = await Promise.all([
             User.findOne({username: username}),
             User.findOne({email: email})
         ])
     } catch(err){
-        return res.status(400).json( {status: -1, message: "Database find error: couldn't search database! Err: "+err }).end() 
+        res.status(400).json({status: -1, message: "Database Query Error: couldn't search database! Err: " + err }) 
+        return true
     }
-    if (user_exists || email_exists)   
-        return res.status(400).json( {status: -1, message: "This Username or Email Address is Already Registered!" }).end() 
-    const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)                                                                                              // 1c) HASH THE PASSWORD FOR STORAGE!    leave salt as 10 and every year increase it by 1 to make cracking uyr passwords difficult                                                                     
-    let hashed_password = null
+    if (user_exists || email_exists){
+        res.status(400).json({status: -1, message: "This Username or Email Address is Already Registered!" }) 
+        return true
+    }
+    return false
+}
+
+async function comparePasswords(res, password, dbPassword){                                                                                                 // Function to check passwords - Compare password that was passed to the one in the db. Returns true if successfull or false if not successfull.
+    try{                                                                                                                                                                                                                                                                        
+        if(!await bcrypt.compare(password, dbPassword)){                                                                                               
+            res.status(401).json( {status: -1, message: "Invalid username or password!"} )
+            return false 
+        } 
+    } catch(err){
+        console.log("Bycrypt Error - Failed to compare passwords! Error: " + err)
+        res.status(400).json({status: -1, message:"Bycrypt Error - Failed to compare passwords! Error: " + err})
+        return false
+    }
+    return true
+}
+
+// Input Fields: display_name, username, email, password
+exports.registerNewUser = async (req,res,next) =>                                                                       
+{
+    let hashed_password = null 
+    const {username, email, password} = req.body                                                                                                            // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema     
+    const {error} = registerValidation(req.body)                                                                                                      
+    if(error){return res.status(400).json({status:-1, message: "Joi Validation Error: " + error.details[0].message})}
+    if (await doesUsernameEmailExist(res, username, email))                                                                                                 // 1b) VALIDATE the POST request: See if user and email already exists in DB
+        return
+
+    const salt = await bcrypt.genSalt(process.env.SALT_NUMBER)                                                                                              // 1c) HASH THE PASSWORD FOR STORAGE! - Leave salt as 10 and every year increase it by 1 to make cracking uyr passwords difficult                                                                     
     try{  
         hashed_password = await bcrypt.hash(password, salt)
-    } catch{ 
-        return res.status(401).json( {status: -1, message: "Failed to hash password!" } ).end()
+    } catch(err){ 
+        return res.status(401).json( {status: -1, message: "Failed to hash password! Error: "+err } )
     }
     const new_user = new User({                                                                                                                             // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the D                                                                                                         
         username: username,
@@ -43,70 +65,42 @@ exports.registerNewUser = async (req,res,next) =>
         email: email,
         password: hashed_password,
     })        
-    let user = null                                                                                                                                         // 3) Add the user to the DB                                                                                                                                                                            
-    try{ 
-        user = await new_user.save()
+    try{                                                                                                                                                    // 3) Add the user to the DB                                                                                                                                                                            
+        await new_user.save()
     } catch(err){ 
-        return res.status(400).json({status: -1, message:"Error adding user to DB: " + err}).end()
+        return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})
     } 
-    try{
-        console.log("registered user: "+user.username)
-        res.status(201).json({status: 1, message: "Succesfuly added user! Check 'user' property", user}).end()
-    } catch(err){ 
-        return res.status(400).json({status: -1, message:"Registeration Error - Error Encrypting db user id to send to client. Error: " + err}).end()
-    } 
+    res.status(201).json({status: 1, message: "Succesfuly added user! Check 'user' property"})
 }
-
 
 exports.login = async (req,res,next) => 
 {    
-    const {username, password} = req.body                                                                                                                   // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema
-    const {error} = loginValidationUsername(req.body)                                                                                       
+    const {username, password} = req.body       
+    const {error} = loginValidationUsername(req.body)                                                                                                       // 1) Validate the request body by using Joi. See if user is in the DB                                                                                                           
     if(error) 
-        return res.status(400).json({status:-1, message: error.details[0].message}).end() 
-    let {user, isUserCached} = await findUserFromCacheOrDB(username)                                                                                        // 2) Find the user - eitcher in Redis cache or mongoDB
+        return res.status(400).json({status:-1, message: error.details[0].message}) 
+    let {user, isUserCached} = await findUserFromCacheOrDB(username)      
     if (!user) 
-        return res.status(401).json( {status: -1, message: "Invalid username or password!"} ).end()
-   
-    try{                                                                                                                                                    // 3) CHECK PASSWORD on DB:                                                                                                                    
-        const valid_pass = await bcrypt.compare(password, user.password)                                                                                    // CHECK PASSWORD: Compare if the passed in pas and the hashed db pass are the same
-        if(!valid_pass)
-            return res.status(401).json( {status: -1, message: "Invalid username or password!"} ).end() 
-    } catch(err){
-        console.log("Bycrypt Error - Failed to compare passwords! Error: " + err)
-        return res.status(400).json( {status: -1, message:"Bycrypt Error - Failed to compare passwords! Error: " + err} ).end()
-    }
-    // 4) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated
-    const payload = {username: user.username, id: randomNum()}     
+        return res.status(401).json( {status: -1, message: "Invalid username or password! Error: "+err} )
+    if(!await comparePasswords(res, password, user.password))                                                                                               // 2) CHECK PASSWORD - Compare password that was passed in to the one in the DB    
+        return
+
+    const payload = {username: user.username, id: randomNum()}                                                                                              // 3) CREATE + ASSIGN TOKEN So User Can Access Private Routes (admin secret is set in .env, user secret is uniquely generated
     try{
         createJWT(res, payload, "access")
-    } catch(err){
-        return res.status(400).json({status:-1, message: "Failed to create access token! Error: "+err}).end()
-    }
-    try{
         await createStoreRefreshToken(res, payload)   
     } catch(err){
-        return res.status(400).json({status:-1, message: "Failed to create refresh token! Error: "+err}).end()
-    } 
-    res.status(201).json( {status: 1, message: "Logged In!"} ).end()
+        return res.status(400).json({status:-1, message: "Failed to create access or refresh token! Error: "+err})
+    }
+    res.status(201).json( {status: 1, message: "Logged In!"} )
     
-    // 5) After sending response - Add user to redis cache so that we can use it later for the session
-    if (!isUserCached){
+    if (!isUserCached){                                                                                                                                     // 4) After sending response - Add user to redis cache so that we can use it later for the session
         try{
-            await storeToken("user-"+username, JSON.stringify(user), REDIS_USER_CACHE_EXP)                                                       // set refresh token in redis cache as a key
-            console.log("Cached user data to Redis for 1 Day")
+            await storeToken("user-"+username, JSON.stringify(user), REDIS_USER_CACHE_EXP)                                                                  // Set refresh token in redis cache as a key
         } catch(err){
-            console.log("Failed to add user data to redis cache. Error: "+err)
+            console.log("     Failed to add user data to redis cache. Error: "+err)
         }
     }
-    try{
-        await User.updateOne({ _id: user._id }, {login_status: 1})                                                                                          // Change logged in status for user                             
-    } catch(err){
-        console.log("Failed to update login status of user! Error: "+err)
-    }
-    console.log("    (DEL) Set cookie secure flag to true so when client uses https! ")                                                     
-    console.log("    Logged In: " + user.username)
-    return 
 }
 
 exports.logout = async (req,res,next) => 
@@ -124,7 +118,7 @@ exports.logout = async (req,res,next) =>
         return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Couldn't delete rf from db!"})
     }
     try{
-        await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                               // Delete RT from redis
+        await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                    // Delete RT from redis
         console.log("     Deleted redis RF")
         return res.status(200).json({status:1, message: "Successfully logged out and cookie deleted!"})
     } catch(err){
@@ -138,44 +132,37 @@ exports.refresh = async (req,res,next) => {
     let verified_RF                                                                                                                                         
     const old_RF = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
     const username_in = req.headers['username']   
-    
-    if (!old_RF){
+    if (!old_RF)
         return res.status(401).json({status: -1, message: "No refresh-token cookie sent with request! Need to login again!"})
-    }
-    
     try{
         verified_RF = verifyToken(old_RF, "refresh", req.role)                                                                                              // 1) check if token expired - if it is expired, it will be deleted from db anyways
     } catch(err){ 
         res.clearCookie("refreshToken")    
         res.clearCookie("accessToken")
-        return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again!"}).end()
+        return res.status(401).json({status:-1, message: "Incorrect or Expired Refresh Token! Need to login again!"})
     }
 
     if (username_in !== verified_RF.username){
         res.clearCookie("refreshToken")    
         res.clearCookie("accessToken") 
-        return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"}).end()
+        return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"})
     }
     if (!await redis_client.exists("RT-"+verified_RF.username+'-'+verified_RF.id))                                                                          // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
-        return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"}).end()
+        return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"})
     try{
-        await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                               // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
+        await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                    // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
     } catch{
-        return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"}).end()
+        return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"})
     }
 
+    const payload = {username: verified_RF.username, id: randomNum()}   
     try{
-        const payload = {username: verified_RF.username, id: randomNum()}   
         createJWT(res, payload, "access")
         await createStoreRefreshToken(res, payload)   
     } catch(err){
-        return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err}).end()
+        return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err})
     }
-    console.log("    (DEL) SET COOKIE SECURE FLAG TO TRUE SO WHEN CLIENT USES HTTPS")
-    console.log("    (DEL) REMINDER: PUT JWT IN AUTH HEADER!!!")
-    console.log("    (TODO) Refresh tokens are stored in redis. But i need to store in MongoDB so its permanent. Also need to cache it")
-    console.log('    REFRESHED TOKEN RESPONSE SENT!')
-    return res.status(201).json({status: 2, message: "Successfully refreshed JWT and refresh token"}).end()
+    return res.status(201).json({status: 2, message: "Successfully refreshed JWT and refresh token"})
 }
 
 

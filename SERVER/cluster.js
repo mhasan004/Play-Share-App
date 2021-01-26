@@ -1,7 +1,6 @@
 var cluster = require('cluster');
 var threadCount = require('os').cpus().length;                                              // Count the machine's threads
 
-
 if (cluster.isMaster) {                                                                     // parent process
     for (var i = 0; i < threadCount; ++i) {                                                 // create threads based on thread count
         cluster.fork();

@@ -12,6 +12,7 @@
   * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) 
   * **Clean URLS** so that attackers can't query requests too easily. Query parameters are passed via headers.
   * **Some Others:** Caching data for frequently used endpoints, input validation, password hashing, etc
+  * **Combined benefits of token based and session based authentication** by using JWT acces and refresh tokens and have a silent refresh scheme to persist sessions. 
 
 # DEMO:
 
@@ -20,17 +21,15 @@
     Fig 1: App security demo so far (App still in development)
 </p>
 
-* **What users can do:** <details>      
-  <summary > Click to expand section  </summary>   
+<details>      
+  <summary ><b>  What users can do:  </b></summary>   
 
   * **Users** can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
   * **Admin** can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
   * **(In Progress)** Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other posts, comment on other user's posts. 
   * **(Future Plans)** Users can join different game groups just like reddit and follow users. App will feature an hierarchical commenting system and messaging system in the future.
  
-  </details>    
-
-<br/>
+</details>    
 
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
@@ -63,7 +62,7 @@
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
       * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
       * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
-      * `JWT_PAYLOAD_ENCRYPTION_KEY` - Used to encrypt the JWT payload. Paylaod doesn't contains the username and a random number, which together, lets us find the refresh key value in the database. 
+      * `JWT_PAYLOAD_ENCRYPTION_KEY` - Used to encrypt the JWT payload. Payload contains the username and a random number, which together, lets the server find the refresh key value in the database in linear time. 
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
       the hashing algorithm of these fields.
       * `USE_TLS = false` - Can keep this as is. Do you want to use the TLS handshake? false = disable TLS (do this when using https). true = enable TLS. 
@@ -71,7 +70,6 @@
 2) `redis-server` - download redis and start the redis server for REST API.
 3) `npm install` on the **CLIENT** & **SERVER** directories
 4) `npm start` on the **CLIENT** & **SERVER** directories to run the client and server 
-<br/>
 
 # 🛡️ APP SECURITY:
 <details>      
@@ -95,39 +93,40 @@
   </p>
 
   * After successful login, access token and refresh tokens are made and stored in a signed HttpOnly cookie so that they cannot be accessed in the client. Can silently refresh tokens to persist sessions with: (1) valid refresh token, and (2) corresponding username in the `username` header of the request. 
-  * 🍪 **Token & Cookie Creation + Expiration Times:** <details>      
-    <summary > Click to expand section  </summary>
+  <details>      
+  <summary ><b>🍪 Token & Cookie Creation + Expiration Times: </b></summary>
 
-    * **Secret Keys:** 
-      * **Access token** is signed with the `USER_SECRET_KEY` key if its a user or the `ADMIN_SECRET_KEY` key if it is an admin. 
-      * **Refresh token** is signed with the `REFRESH_TOKEN_SECRET` key.
-      * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`. Can only be sent via HTTPS and to the same domain/subdomain. 
-    * **Token Payload:** The payload of the tokens is the username along with a randomly generated number. Example: `{username: 'Tom', id: '1234'}`
-    * **Expiration Times:** 
-      * **Access token** expiration time: 5 minutes
-      * **Refresh tokens** expiration time: 15 days
-      * **Access tokens HttpOnly cookie** expiration time: 1 day 
-      * **Refresh token HttpOnly cookie** expiration time: 15 days
-    </details> 
+  * **Secret Keys:** 
+    * **Access token** is signed with the `USER_SECRET_KEY` key if its a user or the `ADMIN_SECRET_KEY` key if it is an admin. 
+    * **Refresh token** is signed with the `REFRESH_TOKEN_SECRET` key.
+    * Tokens are AES encrypted with `JWT_PAYLOAD_ENCRYPTION_KEY`. 
+    * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`. Can only be sent via HTTPS and to the same domain/subdomain. 
+  * **Token Payload:** The payload of the tokens is the username along with a randomly generated number. Example: `{username: 'Tom', id: '1234'}`
+  * **Expiration Times:** 
+    * **Access token** expiration time: 5 minutes
+    * **Refresh tokens** expiration time: 15 days
+    * **Access tokens HttpOnly cookie** expiration time: 1 day 
+    * **Refresh token HttpOnly cookie** expiration time: 15 days
+  </details> 
    
-  * 🤫 **Silent Refresh Procedure to Persist Sessions (Figure 3)**: <details>      
-    <summary > Click to expand section  </summary>
+  <details>      
+  <summary ><b>🤫 Silent Refresh Procedure to Persist Sessions</b> (Figure 3):  </summary>
 
-    1) When a request has an invalid access token, the server will verify if the refresh token is valid. If it is valid, the server will respond with status code `-2`. 
-    2) Client will send a GET request to the `/auth/refresh` endpoint. 
-    3) Server will decrypt the refresh token and will get the `username` and `id` fields from the payload. It will fetch the value of `username-id` from the database. If the incoming refresh token matches the token saved in the database, and the `username` header matches the `username` payload field of the token, the server will try to refresh the tokens.
-    4) If the server successfully refreshed the tokens, it will respond with status code `2` and will delete the token from the database and will add the new token to the database. If unsuccessful, server will respond with `-1`.
-    </details>  
+  1) When a request has an invalid access token, the server will verify if the refresh token is valid. If it is valid, the server will respond with status code `-2`. 
+  2) Client will send a GET request to the `/auth/refresh` endpoint. 
+  3) Server will decrypt the refresh token and will get the `username` and `id` fields from the payload. It will fetch the value of `username-id` from the database. If the incoming refresh token matches the token saved in the database, and the `username` header matches the `username` payload field of the token, the server will try to refresh the tokens.
+  4) If the server successfully refreshed the tokens, it will respond with status code `2` and will delete the token from the database and will add the new token to the database. If unsuccessful, server will respond with `-1`.
+  </details>  
 
-  * **Authentication & Authorization** <details>      
-    <summary > Click to expand section  </summary>
+  <details>       
+  <summary ><b>Authentication & Authorization </b> </summary>
 
-    * Multiple checks to authenticate user: 
-    1) Validating access and refresh tokens. 
-    2) Matching token payloads with username header to ensure that the correct user is using the token. 
-    3) Checking if user is in the database
-    4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshign tokens, or when access token is invalid)
-  </details>
+  * Multiple checks to authenticate user: 
+  1) Validating access and refresh tokens. 
+  2) Matching token payloads with username header to ensure that the correct user is using the token. 
+  3) Checking if user is in the database
+  4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshign tokens, or when access token is invalid)
+</details>
 
   
 
@@ -138,43 +137,37 @@
   </p>
 
   * TLS handshake can be performed but is not needed since server and client will communicate over https. Implemented basic version of TLS for fun
-    <details>      
-      <summary> TLS Handshake Process </summary>
+  <details>      
+    <summary><b> TLS Handshake Process</b> </summary>
 
-    1. Client sends initial request to server (/auth/ routes only).
-    2. Server generates RSA public and private keys and send to public key to client:
-      * 1) header `handshake` = 0
-      * 2) header `pub_key` = public key
-    3. Client generates a random hash (`SYMMETRIC_KEY`) and encrypts with public key and sends request to server with two headers: 
-      * 1) header `handshake` = 0
-      * 2) header `key` = `SYMMETRIC_KEY` encrypted with public key
-    4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `handshake` = 1, signifying handshake completed for server.
-    5. Client will finish by sending a request with header `handshake` = 1, signifying it has received the server's message
-    6. Server will only fulfill requests for auth routes if the `handshake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
-    7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
+  1. Client sends initial request to server (/auth/ routes only).
+  2. Server generates RSA public and private keys and send to public key to client:
+    * 1) header `handshake` = 0
+    * 2) header `pub_key` = public key
+  3. Client generates a random hash (`SYMMETRIC_KEY`) and encrypts with public key and sends request to server with two headers: 
+    * 1) header `handshake` = 0
+    * 2) header `key` = `SYMMETRIC_KEY` encrypted with public key
+  4. Server will then decrypt the `SYMMETRIC_KEY` with the private key and will send a response with header `handshake` = 1, signifying handshake completed for server.
+  5. Client will finish by sending a request with header `handshake` = 1, signifying it has received the server's message
+  6. Server will only fulfill requests for auth routes if the `handshake` header is set to 1. This means that server has the client's `SYMMETRIC_KEY` and can decrypt request. If server cannot decrypt request, the `SYMMETRIC_KEY` is incorrect and server will refuse request. 
+  7. Symmetric keys are stored in a dictionary in the server (will move it to a key-value database). If user logs out, entry is deleted
 
-    </details>
+  </details>
 
 
 # 📐 USABILITY (CLIENT REQUESTS):
-* **Client Headers** Send encrypted authentication code to server through the header <details>      
-    <summary > Click to expand section  </summary>
+<details>      
+  <summary ><b> Client Headers </b>  </summary>
 
-  * To make any requests to the server, the application needs to have the valid access key.
-  * `Content-Type` = `application/json`
-  * `username` = username. this username will be compared to the username in the tokens to authenticate user
-  * `post-id` = client will specify the post id here to edit the specific post
-  * `like-dislike` = `dislike` or `like`
-  * (optional if using TLS) `handshake` =  
-    * nothing - to initiate TLS handshake
-    * `0` - to  say sending client's symmetric key to server 
-    * `handshake_index` - this is sent by server after successful TLS handshake 
-  * (optional if using TLS) AES encrypt the post request body with the symmetric key
+* To make any requests to the server, the application needs to have the valid access key.
+* `Content-Type` = `application/json`
+* `username` = username. this username will be compared to the username in the tokens to authenticate user
+* `post-id` = client will specify the post id here to edit the specific post
+* `like-dislike` = `"like"` or `"dislike"`
+* (optional if using TLS): `handshake` =  
+  * nothing - to initiate TLS handshake
+  * `0` - to  say sending client's symmetric key to server 
+  * `handshake_index` - this number is sent by server after successful TLS handshake. Client will make requests with this handshake
+* (optional if using TLS): AES encrypt the body and specific headers of the request or response with the symmetric key
 
-  </details>  
-
-
-  
-  
-
-
+</details>  

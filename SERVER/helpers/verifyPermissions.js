@@ -1,5 +1,3 @@
-const jwt = require('jsonwebtoken')
-// const CryptoJS = require("crypto-js");
 const {verifyToken, deleteToken} = require('./TokenFunctions')
 const {cacheUser} = require('./CachingFunctions')
 
@@ -76,12 +74,6 @@ exports.verifyUser = async (req,res,next) =>                                    
 exports.isAdmin = async (req,res,next) => {                                                                                                     // MiddleWare: Admin Route. See if req.role is admin or not
     if (req.role !== "admin")
         return res.status(401).json({status: -1, message: "Access Denied! Not Admin!"}).end() 
-    next()
-}
-
-exports.isUser = async (req,res,next) => {                                                                                                      // MiddleWare: Admin Route. See if req.role is admin or not
-    if (req.role !== "user")
-        return res.status(401).json({status: -1, message: "Access Denied! Not User! If Admin, try admin routes instead!"}).end() 
     next()
 }
 

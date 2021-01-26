@@ -57,9 +57,26 @@ function verifyToken(token, type = "access", role = "user"){                    
 }
 
 async function storeToken(key, value, exp, cachingOnly = true){  
-    await redis_client.set(key, value, 'EX', exp)                                                           // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
+    try{
+        await redis_client.set(key, value, 'EX', exp)                                                           // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
+    } catch(err){
+        throw err
+    }
     if (!cachingOnly){
         //store in key value db also
+        // const new_token = new User({                                                                                                                             // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the D                                                                                                         
+        //     username: username,
+        //     handle: "@"+username, 
+        //     // display_name: username,                                                                                                                          // Disabeld for now                                                                                      
+        //     email: email,
+        //     password: hashed_password,
+        // })        
+        // try{                                                                                                                                                    // 3) Add the user to the DB                                                                                                                                                                            
+        //     await new_token.save()
+        // } catch(err){ 
+        //     throw err
+        // } 
+
     }
 }                                                                                             
 async function deleteToken(key){  

@@ -10,10 +10,9 @@ async function findUserFromCacheOrDB(username)                                  
     try{
         if(await redis_client.exists("user-"+username)){
             try{
-                isUserCached = true
-                console.log("    (DEL) Got user from cache!")
                 user = await redis_client.get("user-"+username)
                 user = JSON.parse(user)
+                isUserCached = true
                 return {user, isUserCached}
             } catch(err){
                 console.log("Failed to add user data to redis cache. Error: "+err)
@@ -25,11 +24,13 @@ async function findUserFromCacheOrDB(username)                                  
     } catch(err){
         console.log("Failed to see if user exists in Redis. Error: "+err)
     }
-    try{
-        user = await User.findOne({username: username})
-        return {user, isUserCached}
-    } catch(err){
-        console.log("Error finding user form Mongo DB. Error: "+err) 
+    if (!isUserCached){
+        try{
+            user = await User.findOne({username: username})
+            return {user, isUserCached}
+        } catch(err){
+            console.log("Error finding user form Mongo DB. Error: "+err) 
+        }
     }
 }
 
@@ -47,9 +48,8 @@ async function cacheUser(req, username)
             const user = await User.findOne({username: username})
             req.user = user
             try{
-                await storeToken("user-"+username, user, REDIS_USER_CACHE_EXP)                                                       // Saving Refresh token to Redis Cache
-            }
-            catch(err){
+                await storeToken("user-"+username, user, REDIS_USER_CACHE_EXP)                                              // Saving Refresh token to Redis Cache
+            } catch(err){
                 console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
                 throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
             } 

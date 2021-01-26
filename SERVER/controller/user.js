@@ -14,7 +14,7 @@ exports.getAllPosts = async (req,res,next) =>
     try{
         const user_posts = await Post.find({username: username})
         return res.status(200).json({status: 1, message: "Successfully retrieved all posts. See user_posts field!", user_posts})                                                     
-    }catch{
+    }catch(err){
         return res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
     }
 }
