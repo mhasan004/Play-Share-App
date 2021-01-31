@@ -1,6 +1,9 @@
 .global-feed-body{
     display: flex; 
-    flex-direction: row; 
+    flex-direction: column; 
+    flex-wrap: wrap;
+    justify-content: center;
+
     /* margin: 10px;
     border-radius: 20px; */
 

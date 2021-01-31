@@ -1,12 +1,13 @@
 import React, {Component} from "react"
+// import '../../css/post.css'
 
 class Post extends React.Component{
     loggedUser = localStorage.getItem("username")
     state = this.props.post
 
     async likeHandler(event) {
-        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
-            return
+        // if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
+        //     return
     
         // I hit like again, so remove like
         if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){          // if already liked, remove it
@@ -44,8 +45,8 @@ class Post extends React.Component{
         }
     }
     async dislikeHandler(event) {    
-        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
-            return
+        // if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
+        //     return
     
         // I hit dislike again, so remove dislike
         if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){          // if already disliked, remove it

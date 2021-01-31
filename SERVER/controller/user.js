@@ -9,7 +9,6 @@ Date.prototype.formatMMDDYYYY = function(){
 
 exports.getAllPosts = async (req,res,next) => 
 {
-    console.log("     HITTED GET ALL!-----------------------------------")
     const username = req.username
     try{
         const user_posts = await Post.find({username: username})
@@ -34,6 +33,9 @@ exports.makePost = async (req,res,next) =>
         handle:'@'+username,
         title: req.body.title,
         content: req.body.content,
+        likes: 1,
+        total_likes: 1,
+        user_liked: [username],
         date: new Date().toLocaleDateString('en-US'),
         group: req.body.group,
         group_type: req.body.group_type,
@@ -44,9 +46,7 @@ exports.makePost = async (req,res,next) =>
         console.log("Post made")
         return res.status(200).json({status: 1, added_post_id: added_post._id})
     } catch(err){
-        console.log("failed to make post")
-        console.log(Date.now)
-        console.log((new Date()).toLocaleDateString('en-US'))
+        console.log("Dailed to make post for: "+ (new Date()).toLocaleDateString('en-US'))
         return res.status(400).json({status: -1, message: "Failed to post: "+err})
     }
 }
@@ -89,10 +89,15 @@ exports.deleteAPost = async (req,res,next) =>
     }
 }
 
+// function shortenCount(num){
+//     if num
+// }
+
 exports.getFeed = async (req,res,next) => {
     try{
         let posts = await Post.find()                                                           //Post.find().sort([['date', -1]]).exec()
         posts = posts.reverse()
+        
         return res.status(200).json({status: 1, posts})    
     } catch{
         return  res.status(400).json({status: -1, message: "Failed to get post feed: "+err})    

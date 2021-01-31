@@ -44,8 +44,14 @@ const postSchema = new mongoose.Schema({
         default: 0
     },
     date: {
+        type: String, 
+        // type: Date,
+        default: new Date().toLocaleDateString('en-US'),
+        // max:22
+    },
+    exact_date: {
         type: Date,
-        default: Date.now,
+        default:  Date.now(),
         // max:22
     },
     likes:{                                                                                     

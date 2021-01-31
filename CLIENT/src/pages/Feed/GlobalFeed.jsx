@@ -57,7 +57,7 @@ class GlobalFeed extends React.Component{
         }
     }
 
-    render(){          
+    render(){   
         return (
             <div class="global-feed-body">
                 <span class="global-feed-nav">

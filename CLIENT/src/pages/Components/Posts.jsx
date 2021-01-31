@@ -1,7 +1,5 @@
 import React, {Component} from "react"
-import Post from "./Post"
-import '../../css/post.css'
-
+import Post from "./TestPost3"
 
 class Posts extends React.Component{
     deleteHandler(postId){

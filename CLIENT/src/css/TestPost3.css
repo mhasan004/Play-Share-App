@@ -1,0 +1,233 @@
+            /* margin-left: auto; */
+/* *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        border-radius: 10px
+    } */
+    /* phone width: 380px. desktop should be about 850*/
+    :root {
+        --font-size-handleDate:  .5rem;
+        --font-size-title:       1.6rem;
+        --font-size-content:     1.2rem;
+        --font-size-like:        1.87rem;
+        --card-left-max-width:     33rem;
+        
+        --arrow-width:  2.2rem;
+        --arrow-height: 2.2rem;
+        --right-side-width: 3.3rem;
+        --left-row-margins: .5rem .5rem .5rem .5rem;
+        --left-body-row-margins: 1rem;
+    }
+    @media screen and (max-width: 600px) {
+        :root {
+            --font-size-handleDate:  .4rem;
+            --font-size-title:       1.4rem;
+            --font-size-content:     1.1rem;
+            --font-size-like:        1.7rem;
+
+            --arrow-width:  2rem;
+            --arrow-height: 2rem;
+            --right-side-width: 2.4rem;
+            --left-row-margins: .4rem .4rem .4rem .4rem;
+            --left-body-row-margins: .7rem
+        }
+    }
+    
+    @media screen and (max-width: 400px) {
+        :root {
+            --font-size-handleDate:  .5rem;
+            --font-size-title:       1.3rem;
+            --font-size-content:     1.0rem;
+            --font-size-like:        1.5rem;
+    
+            --arrow-width:  2rem;
+            --arrow-height: 2rem;
+            --right-side-width: 2.4rem;
+            --left-row-margins: .3rem .3rem .3rem .3rem;
+            --left-body-row-margins: .5rem
+        }
+    }
+                                                    
+/*----------------------------------------------------BODY/*----------------------------------------------------*/
+    .post-card-body-main{
+        font-family: Quicksand;
+        font-style: normal;
+        font-weight: normal;
+
+        margin: 1rem 1rem 1rem 1rem;
+        min-width: 14rem;
+        max-width: 38rem;
+        /* max-height: 50rem; */
+
+        border-radius: 10px;
+        background: rgb(255, 255, 255);
+        box-shadow: 0 14px 28px rgb(0, 0, 0, .25), 0 10px 10px rgb(0, 0, 0, 0.2);   /* TIP: MULTI SHADOWS */
+
+        display: grid;
+        grid-template-columns: 1fr auto; 
+        grid-template-rows: 1fr auto; 
+    }
+    .post-card-body{
+        min-width: 12rem;
+        max-width: 37rem;
+        max-height: 50rem;
+    }
+    
+    /*----------------------------------------------------LEFT SIDE----------------------------------------------------*/
+        .post-card-left {
+            grid-column: 1/1 ;
+            grid-row: 1/1 ;
+
+            margin: .5rem;
+            margin-left: 1rem;
+            margin-right: 1rem;
+            max-width: var(--card-left-max-width);
+            overflow-x: hidden;  
+        }
+        .PCL-row{
+            margin: var(--left-row-margins);
+        }  
+       
+    /*LEFT SIDE: row-1: handle/date*/
+        .PCL-row-1{
+            display: flex;
+            flex-direction: row;
+            font-size: var(--font-size-handleDate);
+            min-height: 40px;
+            max-height: 80px;
+        }
+        .PCL-handle-date{
+            padding-left: .2rem;
+            display: flex;
+            flex-direction: row;  
+            flex-wrap: wrap;
+            align-items: center; 
+        }
+        .PCL-handle{
+            margin-right: .5rem;
+        }
+        .PCL-date{
+            color: #afafaf;        
+        }
+        .PCL-avatar{
+            min-width: 30px;
+            min-height: 30px;
+            max-width: 55px;
+            max-height: 55px;
+            padding-right: .5rem;
+        }
+    
+    /*LEFT SIDE: row-2/3: body: title/content*/
+        .PCL-body{
+            /* word-wrap: break-word; */
+            margin-left: var(--left-body-row-margins);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2; 
+        }
+        .PCL-title{
+            font-weight: bold;
+            font-size: var(--font-size-title); 
+        }
+        .PCL-content-text{
+            font-size: var(--font-size-content); 
+            word-wrap: break-word;
+        }
+        .PCL-row-3{
+          
+        }
+        .PCL-content-img {
+            /* height: 100%; */
+            /* text-align: center; */
+            background-repeat:no-repeat; 
+        }
+        .PCL-content-img img{
+            border-radius: 10px;
+        }
+    /*LEFT SIDE: row-4:comment*/
+        .PCL-comment{
+            grid-column: 1/3 ;
+            grid-row: 2/3 ;
+
+            margin: 0rem .9rem .9rem .9rem;
+            display: flex;
+            flex-direction: row;  
+            justify-content:center; 
+        }
+    
+    
+    
+    /*----------------------------------------------------RIGHT SIDE----------------------------------------------------*/
+        .post-card-right{
+            grid-column: 2/3 ;
+            grid-row: 1/3 ;
+
+            background: #F4F4F4;
+            min-width: var(--right-side-width );
+            max-width: 5rem;
+            margin-left: auto;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+
+    
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .PCR-action{
+            align-items:  flex-center;
+        }
+    /*RIGHT SIDE action-1: up/down block*/
+        .PCR-action-1{
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .PCR-arrows{
+            width: var(--arrow-width);
+            height: var(--arrow-height);
+            min-width: 2rem;
+            min-height: 2rem;
+            margin: .1rem
+        }
+        .PCR-total-likes-text{
+            font-size: var(--font-size-like);
+            padding-left:.1rem;
+            padding-right:.1rem;
+        }
+    
+    /*RIGHT SIDE action-2: edit/delete/*/
+        .PCR-action-2{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: .3rem;
+            margin-bottom: .2rem;
+        }
+        .PCR-edit{
+            margin-bottom: .2rem;
+        } 
+    
+    
+    .icon:hover{
+        border-radius: 2px;
+        background:rgba(207, 207, 207, 0.25);
+        background-clip: border-box;
+    }
+    .PCR-arrow-up:hover > path{
+        fill: #2BB3FF
+    }
+    .PCR-arrow-down:hover > path{
+        fill: #FF4B2B
+    }
+    
+    .PCL-comment-elem:hover{
+        transform: scale(1.02);
+    }
+    .PCL-comment-elem:hover > path {
+        fill:#2bb1ffb6
+    }

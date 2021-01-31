@@ -141,6 +141,7 @@ class MakePost extends React.Component{
                     <textarea class="post-form-input post-form-input-content " type="text" value={this.state.content} onChange={e=>this.handleInputChange(e)} name="content" placeholder="Text (option)" ></textarea>
                     <button type="submit" id='postButton'>Post</button> 
                 </form>
+                
             </div>
         );
     }
