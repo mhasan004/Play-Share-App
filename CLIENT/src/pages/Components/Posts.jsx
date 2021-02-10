@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import Post from "./TestPost3"
+import Post from "./Post"
 
 class Posts extends React.Component{
     deleteHandler(postId){

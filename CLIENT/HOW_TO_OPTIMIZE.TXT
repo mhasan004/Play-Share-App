@@ -1,0 +1,1 @@
+mAKEpOST.JSX tab selection function is slow. can fix it seeing which tab text selected: "tab1" "tab2" "tab3"

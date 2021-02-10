@@ -33,13 +33,16 @@ const postSchema = new mongoose.Schema({
         min:2,
         max:75
     },
+
     content:{                                                                                   // url of pic/img
         type: String,                                    
         max:250
     },
-
-    
     isURL: {                                                                                    // is content a url?                                                               
+        type: Boolean,                          
+        default: 0
+    },
+    isFile: {                                                                                    // is content a url?                                                               
         type: Boolean,                          
         default: 0
     },

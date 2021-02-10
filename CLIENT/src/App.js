@@ -4,10 +4,7 @@ import SignInUpPage from "./pages/SignInUpPage/SignInUpPage";
 import GlobalFeed from "./pages/Feed/GlobalFeed";
 import MakePost from "./pages/MakePostComponents/MakePost.jsx";
 import UserFeed from "./pages/Feed/UserFeed";
-import TestPost from "./pages/Components/TestPost";
-import TestPost2 from "./pages/Components/TestPost2";
-import TestPost3 from "./pages/Components/TestPost3";
-
+import TestPost from "./pages/Components/Post";
 import CONFIG from "./config"
 import './App.css'
 
@@ -71,11 +68,7 @@ class App extends React.Component{
                     <GlobalFeed   exact path={CONFIG.PATHS.GlobalFeed} /> 
                     <MakePost     exact path={CONFIG.PATHS.MakePost} /> 
                     <UserFeed     exact path={CONFIG.PATHS.UserFeed} />                    
-                    <TestPost     exact path="/test" post={testPost[0]} />
-                    <TestPost2     exact path="/test2" post={testPost[2]} />
-                    <TestPost3     exact path="/test3" post={testPost[2]} />
-
-
+                    <TestPost     exact path="/test" post={testPost[2]} />
                     <Route path="*" component={()=>"404 NOT FOUND!"}/>
                 </Switch>
             </Router>      
@@ -84,7 +77,3 @@ class App extends React.Component{
 }
 
 export default App;
-// access-token-exp 
-// (new Date().getTime() >= localStorage.getItem("access-token-exp"))
-// localStorage.setItem("access-token-exp", refresh.accessTokenExp)
-// localStorage.removeItem("access-token-exp")

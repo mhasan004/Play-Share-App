@@ -53,6 +53,7 @@ class GlobalFeed extends React.Component{
         }
         else{
             console.log("Improper or no API response!")
+            console.log(resJson)
             return await Logout(this.props)
         }
     }

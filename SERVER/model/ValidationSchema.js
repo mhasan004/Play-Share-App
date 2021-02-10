@@ -32,6 +32,7 @@ function postValidation(data)
         title: Joi.string().min(2).max(75).required(),
         content: Joi.string().max(250),                                                     //.required(),                                       //***VALIDATE URL
         isURL: Joi.boolean(),
+        isFile: Joi.boolean(),
     })
     return validationSchema.validate(data)                                                 
 }

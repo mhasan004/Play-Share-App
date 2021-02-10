@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
-const CryptoJS = require("crypto-js")
 const Token = require('../model/Token')
-const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")                                         
+const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
 const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptRequest')
+const {encryptPayload, decryptPayload} = require('./AuthFunctions')
 const {redis_client} = require('./RedisDB')
 
 /*  JWT_payload = encrypted with AES: {username: username, id: random number}  
@@ -38,24 +38,6 @@ async function createStoreRefreshToken(res, JWT_payload){                       
     res.cookie('refreshToken', refresh_token, cookieConfigRefresh);
 }
 
-function verifyToken(token, type = "access", role = "user"){                                                                                                // Function to verify user access tokens, admin access tokens, and refresh tokens 
-    if (type === "refresh"){
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.REFRESH_TOKEN_SECRET) )                                                                    // Verify refresh token  
-        } catch(err){ throw err }
-    }
-    else if (role === "admin"){
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.ADMIN_SECRET_KEY) )                                                                        // Try to verify token if its an admin   
-        } catch(err){ throw err }
-    }
-    else{
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.USER_SECRET_KEY) )                                                                         // Try to verify token if its a user              
-        } catch(err){ throw err }
-    }
-}
-
 async function storeToken(key, value, exp, cachingOnly = true){  
     try{
         await redis_client.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
@@ -83,34 +65,11 @@ async function deleteToken(key){
     await redis_client.del(key)                                                                                                                             // delete refresh token from redis cache and mongodb as a key
 }    
 
-function encryptPayload(JWTpayload){
-    let payload = {}
-    if (JWTpayload.username)
-        payload.username = CryptoJS.AES.encrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY).toString()
-    if (JWTpayload.id)
-        payload.id = CryptoJS.AES.encrypt(JWTpayload.id.toString(), process.env.PAYLOAD_ENCRYPTION_KEY).toString()
-    return payload;     
-}    
 
-function decryptPayload(JWTpayload){ 
-    let payload = {}
-    if (JWTpayload.username){
-        let bytes = CryptoJS.AES.decrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.username = bytes.toString(CryptoJS.enc.Utf8)   
-    }
-    if (JWTpayload.id){
-        let bytes = CryptoJS.AES.decrypt(JWTpayload.id, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.id = parseInt(bytes.toString(CryptoJS.enc.Utf8))
-    }
-    return payload                                                          
-}    
 
 module.exports = {
     createJWT,
     createStoreRefreshToken,
-    verifyToken,
-    encryptPayload,
-    decryptPayload,
     storeToken,
     deleteToken
 }

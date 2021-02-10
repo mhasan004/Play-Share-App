@@ -7,15 +7,14 @@
 
 # 💎 FEATURES:
   * **Rate Limiting** to protect against basic DDOS attacks: blocking an IP for several minutes if they make too many requests. 
-  * **Session Persistence:** Keeping users logged in by silently refreshing tokens
+  * **Session Persistence:** Keeping users logged in by silently refreshing tokens.
   * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks. 
-  * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) 
+  * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) .
   * **Clean URLS** so that attackers can't query requests too easily. Query parameters are passed via headers.
-  * **Some Others:** Caching data for frequently used endpoints, input validation, password hashing, etc
+  * **Some Others:** Caching data for frequently used endpoints, input validation, password hashing, etc.
   * **Combined benefits of token based and session based authentication** by using JWT acces and refresh tokens and have a silent refresh scheme to persist sessions. 
 
 # DEMO:
-
 ![App security demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
 <p align="center" style="font-style: italic">
     Fig 1: App security demo so far (App still in development)

@@ -2,44 +2,13 @@ const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const { registerValidation, loginValidationUsername } = require('../model/ValidationSchema')                                                                // Joi validation functions
 const { redis_client } = require('../helpers/RedisDB')
-const { createJWT, createStoreRefreshToken, verifyToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
+const { doesUsernameEmailExist, comparePasswords, verifyToken } = require('../helpers/AuthFunctions')
+const { createJWT, createStoreRefreshToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
 const { findUserFromCacheOrDB } = require('../helpers/CachingFunctions')
 const { REDIS_USER_CACHE_EXP } = require("../config")                                         
 
 function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
-}
-
-async function doesUsernameEmailExist(res, username, email){                                                                                                // Fucntion that checks if username or email exists in database - used for registration. Returns true if it does, response will be sent out. false if there is no username/email                                                            
-    let user_exists, email_exists                                                                                                                                        
-    try{
-        [user_exists, email_exists] = await Promise.all([
-            User.findOne({username: username}),
-            User.findOne({email: email})
-        ])
-    } catch(err){
-        res.status(400).json({status: -1, message: "Database Query Error: couldn't search database! Err: " + err }) 
-        return true
-    }
-    if (user_exists || email_exists){
-        res.status(400).json({status: -1, message: "This Username or Email Address is Already Registered!" }) 
-        return true
-    }
-    return false
-}
-
-async function comparePasswords(res, password, dbPassword){                                                                                                 // Function to check passwords - Compare password that was passed to the one in the db. Returns true if successfull or false if not successfull.
-    try{                                                                                                                                                                                                                                                                        
-        if(!await bcrypt.compare(password, dbPassword)){                                                                                               
-            res.status(401).json( {status: -1, message: "Invalid username or password!"} )
-            return false 
-        } 
-    } catch(err){
-        console.log("Bycrypt Error - Failed to compare passwords! Error: " + err)
-        res.status(400).json({status: -1, message:"Bycrypt Error - Failed to compare passwords! Error: " + err})
-        return false
-    }
-    return true
 }
 
 // Input Fields: display_name, username, email, password

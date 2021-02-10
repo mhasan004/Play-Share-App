@@ -1,4 +1,4 @@
-const {verifyToken, deleteToken} = require('./TokenFunctions')
+const {verifyToken, tokenNameVerified} = require('./AuthFunctions')
 const {cacheUser} = require('./CachingFunctions')
 
 // Middleware authenticates the user and adds to req  object: (1) user: user object from db, (2) isUserCached = if user is cached in redis or not (3) username, (4) tokenId: random toklenid to find refreshtoken with username-tokenId,
@@ -17,7 +17,7 @@ exports.verifyUser = async (req,res,next) =>                                    
     const recieved_RF = req.signedCookies.refreshToken;
     if(!recieved_RF) 
         return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
-        
+ 
     // 2) (a) Verify if access token is valid. If valid, move on to b. If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access token matches the username in header. (c) for admin usernames, check also if rf payload match. 
     let verified_access, verified_rf
     try{
@@ -39,33 +39,17 @@ exports.verifyUser = async (req,res,next) =>                                    
         }
         return res.status(401).json({status: -2, message: "Access Denied! Invalid Access Token! Send request to /auth/refresh. Error: "+err}).end() 
     }
-    if (verified_access.username !== username_in){                                                                                                  // 2.b) Access Token Payload name Check. If payload name of the access tokens != username --> then somethings fishy!
-        console.log("     Fishy Behavior Detected - Access Token! (1) - Deleting RF from DB")
-        res.clearCookie("refreshToken")
-        res.clearCookie("accessToken")
-        await deleteToken("RT-"+verified_access.username+'-'+verified_access.id)                                                            
-        return res.status(401).json({status: -3, message: "Access Denied! Fishy Behavior! Token Mismatch!"}).end() 
-    }
-    if (username_in === process.env.ADMIN_USERNAME){                                                                                                // 2.c) RF Token Payload Name Check (for Admins only)
-        if (verified_rf.username !== process.env.ADMIN_USERNAME || 
-            verified_rf.username !== verified_access.username  || 
-            verified_rf.id !== verified_access.id
-        ){
-            console.log("     Fishy Behavior Detected - RF Token! (2) - Deleting RF from DB")
-            res.clearCookie("refreshToken")
-            res.clearCookie("accessToken")
-            await deleteToken("RT-"+verified_rf.username+'-'+verified_rf.id)                                                                                          
-            return res.status(401).json({status: -3, message: "Access Denied! Fishy Behavior! Token Mismatch!"}).end()  
-        }
-    }
-    
+    if (!await tokenNameVerified(res, username_in, verified_access, verified_rf))                                                                 // 2.b) check if the username stored in token is the same username that was passed in through the header.
+        return                                                                                                                                      // If names are not the same, an error message was sent out so exist                                                                        
+
     // 3) See if username exists in redis cache, if not, find in db and add to cache. then, we can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
     try{
         await cacheUser(req, username_in)
     } catch(err){
-        console.log("      failed to cached user!")
+        console.log("      failed to cached user! Err: "+err)
         return res.status(401).json({status: -1, message: err})
     }
+
     req.username = verified_access.username       
     req.tokenId = verified_access.id    
     next()
