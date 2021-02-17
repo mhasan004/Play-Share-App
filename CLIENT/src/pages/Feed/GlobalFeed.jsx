@@ -11,6 +11,7 @@ const ROUTE_URL = CONFIG.API_BASE_URL + "/user/feed/"
 class GlobalFeed extends React.Component{
     state = {
         posts: []
+
     }
 
     async componentDidMount() {
@@ -81,9 +82,3 @@ class GlobalFeed extends React.Component{
 }
 
 export default withRouter(GlobalFeed);                  // need to export this class withRouter for redirect to work
-
-//console.log("1: "+this.props.accessToken)
-// await this.props.setAppState({
-//     accessToken:"dsfa"
-// })
-// console.log("2: "+this.props.accessToken)

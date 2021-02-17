@@ -31,6 +31,7 @@ function postValidation(data)
         group_type: Joi.string().min(1).max(20),
         title: Joi.string().min(2).max(75).required(),
         content: Joi.string().max(250),                                                     //.required(),                                       //***VALIDATE URL
+        file: Joi.any(),                                                     //.required(),                                       //***VALIDATE URL
         isURL: Joi.boolean(),
         isFile: Joi.boolean(),
     })

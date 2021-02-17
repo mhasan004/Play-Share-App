@@ -1,14 +1,37 @@
-// Middleware to decrypt request fields with 
+// Contains some middleware to decrypt request with symmetric key with TLS is enables or encrypt with symmetric key with TLS is enabled. Also contains other encryption and decryption functions
+const CryptoJS = require("crypto-js")
 const NodeRSA = require('node-rsa');
-const key = new NodeRSA({b: 1024});                     // PUBLIC + PRIVATE KEY MADE - len of the bytes
-const public_key = key.exportKey('public')              // public key ------> sendout
-const private_key = key.exportKey('private')            // private key
+const key = new NodeRSA({b: 1024});                                                                                     // PUBLIC + PRIVATE KEY MADE - len of the bytes
+const public_key = key.exportKey('public')                                                                              // public key ------> sendout
+const private_key = key.exportKey('private')                                                                            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
-
-const encrypted_headers = []
+const encrypted_headers = []                                                                                            // will decrypt these headers with symmetric key             
 let SYMMETRIC_KEY_DICT = {}
 let MAX_CLIENT_CONNECTIONS = 10
+
+function encryptPayload(JWTpayload){                                                                                    // used to encrypt the jwt payload with PAYLOAD_ENCRYPTION_KEY
+    let payload = {}
+    if (JWTpayload.username)
+        payload.username = CryptoJS.AES.encrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY).toString()
+    if (JWTpayload.id)
+        payload.id = CryptoJS.AES.encrypt(JWTpayload.id.toString(), process.env.PAYLOAD_ENCRYPTION_KEY).toString()
+    return payload;     
+}    
+
+function decryptPayload(JWTpayload){                                                                                    // used to decrypt the jwt payload with PAYLOAD_ENCRYPTION_KEY
+    let payload = {}
+    if (JWTpayload.username){
+        let bytes = CryptoJS.AES.decrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY)    
+        payload.username = bytes.toString(CryptoJS.enc.Utf8)   
+    }
+    if (JWTpayload.id){
+        let bytes = CryptoJS.AES.decrypt(JWTpayload.id, process.env.PAYLOAD_ENCRYPTION_KEY)    
+        payload.id = parseInt(bytes.toString(CryptoJS.enc.Utf8))
+    }
+    return payload                                                          
+}    
+
 
 function findEmptyKey()
 {
@@ -31,7 +54,7 @@ function findEmptyKey()
 exports.initiateCheckHandShake =  (req,res,next) => 
 {
     // Handshake was done so can decrypt client data with SYMMETRIC_KEY
-    if ((req.headers["handshake"] > 0)){                    // handshake already performed, so its only to decrypt
+    if ((req.headers["handshake"] > 0)){                                                                            // handshake already performed, so its only to decrypt
         res.set('handshake', req.headers["handshake"]) 
         next()
     }
@@ -47,7 +70,7 @@ exports.initiateCheckHandShake =  (req,res,next) =>
     else if (req.headers["handshake"] == 0 && req.headers["key"] != null){
         try{ 
             const empty_index = findEmptyKey()
-            SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')// decrypt SYMMETRIC_KEY
+            SYMMETRIC_KEY_DICT[empty_index] = RSA_private_key.decrypt(req.headers["key"], 'utf8')                   // decrypt SYMMETRIC_KEY
             console.log("Got Client's SYMMETRIC_KEY!")
             return res.status(200).json({status:1, handshake_index: empty_index, message: `Got SYMMETRIC_KEY! Set header: 'handshake' = ${empty_index} for future requests (see handshake_index field)`}).end() 
         } catch(err){
@@ -61,7 +84,7 @@ exports.initiateCheckHandShake =  (req,res,next) =>
 }
 
 
-exports.decryptBody = async (req,res,next) =>                                                                       
+exports.decryptBody = async (req,res,next) =>                                                                       // decrypt body of request with symmetric key                                                          
 {
     let err_obj = null
     let field_array = []
@@ -85,13 +108,12 @@ exports.decryptBody = async (req,res,next) =>
     next()
 }
 
-exports.decryptSelectedHeader = async (req,res,next) =>                                                                       
+exports.decryptSelectedHeader = async (req,res,next) =>                                                 // decrypt encrypted choosen headers with symmetric key                                                   
 {
     let err_obj = null
     encrypted_headers.forEach(field=> {
-        if (req.headers[field] == null){                                // if there is no encrypted header to decrypt, move on
+        if (req.headers[field] == null)                                                                // if there is no encrypted header to decrypt, move on
             return
-        }
         try{
             req.headers[field] = RSA_private_key.decrypt(req.headers[field], 'utf8')  
         }
@@ -106,8 +128,14 @@ exports.decryptSelectedHeader = async (req,res,next) =>
     next()
 }
 
-exports.SYMMETRIC_KEY_encrypt = (data, handshake_index) =>{
+function SYMMETRIC_KEY_encrypt (data, handshake_index){                                                 // function to encrypt with symmetric key
     return CryptoJS.AES.encrypt(data, SYMMETRIC_KEY_DICT[handshake_index]).toString(); 
 }
 
-exports.SYMMETRIC_KEY_DICT = SYMMETRIC_KEY_DICT;
+module.exports = {
+    encryptPayload,
+    decryptPayload,
+    SYMMETRIC_KEY_DICT: SYMMETRIC_KEY_DICT,
+    SYMMETRIC_KEY_encrypt
+}
+  

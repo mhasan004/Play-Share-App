@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken')
 const Token = require('../model/Token')
-const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
-const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptRequest')
-const {encryptPayload, decryptPayload} = require('./AuthFunctions')
 const {redis_client} = require('./RedisDB')
+const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
+const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptFunctions')
+const {encryptPayload, decryptPayload} = require('./EncryptDecryptFunctions')
 
 /*  JWT_payload = encrypted with AES: {username: username, id: random number}  
     user access token   = jwt.sign(JWT_payload, USER_SECRET_KEY,      {expiresIn: '5m'})    
@@ -38,6 +38,31 @@ async function createStoreRefreshToken(res, JWT_payload){                       
     res.cookie('refreshToken', refresh_token, cookieConfigRefresh);
 }
 
+function verifyToken(token, type = "access", role = "user"){                                                                                                // Function to verify user access tokens, admin access tokens, and refresh tokens 
+    if (type === "refresh"){
+        try{ 
+            return decryptPayload( jwt.verify(token, process.env.REFRESH_TOKEN_SECRET) )                                                                    // Verify refresh token  
+        } catch(err){ throw err }
+    }
+    else if (role === "admin"){
+        try{ 
+            return decryptPayload( jwt.verify(token, process.env.ADMIN_SECRET_KEY) )                                                                        // Try to verify token if its an admin   
+        } catch(err){ throw err }
+    }
+    else{
+        try{ 
+            return decryptPayload( jwt.verify(token, process.env.USER_SECRET_KEY) )                                                                         // Try to verify token if its a user              
+        } catch(err){ throw err }
+    }
+}
+
+async function findToken(tokenName){
+    let token
+    token = await redis_client.exists(tokenName)
+    // if not in redis, see db
+    return token
+}
+
 async function storeToken(key, value, exp, cachingOnly = true){  
     try{
         await redis_client.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
@@ -45,20 +70,7 @@ async function storeToken(key, value, exp, cachingOnly = true){
         throw err
     }
     if (!cachingOnly){
-        //store in key value db also
-        // const new_token = new User({                                                                                                                     // 2) CAN NOW ADD USER: Populate the Mongoose Schema to push to the Post collection in the D                                                                                                         
-        //     username: username,
-        //     handle: "@"+username, 
-        //     // display_name: username,                                                                                                                   // Disabeld for now                                                                                      
-        //     email: email,
-        //     password: hashed_password,
-        // })        
-        // try{                                                                                                                                             // 3) Add the user to the DB                                                                                                                                                                            
-        //     await new_token.save()
-        // } catch(err){ 
-        //     throw err
-        // } 
-
+        //store in key value DB (Dynamo DB)
     }
 }                                                                                             
 async function deleteToken(key){  
@@ -70,6 +82,8 @@ async function deleteToken(key){
 module.exports = {
     createJWT,
     createStoreRefreshToken,
+    verifyToken,
+    findToken,
     storeToken,
     deleteToken
 }

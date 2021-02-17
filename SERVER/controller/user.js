@@ -1,5 +1,7 @@
 const Post = require('../model/Post')
 const {postValidation, editPostValidation} = require('../model/ValidationSchema')
+const {S3Upload} = require("../helpers/AWSFunctions");
+const FileType = require('file-type');                                                                          // detect filetype. need for aws
 
 Date.prototype.formatMMDDYYYY = function(){
     return (this.getMonth() + 1) + 
@@ -20,15 +22,34 @@ exports.getAllPosts = async (req,res,next) =>
 
 exports.makePost = async (req,res,next) => 
 {
-    const username = req.username                                                                    
-    if(!req.body.group) 
-        req.body.group = 'None'
-    if(!req.body.group_type) 
-        req.body.group_type = 'None'
-    const {error} = postValidation(req.body)                                                                // 1) VALIDATE the POST request:              
+    const username = req.username                                                                               // Setting up variables and edge cases  
+    let isURL = req.header('isURL')     
+    let isFile = req.header('isFile')
+    if (!isURL) isURL = "false"
+    if (!isFile) isFile = "false"
+    if(!req.body.group) req.body.group = 'None'
+    if(!req.body.group_type) req.body.group_type = 'None'
+
+    if (isFile === "true"){                                                                              
+        const filename = `${username}/${Date.now().toString()}`;                                                // files will be added inm this fileaname
+        const {file, body: {title}} = req   
+        req.body.title = title
+        file.type = await FileType.fromBuffer(file.buffer)   
+        try{ 
+            const AWSdata = await S3Upload(filename, file.buffer, file.type)
+            req.body.content = AWSdata.Location
+            isURL = true
+        } catch(err){ 
+            console.log("Error uploading to s3. Error: "+err)
+            return res.status(400).json({status:-1, mesage: err})
+        }
+    }
+
+    const {error} = postValidation(req.body)                                                                    // 1) VALIDATE the POST request:              
     if(error)
-        return res.status(400).json({status:-1, message: error.details[0].message}) 
-    const post = new Post({                                                                                 // 2) Make New Post:
+        return res.status(400).json({status:-1, message: "Post Validation Error - "+error.details[0].message}) 
+
+    const post = new Post({                                                                                     // 2) Make New Post:
         username: username,
         handle:'@'+username,
         title: req.body.title,
@@ -37,11 +58,13 @@ exports.makePost = async (req,res,next) =>
         total_likes: 1,
         user_liked: [username],
         date: new Date().toLocaleDateString('en-US'),
+        isURL: isURL,
+        isFile: isFile,
         group: req.body.group,
         group_type: req.body.group_type,
     })
 
-    try{                                                                                                    // 3) Save to DB:
+    try{                                                                                                        // 3) Save to DB:
         const added_post = await post.save()
         console.log("Post made")
         return res.status(200).json({status: 1, added_post_id: added_post._id})
@@ -76,6 +99,7 @@ exports.editAPost = async (req,res,next) =>
         return res.status(400).json({status: -1, message: "Failed to edit post: "+err})    
     }
 }
+
 exports.deleteAPost = async (req,res,next) => 
 {
     const post_to_del = await Post.findOne({_id: req.headers["post-id"]})
@@ -89,13 +113,9 @@ exports.deleteAPost = async (req,res,next) =>
     }
 }
 
-// function shortenCount(num){
-//     if num
-// }
-
 exports.getFeed = async (req,res,next) => {
     try{
-        let posts = await Post.find()                                                           //Post.find().sort([['date', -1]]).exec()
+        let posts = await Post.find()                                                                           // Post.find().sort([['date', -1]]).exec()
         posts = posts.reverse()
         
         return res.status(200).json({status: 1, posts})    

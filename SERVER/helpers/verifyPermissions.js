@@ -1,4 +1,5 @@
-const {verifyToken, tokenNameVerified} = require('./AuthFunctions')
+const {verifyToken} = require('./TokenFunctions')
+const {tokenNameVerified} = require('./AuthFunctions')
 const {cacheUser} = require('./CachingFunctions')
 
 // Middleware authenticates the user and adds to req  object: (1) user: user object from db, (2) isUserCached = if user is cached in redis or not (3) username, (4) tokenId: random toklenid to find refreshtoken with username-tokenId,

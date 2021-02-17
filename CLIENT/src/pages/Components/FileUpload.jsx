@@ -16,7 +16,7 @@ class FileUpload extends React.Component {
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group files">
-                        <input class="form-control" type="file" name="file" onChange={this.onChangeHandler} multiple="" />
+                        <input class="form-control" type="file" name="file" onChange={this.onChangeHandler} multiple="" accept = ".png, .jpg, .img, .jpg, .gif, .mov, .mkv, .mp4" />
                     </div>
                 </div>
             </div>

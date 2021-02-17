@@ -1,5 +1,4 @@
 const router = require('express').Router()
-const {verifyUser} = require('../helpers/VerifyPermissions')                                                 
 const authController = require('../controller/auth')
 
 router.post('/register', authController.registerNewUser)                // /api/v1/register   - Add a new user to the DB

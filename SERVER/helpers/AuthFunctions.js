@@ -1,25 +1,5 @@
-const jwt = require('jsonwebtoken')
-const CryptoJS = require("crypto-js")
 const User = require('../model/User')
 const bcrypt = require('bcryptjs')
-
-function verifyToken(token, type = "access", role = "user"){                                                                                                // Function to verify user access tokens, admin access tokens, and refresh tokens 
-    if (type === "refresh"){
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.REFRESH_TOKEN_SECRET) )                                                                    // Verify refresh token  
-        } catch(err){ throw err }
-    }
-    else if (role === "admin"){
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.ADMIN_SECRET_KEY) )                                                                        // Try to verify token if its an admin   
-        } catch(err){ throw err }
-    }
-    else{
-        try{ 
-            return decryptPayload( jwt.verify(token, process.env.USER_SECRET_KEY) )                                                                         // Try to verify token if its a user              
-        } catch(err){ throw err }
-    }
-}
 
 async function tokenNameVerified(res, passedUsername, accessTokenVerified, refreshTokenVerified){
     if (accessTokenVerified.username !== passedUsername){                                                                                                   // 1) Access Token Payload name Check. If payload name of the access tokens != username --> then somethings fishy!
@@ -45,28 +25,6 @@ async function tokenNameVerified(res, passedUsername, accessTokenVerified, refre
     }
     return true
 }
-
-function encryptPayload(JWTpayload){
-    let payload = {}
-    if (JWTpayload.username)
-        payload.username = CryptoJS.AES.encrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY).toString()
-    if (JWTpayload.id)
-        payload.id = CryptoJS.AES.encrypt(JWTpayload.id.toString(), process.env.PAYLOAD_ENCRYPTION_KEY).toString()
-    return payload;     
-}    
-
-function decryptPayload(JWTpayload){ 
-    let payload = {}
-    if (JWTpayload.username){
-        let bytes = CryptoJS.AES.decrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.username = bytes.toString(CryptoJS.enc.Utf8)   
-    }
-    if (JWTpayload.id){
-        let bytes = CryptoJS.AES.decrypt(JWTpayload.id, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.id = parseInt(bytes.toString(CryptoJS.enc.Utf8))
-    }
-    return payload                                                          
-}    
 
 async function doesUsernameEmailExist(res, username, email){                                                                                                // Fucntion that checks if username or email exists in database - used for registration. Returns true if it does, response will be sent out. false if there is no username/email                                                            
     let user_exists, email_exists                                                                                                                                        
@@ -100,13 +58,9 @@ async function comparePasswords(res, password, dbPassword){                     
     return true
 }
 
-
 module.exports = {
     doesUsernameEmailExist,
     comparePasswords,
-    encryptPayload,
-    decryptPayload,
-    verifyToken,
     tokenNameVerified
 }
   

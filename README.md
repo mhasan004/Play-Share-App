@@ -8,11 +8,13 @@
 # 💎 FEATURES:
   * **Rate Limiting** to protect against basic DDOS attacks: blocking an IP for several minutes if they make too many requests. 
   * **Session Persistence:** Keeping users logged in by silently refreshing tokens.
-  * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks. 
-  * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client) .
-  * **Clean URLS** so that attackers can't query requests too easily. Query parameters are passed via headers.
-  * **Some Others:** Caching data for frequently used endpoints, input validation, password hashing, etc.
-  * **Combined benefits of token based and session based authentication** by using JWT acces and refresh tokens and have a silent refresh scheme to persist sessions. 
+  * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks.   
+  * **Node Server Clustering and Task Threading** to increase performance of server. 
+  * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client).
+  * **Clean URLS:** Query parameters are passed via headers so that attackers can't query requests easily using the url. 
+  * **EXIF Metadata Stripping** from images (to be implemented).
+  * **Some Others:** Input validation, password hashing, saching data for frequently used endpoints, etc.
+  * **Combined benefits of token based and session based authentication** by using JWT access and refresh tokens and have a silent refresh scheme to persist sessions. 
 
 # DEMO:
 ![App security demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
@@ -45,7 +47,10 @@
 * **morgan** - used to log endpoint response times to optimize code. 
 
 # 🚑 SERVER RESPONSE CODES:
-  ![Silent Refresh](/PicturesGifs/Basic_Response.PNG)
+  <p align="center">
+    <img src="./PicturesGifs/Basic_Response.PNG" width="70%">
+  </p>
+
   <p align="center" style="font-style: italic">
     Fig 2: Responses of the API Server: 1, -1, -2, 2, -3
   </p>
@@ -76,12 +81,12 @@
 
   * **Rate Limiting** Limited requests to 100 requests every 10 minutes. This will guard against simple DDOS attacks by rating how many requests can be made in a specific time by the same IP.
   * **Input Validation** with **Joi**.
-  * **Passwords hashed in Database:**
+  * **Passwords are hashed and stored in database:**
   * **Long Secret Keys:** The secret keys needed to make tokens, cookies, and hash passwords are 700-1200 characters long and are stored in the **.env** file. The keys are created using concatenations of several randomly generated hashes. 
   * **Session Persistence:** Application can keep users logged in if the client supplies the correct refresh token HttpOnly cookie and the correct `username` header. 
   * **Cors & Helmet Protections:** **Cors** and **helmet.js** middlewares provide some basic security to server.
   * **HttpOnly Cookies:** Token cookies are HttpOnly cookies with flags set to `httpOnly:true`, `secure:true`, `sameSite:strict` to ensure the client cannot read its contents and cookies can only be transmitted via https and can only send to the same domain to guard against CSRF attacks. 
-  * **Token Expire Times:** Access token expires 5 minutes and cookie expires in 1 day. Refresh token and cookie expires in 15 days. 
+  * **Token Expire Times:** Access token and its cookie expires in 5 minutes. Refresh token and its cookie expires in 15 days. 
   * **TLS:** (optional if using TLS) All data in requests and responses are AES encrypted by the symmetric key. Api automatically decrypted request with symmetric key.
   </details>
 
@@ -102,10 +107,8 @@
     * **HttpOnly cookies:** Access and Refresh tokens are stored in individual HttpOnly cookies. The cookies are signed with `COOKIE_SECRET`. Can only be sent via HTTPS and to the same domain/subdomain. 
   * **Token Payload:** The payload of the tokens is the username along with a randomly generated number. Example: `{username: 'Tom', id: '1234'}`
   * **Expiration Times:** 
-    * **Access token** expiration time: 5 minutes
-    * **Refresh tokens** expiration time: 15 days
-    * **Access tokens HttpOnly cookie** expiration time: 1 day 
-    * **Refresh token HttpOnly cookie** expiration time: 15 days
+    * **Access Token & HttpOnly Cookie** expiration time: 5 minutes
+    * **Refresh Tokens& HttpOnly Cookie** expiration time: 15 days
   </details> 
    
   <details>      

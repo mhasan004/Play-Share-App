@@ -3,10 +3,10 @@ const REDIS_PORT = process.env.REDIS_PORT || 6379
 var redis_client = asyncRedis.createClient(REDIS_PORT)
 
 redis_client.on("error", function (err) {
-  console.log("Error Connecting to Redis! - There could be no redis server running. Run 'redis-server'. Error: " + err);
+  console.log("Error Connecting to Redis! - There could be no redis server running. Install redis then run 'redis-server' to start the redis server!. Error: " + err);
 });
 
 module.exports = {
-  redis_client: redis_client
+  redis_client
 }
 

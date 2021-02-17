@@ -38,6 +38,7 @@ const postSchema = new mongoose.Schema({
         type: String,                                    
         max:250
     },
+   
     isURL: {                                                                                    // is content a url?                                                               
         type: Boolean,                          
         default: 0

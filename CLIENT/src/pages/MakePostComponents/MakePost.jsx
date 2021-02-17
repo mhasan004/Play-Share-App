@@ -23,17 +23,24 @@ class MakePost extends React.Component{
     handleFormPick(e){
         this.setState({content: "Text (option)"})
     }
+
     handleInputChange(e){
         this.setState({[e.target.name]: e.target.value})
-        console.log(e.target.name)
     }
+
+    onFileUpload = file => {
+        this.setState({
+            file: file
+        })
+    }
+  
     async handleFormSubmit(e){
         e.preventDefault()
         let s3BucketURL = "url to the file"
-        let isURL 
-        if (this.state.selectedTab !== "tabURL")
-            isURL = true
-        if (this.state.selectedTab !== "tabFile"){                                                      // if we arnt 
+        if (this.state.selectedTab !== "tabFile"){                                                      // not file form
+            let isURL = false
+            if (this.state.selectedTab === "tabURL")
+                isURL = true
             const reqObject = {
                 method: 'POST',
                 mode: 'cors',
@@ -43,6 +50,7 @@ class MakePost extends React.Component{
                     'Content-Type': 'application/json',
                     'username': localStorage.getItem("username"),
                     'isURL': isURL,
+                    'isFile': false,
                 },
                 body: JSON.stringify({
                     title: this.state.title,
@@ -53,27 +61,29 @@ class MakePost extends React.Component{
             }
             await this.postToAPI(reqObject)       
         }
+
         else if (this.state.selectedTab === "tabFile") {                                                // send the title and file url to my api
-            // 1) post to s3 and get link
-            // 2) post to my api the s3 link
+            if (!this.state.file) alert("Need to pick a file!")
+            const fileData = new FormData()
+            fileData.append('file', this.state.file)                                                    // when user uploads the file, turn the file into BINARY FILE and send it out
+            fileData.append('title', this.state.title)                                                  // appending the title field to the FormData
             const reqObject = {
                 method: 'POST',
                 mode: 'cors',
                 credentials: 'include', 
                 headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    // 'Content-Type': 'multipart/form-data',                                           // no Content-Type for fetch with file input type       
                     'username': localStorage.getItem("username"),
+                    'isURL': false,
                     'isFile': true
                 },
-                body: JSON.stringify({
-                    title: this.state.title,
-                    content: s3BucketURL
-                    // group: "",
-                    // group_type: ""
-                })
+                body: fileData
             }
-            await this.postToAPI(reqObject)        
+            try{ 
+                await this.postToAPI(reqObject)     
+            } catch(err){
+                alert(err)
+            }   
         }     
     }
 
@@ -81,9 +91,8 @@ class MakePost extends React.Component{
         let resJson
         try{
             resJson = await MakeRequest(ROUTE_URL, reqObject, this.props)
-        }
-        catch(err){
-            return console.log(err)
+        }catch(err){
+            throw err
         }
         if (resJson.status === 1){
             console.log("Posted!")
@@ -95,8 +104,11 @@ class MakePost extends React.Component{
                 pathname: CONFIG.PATHS.GlobalFeed,
             });
         }
-        else if (resJson.status === -1)
-            return alert("Failed to Post! " + resJson.message ) 
+        else if (resJson.status === -1){
+            const errMesage = "Failed to Post! " + resJson.messag
+            throw (errMesage)
+        }
+       
     }
 
     tabClicked(e){
@@ -127,14 +139,7 @@ class MakePost extends React.Component{
         }
     }
 
-    onFileUpload = file=>{
-        const data = new FormData()
-        data.append('file', file)                                                           // when user uploads the file, turn the file into BINARY FILE and send it out
-        this.setState({
-            file: data
-        })
-    }
-  
+    
 
     
     render(){
@@ -177,14 +182,3 @@ class MakePost extends React.Component{
 }
 
 export default withRouter(MakePost);                  // 3) need to export this class withRouter for redirect to work
-
-// {(this.state.selectedTab === "tabFile") ? 
-//                     (<FileUpload  onChange={e=>this.handleInputChange(e)}  name="content"/>) 
-//                     : 
-//                     (<textarea id="makePost-content-field" class="makePost-input-content makePost-row makePost-input" type="text" value={this.state.content} onChange={e=>this.handleInputChange(e)}  name="content" placeholder="Text (optional)" ></textarea>)                 
-//                 } 
-//                 {(this.state.selectedTab === "tabURL") ? 
-//                     (<input type="url" value={this.state.content} onChange={e=>this.handleInputChange(e)}  name="content" placeholder="URL" ></input>) 
-//                     : 
-//                     (<textarea id="makePost-content-field" class="makePost-input-content makePost-row makePost-input" type="text" value={this.state.content} onChange={e=>this.handleInputChange(e)}  name="content" placeholder="Text (optional)" ></textarea>)                 
-//                 }

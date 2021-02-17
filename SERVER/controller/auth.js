@@ -1,9 +1,8 @@
 const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const { registerValidation, loginValidationUsername } = require('../model/ValidationSchema')                                                                // Joi validation functions
-const { redis_client } = require('../helpers/RedisDB')
-const { doesUsernameEmailExist, comparePasswords, verifyToken } = require('../helpers/AuthFunctions')
-const { createJWT, createStoreRefreshToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
+const { doesUsernameEmailExist, comparePasswords } = require('../helpers/AuthFunctions')
+const { createJWT, createStoreRefreshToken, verifyToken, findToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
 const { findUserFromCacheOrDB } = require('../helpers/CachingFunctions')
 const { REDIS_USER_CACHE_EXP } = require("../config")                                         
 
@@ -11,8 +10,7 @@ function randomNum(min=0, max=1000000000000){                                   
     return (Math.random() * (max - min + 1) ) << 0
 }
 
-// Input Fields: display_name, username, email, password
-exports.registerNewUser = async (req,res,next) =>                                                                       
+exports.registerNewUser = async (req,res,next) =>                                                                                                           // Input Fields: display_name, username, email, password                                                             
 {
     let hashed_password = null 
     const {username, email, password} = req.body                                                                                                            // 1a) VALIDATE the POST request: See if it adhears to the rules of the schema     
@@ -116,7 +114,7 @@ exports.refresh = async (req,res,next) => {
         res.clearCookie("accessToken") 
         return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"})
     }
-    if (!await redis_client.exists("RT-"+verified_RF.username+'-'+verified_RF.id))                                                                          // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
+    if (!await findToken("RT-"+verified_RF.username+'-'+verified_RF.id))                                                                                    // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
         return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"})
     try{
         await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                    // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
