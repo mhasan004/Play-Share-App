@@ -1,6 +1,6 @@
 const Post = require('../model/Post')
 const {postValidation, editPostValidation} = require('../model/ValidationSchema')
-const {S3Upload} = require("../helpers/AWSFunctions");
+const {S3Upload} = require("../helpers/AWS");
 const FileType = require('file-type');                                                                          // detect filetype. need for aws
 
 Date.prototype.formatMMDDYYYY = function(){

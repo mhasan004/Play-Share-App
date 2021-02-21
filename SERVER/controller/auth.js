@@ -2,9 +2,8 @@ const User = require('../model/User')
 const bcrypt = require('bcryptjs')
 const { registerValidation, loginValidationUsername } = require('../model/ValidationSchema')                                                                // Joi validation functions
 const { doesUsernameEmailExist, comparePasswords } = require('../helpers/AuthFunctions')
-const { createJWT, createStoreRefreshToken, verifyToken, findToken, storeToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
+const { createJWT, createStoreRefreshToken, verifyToken, findToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
 const { findUserFromCacheOrDB } = require('../helpers/CachingFunctions')
-const { REDIS_USER_CACHE_EXP } = require("../config")                                         
 
 function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
@@ -37,7 +36,7 @@ exports.registerNewUser = async (req,res,next) =>                               
     } catch(err){ 
         return res.status(400).json({status: -1, message:"Error adding user to DB: " + err})
     } 
-    res.status(201).json({status: 1, message: "Succesfuly added user! Check 'user' property"})
+    res.status(201).json({status: 1, message: "Succesfuly added user!"})
 }
 
 exports.login = async (req,res,next) => 
@@ -46,7 +45,14 @@ exports.login = async (req,res,next) =>
     const {error} = loginValidationUsername(req.body)                                                                                                       // 1) Validate the request body by using Joi. See if user is in the DB                                                                                                           
     if(error) 
         return res.status(400).json({status:-1, message: error.details[0].message}) 
-    let {user, isUserCached} = await findUserFromCacheOrDB(username)      
+    let user, isUserCached
+    try{
+        const ret = await findUserFromCacheOrDB(username)      
+        user = ret.user
+        isUserCached = ret.isUserCached
+    } catch(err){
+        return res.status(400).json( {status: -1, message: err} )
+    }
     if (!user) 
         return res.status(401).json( {status: -1, message: "Invalid username or password! Error: "+err} )
     if(!await comparePasswords(res, password, user.password))                                                                                               // 2) CHECK PASSWORD - Compare password that was passed in to the one in the DB    
@@ -63,7 +69,7 @@ exports.login = async (req,res,next) =>
     
     if (!isUserCached){                                                                                                                                     // 4) After sending response - Add user to redis cache so that we can use it later for the session
         try{
-            await storeToken("user-"+username, JSON.stringify(user), REDIS_USER_CACHE_EXP)                                                                  // Set refresh token in redis cache as a key
+            await cacheUser(req, username)                                                                                                                  // Caching user for a day
         } catch(err){
             console.log("     Failed to add user data to redis cache. Error: "+err)
         }
