@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const Token = require('../model/Token')
-const {redis_client} = require('./RedisDB')
+const {redis_client} = require('./Redis')
 const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
 const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptFunctions')
 const {encryptPayload, decryptPayload} = require('./EncryptDecryptFunctions')
@@ -64,17 +64,19 @@ async function findToken(tokenName){
 }
 
 async function storeToken(key, value, exp, cachingOnly = true){  
+    if (!cachingOnly){
+        //store in key value DB (Dynamo DB)
+    }
     try{
         await redis_client.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
     } catch(err){
         throw err
     }
-    if (!cachingOnly){
-        //store in key value DB (Dynamo DB)
-    }
+    
 }                                                                                             
 async function deleteToken(key){  
     await redis_client.del(key)                                                                                                                             // delete refresh token from redis cache and mongodb as a key
+    // delete from db
 }    
 
 

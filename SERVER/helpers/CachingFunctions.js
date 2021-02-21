@@ -1,6 +1,6 @@
 const User = require('../model/User')
 const {REDIS_USER_CACHE_EXP} = require("../config")                                         
-const {redis_client} = require('./RedisDB')
+const {redis_client} = require('./Redis')
 const {storeToken} = require('./TokenFunctions')
 
 async function findUserFromCacheOrDB(username)                                                                                                              // Function to find user in either Redis Cache or MongoDB.  returns {user: Object, isUserCached: Boolean}                                                                    
