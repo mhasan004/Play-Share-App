@@ -23,6 +23,6 @@ if (process.env.USE_TLS === "true")
 app.use('/api/v1/auth',  authRoutes)                                                                                                    // Register new user, login user 
 app.use('/api/v1/user',  verifyUser, userRoutes)                                                                                        // PRIVATE USER ROUTES   
 app.use('/api/v1/admin', verifyUser, isAdmin, adminRoutes)                                                                              // PRIVATE ADMIN ROUTES
-app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route dont exist or wrong http method!"})}) 
+app.get('*', (req,res,next) => {res.status(404).json({status: -1, message: "404 - Route doesn't exist!"})}) 
 
 module.exports = app;

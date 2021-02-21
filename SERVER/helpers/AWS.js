@@ -1,16 +1,16 @@
 const AWS = require("aws-sdk")
 
-AWS.config.update({                                                                                                     // Configure the keys for accessing AWS
-    region: "us-east-2",                                                                                                // For DynamoDB
-    endpoint: "http://localhost:8000",                                                                                   // For DynamoDB
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,                                                                         // For S3
-    secretAccessKey: process.env.AWS_SECRET_KEY,                                                                        // For S3
+AWS.config.update({                                                                                         // Configure the keys for accessing AWS
+    region: "us-east-2",                                                                                    // For DynamoDB
+    endpoint: "http://localhost:8000",                                                                      // For DynamoDB
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,                                                             // For S3
+    secretAccessKey: process.env.AWS_SECRET_KEY,                                                            // For S3
 });
 const s3 = new AWS.S3()
 const dynamodb = new AWS.DynamoDB();
 
-//------------------------------------------------------------------------------------------ S3
-const uploadFile = (filename, buffer, type) => {
+ 
+const uploadFile = (filename, buffer, type) => {                                                            //------------------------------------------------------------------------------------------ S3
     const params = {
         ACL: "public-read",
         Body: buffer,
@@ -31,8 +31,7 @@ async function S3Upload(filename, buffer, type) {
     }
 }
 
-//------------------------------------------------------------------------------------------ DynamoDB
-// const params = {
+// const params = {                                                                                        //------------------------------------------------------------------------------------------ DynamoDB
 //     TableName : "Play-Store-Refresh-Tokens",
 //     KeySchema: [       
 //         { AttributeName: "RefreshTokens", KeyType: "S"}, 

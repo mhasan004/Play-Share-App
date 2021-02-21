@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 const Token = require('../model/Token')
-const {redis_client} = require('./Redis')
+const {redis} = require('./Redis')
 const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
 const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptFunctions')
 const {encryptPayload, decryptPayload} = require('./EncryptDecryptFunctions')
@@ -30,7 +30,7 @@ function createJWT (res, JWT_payload, type = "access"){                         
 async function createStoreRefreshToken(res, JWT_payload){                                                                                                   // Function to create a new JWT refresh token and store the refresh token in a cookie
     const refresh_token = createJWT(res, JWT_payload, "refresh") 
     try{
-        await redis_client.set("RT-"+JWT_payload.username+"-"+JWT_payload.id, refresh_token, 'EX', REDIS_TOKEN_CACHE_EXP)                                   // Saving Refresh token to Redis Cache
+        await storeToken("RT-"+JWT_payload.username+"-"+JWT_payload.id, refresh_token, REDIS_TOKEN_CACHE_EXP)                                               // Storing refresh token to redis cache and db
     } catch(err){
         console.log("CreateStoreRefreshToken Error: couldn't save RF to redis db. Error:  "+err)
         throw "CreateStoreRefreshToken Error - FAILED to add Refresh Token to Redis Cache. Err: "+err
@@ -58,24 +58,26 @@ function verifyToken(token, type = "access", role = "user"){                    
 
 async function findToken(tokenName){
     let token
-    token = await redis_client.exists(tokenName)
+    token = await redis.exists(tokenName)
     // if not in redis, see db
     return token
 }
 
-async function storeToken(key, value, exp, cachingOnly = true){  
-    if (!cachingOnly){
-        //store in key value DB (Dynamo DB)
-    }
+async function storeToken(key, value, exp){  
     try{
-        await redis_client.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
+        //store in key value DB (Dynamo DB)
     } catch(err){
         throw err
+    }
+    try{
+        await redis.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
+    } catch(err){
+        console.log("     Couldn't store refrewsh token to redis cache!")
     }
     
 }                                                                                             
 async function deleteToken(key){  
-    await redis_client.del(key)                                                                                                                             // delete refresh token from redis cache and mongodb as a key
+    await redis.del(key)                                                                                                                             // delete refresh token from redis cache and mongodb as a key
     // delete from db
 }    
 
@@ -102,11 +104,11 @@ module.exports = {
 //     if (username_in !== verified_RF.username)
 //         return res.status(401).json({status:-1, message: "Refresh Token Mismatch! Login again!"}).end()
 
-//     if (!await redis_client.exists("RT-"+verified_RF.username+'-'+verified_RF.id))                   // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
+//     if (!await redis.exists("RT-"+verified_RF.username+'-'+verified_RF.id))                   // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
 //         // return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"}).end()
 //         console.log("sfd")
 //     try{
-//         await redis_client.del("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                           // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
+//         await redis.del("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                           // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
 //     } catch{
 //         return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"}).end()
 //     }
