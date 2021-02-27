@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const { registerValidation, loginValidationUsername } = require('../model/ValidationSchema')                                                                // Joi validation functions
 const { doesUsernameEmailExist, comparePasswords } = require('../helpers/AuthFunctions')
 const { createJWT, createStoreRefreshToken, verifyToken, findToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
-const { findUserFromCacheOrDB } = require('../helpers/CachingFunctions')
+const { findUserFromCacheOrDB, cacheUser } = require('../helpers/CachingFunctions')
 
 function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
@@ -51,10 +51,11 @@ exports.login = async (req,res,next) =>
         user = ret.user
         isUserCached = ret.isUserCached
     } catch(err){
+        console.error("Auth Login Error - "+err)
         return res.status(400).json( {status: -1, message: err} )
     }
     if (!user) 
-        return res.status(401).json( {status: -1, message: "Invalid username or password! Error: "+err} )
+        return res.status(401).json( {status: -1, message: "Invalid username or password! Error: "} )
     if(!await comparePasswords(res, password, user.password))                                                                                               // 2) CHECK PASSWORD - Compare password that was passed in to the one in the DB    
         return
 
@@ -71,7 +72,7 @@ exports.login = async (req,res,next) =>
         try{
             await cacheUser(req, username)                                                                                                                  // Caching user for a day
         } catch(err){
-            console.log("     Failed to add user data to redis cache. Error: "+err)
+            console.error("     Auth Login Error - Failed to add user data to redis cache. Error: "+err)
         }
     }
 }
@@ -92,10 +93,9 @@ exports.logout = async (req,res,next) =>
     }
     try{
         await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                    // Delete RT from redis
-        console.log("     Deleted redis RF")
         return res.status(200).json({status:1, message: "Successfully logged out and cookie deleted!"})
     } catch(err){
-        console.log("     Logout Error: Failed to delete RT from redis")
+        console.error("     Auth Logout Error: Failed to delete RT from redis")
         return res.status(400).json({status:-1, message: "Failed to logout! Error: "+err})
     }
 }
