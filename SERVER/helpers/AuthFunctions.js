@@ -52,7 +52,7 @@ async function comparePasswords(res, password, dbPassword){                     
             return false 
         } 
     } catch(err){
-        console.log("Bycrypt Error - Failed to compare passwords! Error: " + err)
+        console.log("     Bycrypt Error - Failed to compare passwords! Error: " + err)
         res.status(400).json({status: -1, message:"Bycrypt Error - Failed to compare passwords! Error: " + err})
         return false
     }

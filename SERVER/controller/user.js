@@ -9,6 +9,16 @@ Date.prototype.formatMMDDYYYY = function(){
     "/" +  this.getFullYear();
 }
 
+exports.getFeed = async (req,res,next) => {
+    try{
+        let posts = await Post.find()                                                                           // Post.find().sort([['date', -1]]).exec()
+        posts = posts.reverse()
+        return res.status(200).json({status: 1, posts})    
+    } catch{
+        return  res.status(400).json({status: -1, message: "Failed to get post feed: "+err})    
+    }
+}
+
 exports.getAllPosts = async (req,res,next) => 
 {
     const username = req.username
@@ -18,7 +28,9 @@ exports.getAllPosts = async (req,res,next) =>
     }catch(err){
         return res.status(400).json({status: -1, message: "Failed to get post of this user: "+err})
     }
+
 }
+
 
 exports.makePost = async (req,res,next) => 
 {
@@ -113,16 +125,6 @@ exports.deleteAPost = async (req,res,next) =>
     }
 }
 
-exports.getFeed = async (req,res,next) => {
-    try{
-        let posts = await Post.find()                                                                           // Post.find().sort([['date', -1]]).exec()
-        posts = posts.reverse()
-        
-        return res.status(200).json({status: 1, posts})    
-    } catch{
-        return  res.status(400).json({status: -1, message: "Failed to get post feed: "+err})    
-    }
-}
 exports.likeFeedPost = async (req,res,next) => {
     let update, total_likes
     const like_dislike = req.headers["like-dislike"]
