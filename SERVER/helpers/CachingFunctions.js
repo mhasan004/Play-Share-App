@@ -1,20 +1,20 @@
 const User = require('../model/User')
 const {REDIS_USER_CACHE_EXP} = require("../config")                                         
-const {redisLocal} = require('./Redis')
+const {redis} = require('./Redis')    
 
 async function findUserFromCacheOrDB(username)                                                                                                              // Function to find user in either Redis Cache or MongoDB.  returns {user: Object, isUserCached: Boolean}                                                                    
 {
     let isUserCached = false
     let user
     try{
-        if(await redisLocal.exists(("user-"+username))){                                                                   //await redis.exists("user-"+username)){
+        if(await redis.exists(("user-"+username))){                                                                  
             try{
-                user = await redisLocal.get("user-"+username)                                                             // await redis.get("user-"+username)
+                user = await redis.get("user-"+username)                                                                                      
                 user = JSON.parse(user)
                 isUserCached = true
                 return {user, isUserCached}
             } catch(err){
-                console.error("     FindUserCacheDB - Failed to add user data to redis cache. Error: "+err)
+                console.error("     FindUserCacheDB - Failed to get user data to redis cache. Error: "+err)
             }     
         } else{
             console.error("     FindUserCacheDB - Not in cache so will get from DB and will cache later") 
@@ -38,7 +38,7 @@ async function cacheUser(req, username)
 { 
     req.isUserCached = false  
     try{
-        if(await redisLocal.exists("user-"+username))                                                                       // await redis.exists("user-"+username))
+        if(await redis.exists("user-"+username))                                                                      
             req.isUserCached = true  
     } catch{
         console.log("     VerifyUser - user not found in redis! - delete this catch??")
@@ -48,7 +48,7 @@ async function cacheUser(req, username)
             const user = await User.findOne({username: username})
             req.user = user
             try{
-                await redisLocal.set("user-"+username, user.toString(), REDIS_USER_CACHE_EXP)                                          // caching user for a day
+                await redis.set("user-"+username, JSON.stringify(user), REDIS_USER_CACHE_EXP, true)                                          // caching user locally for a day
             } catch(err){
                 console.error("     CacheUser - Couldn't save RF to redis db. Error:  "+err)
                 throw "CacheUser - FAILED to add Refresh Token to Redis Cache. Err: "+err
@@ -59,7 +59,7 @@ async function cacheUser(req, username)
     }
     if (req.isUserCached){
         try{
-            const user = await redisLocal.get("user-"+username)                                                          // await redis.get("user-"+username)
+            const user = await redis.get("user-"+username)                                                        
             req.user = JSON.parse(user)
         } catch{
             req.isUserCached = false  

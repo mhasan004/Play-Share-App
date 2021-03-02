@@ -13,7 +13,6 @@ exports.verifyUser = async (req,res,next) =>                                    
         req.role = "admin"
     else        
         req.role = "user"
-    console.log("Feed: "+username_in+" - "+req.role)
     const recieved_access_token = req.signedCookies.accessToken;                                                                                    // AUTHORIZATION HEADER: const auth_header = req.headers['authorization']; const recieved_access_token = auth_header && auth_header.split(' ')[1]
     const recieved_RF = req.signedCookies.refreshToken;
     if(!recieved_RF) 
@@ -47,10 +46,9 @@ exports.verifyUser = async (req,res,next) =>                                    
     try{
         await cacheUser(req, username_in)
     } catch(err){
-        console.log("      failed to cached user! Err: "+err)
+        console.error("      failed to cached user! Err: "+err)
         return res.status(401).json({status: -1, message: err})
     }
-
     req.username = verified_access.username       
     req.tokenId = verified_access.id    
     next()

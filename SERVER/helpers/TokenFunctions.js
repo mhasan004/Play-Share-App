@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Token = require('../model/Token')
-const {redis} = require('./Redis')
+const {redis} = require('./Redis')  
 const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
 const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptFunctions')
 const {encryptPayload, decryptPayload} = require('./EncryptDecryptFunctions')
@@ -70,11 +69,10 @@ async function storeToken(key, value, exp){
         throw err
     }
     try{
-        await redis.set(key, value, 'EX', exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
+        await redis.set(key, value, exp)                                                                                                       // set refresh token in redis cache and a key value db as the value. key = rf-username-id 
     } catch(err){
         console.log("     Couldn't store refrewsh token to redis cache!")
     }
-    
 }                                                                                             
 async function deleteToken(key){  
     await redis.del(key)                                                                                                                             // delete refresh token from redis cache and mongodb as a key

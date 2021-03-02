@@ -1,41 +1,52 @@
-const Redis      = require("redis")
-const AsyncRedis = require("async-redis")                                                           // async await version of redis
-
-const REDIS_LOCAL_PORT = process.env.REDIS_LOCAL_PORT || 6379                                       // redis local port
-const REDIS_CLOUD_PORT = process.env.REDIS_CLOUD_PORT                                               // redis cloud port
-const REDIS_CLOUD_HOST = process.env.REDIS_CLOUD_HOST || '127.0.0.1'
+// Redis Local and Cloud Databases. Local Redis used for cache.
+const Redis = require("redis")                                                                                                               
+const { promisifyAll } = require('bluebird');
+promisifyAll(Redis);                                                                
 const REDIS_AUTH = {
-    'auth_pass': process.env.REDIS_CLOUD_PASSWD,
-    'return_buffers': true
+    port      : process.env.REDIS_CLOUD_PORT,         
+    host      : process.env.REDIS_CLOUD_HOST,            
 }
+const redisLocal = Redis.createClient(process.env.REDIS_LOCAL_PORT || 6379)
+const redisCloud = Redis.createClient(REDIS_AUTH)       
 
-const redis = AsyncRedis.createClient(REDIS_LOCAL_PORT)
-// const clientCloud = Redis.createClient(REDIS_CLOUD_PORT, REDIS_CLOUD_HOST, REDIS_AUTH)                      
-// const redisCloud = AsyncRedis.decorate(clientCloud)                                                 // promisify redis
-
-redis.on("error", err => {
-    console.log("     Error Connecting to Redis! - There could be no redis server running.\n\
-        Install redis then run 'redis-server' to start the redis server!.\n\
+redisLocal.on("error", err => {
+    console.log("     Error Connecting to Redis! - Install redis then run 'redis-server' to start the redis server!.\n\
         Error: " + err+"\n");
 })
-// redisCloud.on("error", err => {
-//     console.log("     Error Connecting to Redis Cloud!\n          Error: " + err+"\n");
-// })
+redisCloud.auth(process.env.REDIS_CLOUD_PASSWD, (err, res)=>{ if(err) console.log("Couldnt connect to Redis Cloud. Err: "+err)})
 
-redisLocal = {}
-redisLocal.set = async (key, value, exp)=>{                     // await redisLocal.set(...)
-    return redis.set(key, value, 'EX', exp)                                                          
+// These functions combines calls to local and cloud versions redis databases. Using Local Redis for quick cache and cloud redis as the key value database. Redis local keeps data cached, redis cloud. 
+redis = {}
+redis.set = async (key, value, exp, onlyCache = false)=>{                                       // usage: await redis.set(...)
+    if (typeof(value) !== "string"){                                                            // Redis v6 automatically turned values to strings using .toString() so i had to add this to make suer JSON data is stringified.            
+        try{   value = JSON.stringify(value)}
+        catch{ value = value.toString()}
+    }
+    await redisLocal.setAsync(key, value, 'EX', exp)  
+    if (!onlyCache)                                      
+        redisCloud.setAsync(key, value, 'EX', exp)                                     
 }
-redisLocal.get = async (key)=>{                                     // await redisLocal.get(...)
-    return redis.get(key)    
+redis.get = async (key)=>{                                                                    
+    let val
+    try{
+        val = await redisLocal.getAsync(key)                                                    // Get from local version of redis sine it could be cached, if cant, get from cloud and then cache it
+    } catch{
+        val = await redisCloud.getAsync(key)   
+        await redisLocal.setAsync(key, val, 'EX', 86400)                                        // Not in local cache so getting from cloud and caching for a day                              
+    }     
+    return val                                                           
 }
-redisLocal.exists = async(key)=>{                                   // await redisLocal.exists(...)
-    return redis.exists(key)
+redis.exists = async(key)=>{                                                             
+    let val = await redisLocal.existsAsync(key)
+    if (!val)
+        val = await redisCloud.existsAsync(key)
+    return val
 }
-
+redis.del = async(key)=>{  
+    redisCloud.del(key)                                  
+    await redisLocal.del(key)
+}
 
 module.exports = {
     redis,
-    // redisCloud,
-    redisLocal
 }

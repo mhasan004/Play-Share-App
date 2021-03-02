@@ -7,14 +7,15 @@
 
 # 💎 FEATURES:
   * **Rate Limiting** to protect against basic DDOS attacks: blocking an IP for several minutes if they make too many requests. 
-  * **Session Persistence:** Keeping users logged in by silently refreshing tokens.
+  * **Session Persistence:** Keeping users logged in by silently refreshing tokens. **Combined benefits of token based and session based authentication** by using JWT access and refresh tokens and have a silent refresh scheme to persist sessions. 
   * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks.   
   * **Node Server Clustering and Task Threading** to increase performance of server. 
   * **TLS Handshake:** Optional TLS handshake implementation (implemented in server, deleted implementation on client).
+  * **Caching** using Redis for faster response times
   * **Clean URLS:** Query parameters are passed via headers so that attackers can't query requests easily using the url. 
   * **EXIF Metadata Stripping** from images (to be implemented).
   * **Some Others:** Input validation, password hashing, saching data for frequently used endpoints, etc.
-  * **Combined benefits of token based and session based authentication** by using JWT access and refresh tokens and have a silent refresh scheme to persist sessions. 
+
 
 # DEMO:
 ![App security demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
@@ -35,7 +36,7 @@
 # 📌 TECHNOLOGIES / DEPENDENCIES (REST API):
 * The REST API Server is built using **Node**, **Express**, and **Mongoose**
 * The Client side is still in production and is being built with **React**
-* **Redis (async-redis)** - used to cache requests, decrease response times. 
+* **Redis** - Redis is ran locally to cache user and token data for faster response times. Redis is also ran on RedisLabs Cloud Server to store tokens in a key-value database. 
 * **helmet.js** - used to give some basic security to REST API application.
 * **express-rate-limit** - used to limit how many requests can be made to the server in a specified time by the same IP
 * **JWT** - used to authenticate a user - used to make user access and refresh tokens.
@@ -44,7 +45,7 @@
 * **node-rsa** - used to create asymmetric RSA keys to initiate TLS handshake between client and server. 
 * **bcrypt** - used to store hashed passwords into the database.
 * **crypto-js** - (not used if using HTTPS and disabling TLS) used to encrypt response and decrypt request using the client's symmetric key (AES).
-* **morgan** - used to log endpoint response times to optimize code. 
+* **morgan** - used to log endpoint response times. 
 
 # 🚑 SERVER RESPONSE CODES:
   <p align="center">
@@ -56,11 +57,10 @@
   </p>
 
 # 🏠 RUN SERVER LOCALLY:
-1) Rename ***.env.example*** to ***.env***. Can modify all eight variables but must change the **DB_CONNECT** variable so that you can connect to your Mongo Database. Make sure the keys are long and randomly generated. 
+1) Rename ***.env.example*** to ***.env***. Must chnage the **DB_CONNECT**, **REDIS_CLOUD_PORT**, **REDIS_CLOUD_HOST**, **REDIS_CLOUD_PASSWD**, **S3_BUCKET_NAME**, **AWS_ACCESS_KEY_ID**, and **AWS_SECRET_ACCESS_KEY** variables to connect to MongoDB, Redis, and AWS clowd services.
     <details>      
-      <summary> Description of the variables</summary>
+      <summary> Description of the enviornment variables </summary>
     
-      * `DB_CONNECT`  - Store your MongoDB Connection
       * `ADMIN_USERNAME` - Email address of the admin account.
       * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
       * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
@@ -70,10 +70,35 @@
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
       the hashing algorithm of these fields.
       * `USE_TLS = false` - Can keep this as is. Do you want to use the TLS handshake? false = disable TLS (do this when using https). true = enable TLS. 
+    
+      * <details>      
+        <summary> MongoDB </summary>
+
+        * `DB_CONNECT`  - Store your MongoDB Connection
+        </details>
+
+      * <details>      
+        <summary> Redis Labs </summary>
+
+        * `REDIS_LOCAL_PORT` - redis local server port
+        * `REDIS_CLOUD_PORT` - redis cloud server port
+        * `REDIS_CLOUD_HOST` - redis cloud server url
+        * `REDIS_CLOUD_PASSWD` - redis cloud server password
+        </details>
+      * <details>      
+        <summary> AWS </summary>
+
+        * `S3_BUCKET_NAME` - S2 bucket name
+        * `DYNAMODB_TABLE_NAME` - DynamoDB table Name (might delete as redislabs replaces it in code) 
+        * `AWS_ACCESS_KEY_ID` 
+        * `AWS_SECRET_ACCESS_KEY`
+        </details>
+
     </details>
-2) `redis-server` - download redis and start the redis server for REST API.
+2) `redis-server` - download redis and start the redis server for REST API. Connect to the local Redis database by using the CLI: `redis-cli`. Connect to RedisLabs cloud database by running `redis-cli -h "<REDISLABS_URL>" -p <PORT> -a "<PASSWORD>"`
 3) `npm install` on the **CLIENT** & **SERVER** directories
 4) `npm start` on the **CLIENT** & **SERVER** directories to run the client and server 
+
 
 # 🛡️ APP SECURITY:
 <details>      
