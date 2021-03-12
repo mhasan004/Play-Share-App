@@ -28,7 +28,7 @@
 
   * **Users** can make a posts, edit their own posts, delete a post, see all of their posts, and like other user's posts. User feed is currently in production. Uploading video and images to S3 bucket in development. 
   * **Admin** can see all user's posts, see only a specific user's posts, and delete one or many posts by id. 
-  * **(In Progress)** Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote other posts, comment on other user's posts. 
+  * Users can upload image/video to Amazon S3 bucket. Users can delete their own post, can upvote/downvote posts, comment on posts. 
   * **(Future Plans)** Users can join different game groups just like reddit and follow users. App will feature an hierarchical commenting system and messaging system in the future.
  
 </details>    
@@ -56,42 +56,55 @@
     Fig 2: Responses of the API Server: 1, -1, -2, 2, -3
   </p>
 
+  | Server Response Codes | Description             | Client Action | 
+  | ---------------------| -----------              | ------------- | 
+  | 1                    | Request successful       |  |     
+  | -1                   | Request unsuccessful     |  Read the response message|     
+  | -2                   | Need to refresh tokens       |  Needs make a request to the `/refresh` endpoint and supply refresh token
+  | 2                    | Successfully refreshed tokens   | Need to make previous request again |
+  | 3                    | Request unsuccessful. Fishy behavior was detected and tokens are deleted from client | Neeed to login again     
+     
+
+
 # 🏠 RUN SERVER LOCALLY:
-1) Rename ***.env.example*** to ***.env***. Must chnage the **DB_CONNECT**, **REDIS_CLOUD_PORT**, **REDIS_CLOUD_HOST**, **REDIS_CLOUD_PASSWD**, **S3_BUCKET_NAME**, **AWS_ACCESS_KEY_ID**, and **AWS_SECRET_ACCESS_KEY** variables to connect to MongoDB, Redis, and AWS clowd services.
+1) Rename ***.env.example*** to ***.env***. Variables marked with a `*` must be changed to connect to MongoDB, Redis, and AWS cloud services.
     <details>      
       <summary> Description of the enviornment variables </summary>
     
       * `ADMIN_USERNAME` - Email address of the admin account.
-      * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
-      * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
-      * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
-      * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
-      * `JWT_PAYLOAD_ENCRYPTION_KEY` - Used to encrypt the JWT payload. Payload contains the username and a random number, which together, lets the server find the refresh key value in the database in linear time. 
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
       the hashing algorithm of these fields.
       * `USE_TLS = false` - Can keep this as is. Do you want to use the TLS handshake? false = disable TLS (do this when using https). true = enable TLS. 
     
       * <details>      
+        <summary> KEYS </summary>
+
+        * `ADMIN_SECRET_KEY` - This will be used to make the admin's access JWT
+        * `USER_SECRET_KEY`  - This will be used to make the admin's and user's access JWT
+        * `REFRESH_TOKEN_SECRET` - This is used to generate a refresh JWT refresh
+        * `COOKIE_SECRET` - This is used to sign HttpOnly cookies
+        * `JWT_PAYLOAD_ENCRYPTION_KEY` - Used to encrypt the JWT payload. Payload contains the username and a random number, which together, lets the server find the refresh key value in the database in linear time. 
+        </details>
+      * <details>      
         <summary> MongoDB </summary>
 
-        * `DB_CONNECT`  - Store your MongoDB Connection
+        * `* DB_CONNECT`  - Store your MongoDB Connection
         </details>
-
       * <details>      
         <summary> Redis Labs </summary>
 
         * `REDIS_LOCAL_PORT` - redis local server port
-        * `REDIS_CLOUD_PORT` - redis cloud server port
-        * `REDIS_CLOUD_HOST` - redis cloud server url
-        * `REDIS_CLOUD_PASSWD` - redis cloud server password
+        * `* REDIS_CLOUD_PORT` - redis cloud server port
+        * `* REDIS_CLOUD_HOST` - redis cloud server url
+        * `* REDIS_CLOUD_PASSWD` - redis cloud server password
         </details>
       * <details>      
         <summary> AWS </summary>
 
-        * `S3_BUCKET_NAME` - S2 bucket name
-        * `DYNAMODB_TABLE_NAME` - DynamoDB table Name (might delete as redislabs replaces it in code) 
-        * `AWS_ACCESS_KEY_ID` 
-        * `AWS_SECRET_ACCESS_KEY`
+        * `* S3_BUCKET_NAME` - S2 bucket name
+        * `* DYNAMODB_TABLE_NAME` - DynamoDB table Name (might delete as redislabs replaces it in code) 
+        * `* AWS_ACCESS_KEY_ID` 
+        * `* AWS_SECRET_ACCESS_KEY`
         </details>
 
     </details>
@@ -136,7 +149,19 @@
     * **Refresh Tokens& HttpOnly Cookie** expiration time: 15 days
   </details> 
    
-  <details>      
+  | Token Name             | Type        | Encryption Key (JWT)    | Payload Encryption Key (AES) | Expiration 
+  | -----------------      | ----------- | ----------------------- |  --------------------------- | ---------- 
+  | User Access Token JWT  | JWT         | `USER_SECRET_KEY`       | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min       
+  | Admin Access Token JWT | JWT         | `ADMIN_SECRET_KEY`      | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min
+  | Refresh Token JWT      | JWT         | `REFRESH_TOKEN_SECRET`  | `JWT_PAYLOAD_ENCRYPTION_KEY` | 15 min
+
+  | Cookie Name            | Cookie Signature | Flags                                         | Expiration | 
+  | -----------------      | -----------      | --------------------------------------------- | -----------
+  | Access Token Cookie    | `COOKIE_SECRET`  | `httpOnly`, `secure`, `sameSite`, `signed`    | 5 min
+  | Refresh Token Cookie   | `COOKIE_SECRET`  | `httpOnly`, `secure`, `sameSite`, `signed`    | 15 min
+  <br>
+
+  <details>   
   <summary ><b>🤫 Silent Refresh Procedure to Persist Sessions</b> (Figure 3):  </summary>
 
   1) When a request has an invalid access token, the server will verify if the refresh token is valid. If it is valid, the server will respond with status code `-2`. 
@@ -154,6 +179,8 @@
   3) Checking if user is in the database
   4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshign tokens, or when access token is invalid)
 </details>
+
+
 
   
 

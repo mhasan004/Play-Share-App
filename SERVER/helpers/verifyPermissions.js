@@ -15,8 +15,7 @@ exports.verifyUser = async (req,res,next) =>                                    
         req.role = "user"
     const recieved_access_token = req.signedCookies.accessToken;                                                                                    // AUTHORIZATION HEADER: const auth_header = req.headers['authorization']; const recieved_access_token = auth_header && auth_header.split(' ')[1]
     const recieved_RF = req.signedCookies.refreshToken;
-    if(!recieved_RF) 
-        return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
+    // if(!recieved_RF) return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
  
     // 2) (a) Verify if access token is valid. If valid, move on to b. If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access token matches the username in header. (c) for admin usernames, check also if rf payload match. 
     let verified_access, verified_rf
@@ -39,7 +38,7 @@ exports.verifyUser = async (req,res,next) =>                                    
         }
         return res.status(401).json({status: -2, message: "Access Denied! Invalid Access Token! Send request to /auth/refresh. Error: "+err}).end() 
     }
-    if (!await tokenNameVerified(res, username_in, verified_access, verified_rf))                                                                 // 2.b) check if the username stored in token is the same username that was passed in through the header.
+    if (!await tokenNameVerified(res, username_in, verified_access, verified_rf))                                                                   // 2.b) check if the username stored in token is the same username that was passed in through the header.
         return                                                                                                                                      // If names are not the same, an error message was sent out so exist                                                                        
 
     // 3) See if username exists in redis cache, if not, find in db and add to cache. then, we can move on to the next middleware, setting role, username, and user object fileds of the request for the next middleware to use.
@@ -54,7 +53,7 @@ exports.verifyUser = async (req,res,next) =>                                    
     next()
 }
 
-exports.isAdmin = async (req,res,next) => {                                                                                                     // MiddleWare: Admin Route. See if req.role is admin or not
+exports.isAdmin = async (req,res,next) => {                                                                                                         // MiddleWare: Admin Route. See if req.role is admin or not
     if (req.role !== "admin")
         return res.status(401).json({status: -1, message: "Access Denied! Not Admin!"}).end() 
     next()

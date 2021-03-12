@@ -32,7 +32,6 @@ function decryptPayload(JWTpayload){                                            
     return payload                                                          
 }    
 
-
 function findEmptyKey()
 {
     const SYMMETRIC_KEY_DICT_ARRAY = Object.keys(SYMMETRIC_KEY_DICT).map(Number)

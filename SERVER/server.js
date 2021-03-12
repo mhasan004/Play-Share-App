@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const PORT = process.env.PORT || 8080
 const app = require('./app');
 
-mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(process.env.DB_CONNECT, { useUnifiedTopology: true, useNewUrlParser: true,  useFindAndModify: false})                  // useFindAndModify = false to turn of deprecation mesage for findOneAndUpdate()
     .then( () => {
         app.listen(PORT, ()=> console.log(`CONNECTED TO DB!     http://localhost:${PORT}     PID: ${process.pid}`))
     })

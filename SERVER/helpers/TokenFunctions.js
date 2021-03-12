@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const toBoolean = require('to-boolean');
 const {redis} = require('./Redis')  
 const {cookieConfigRefresh, cookieConfigAccess, REDIS_TOKEN_CACHE_EXP, JWT_ACCESS_EXP, JWT_REFRESH_EXP} = require("../config")     
 const {SYMMETRIC_KEY_encrypt} = require('./EncryptDecryptFunctions')
@@ -22,7 +23,7 @@ function createJWT (res, JWT_payload, type = "access"){                         
     else
         token = jwt.sign(JWT_payload, process.env.USER_SECRET_KEY, {expiresIn: JWT_ACCESS_EXP})  
     res.cookie('accessToken', token, cookieConfigAccess); 
-    if (process.env.USE_TLS === "true")
+    if (toBoolean(process.env.USE_TLS))
         res.cookie('accessToken', SYMMETRIC_KEY_encrypt(token, req.headers["handshake"]), cookieConfigAccess);                                              // Encrypt (if TLS handshake in effect - just for practice, not needed) the JWT token and set it in the. SYMMETRIC_KEY_encrypt() is disabled if using https    
 }
 

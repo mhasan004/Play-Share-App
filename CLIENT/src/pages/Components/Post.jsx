@@ -1,39 +1,36 @@
 import React, {Component} from "react"
+import MakeRequest from '../../utils/MakeRequest';                                                                                  // This will be used to make requests to the server and handle silent refresh if needed
+import CONFIG from "../../config"
 import '../../css/post.css'
+const ROUTE_URL = CONFIG.API_BASE_URL + "/user"
 
 class Post extends React.Component{
     loggedUser = localStorage.getItem("username")
     state = this.props.post
 
     async likeHandler(event) {
-        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
-            return
-    
-        // I hit like again, so remove like
-        if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){          // if already liked, remove it
+        // LIKE -> UNLIKE: I hit like again, so remove like
+        if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){                // if already liked, remove it
             this.setState({
                 like: this.state.like - 1,
                 total_likes: this.state.total_likes - 1,
-                user_liked: this.state.user_liked.filter(usrs => usrs !== this.loggedUser),
+                user_liked: this.state.user_liked.filter(user => user !== this.loggedUser),
             })  
-            return
         }
-
-        // I disliked it but now switching to like it
-        if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser) ){         // if I had it in dislike, remove dislike and add like
+        // DISLIKE -> LIKE: I disliked it but now switching to like it
+        else if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser) ){         // if I had it in dislike, remove dislike and add like
             let new_user_liked = this.state.user_liked
             new_user_liked.push(this.loggedUser)
             this.setState({
                 like: this.state.like + 2,
                 dislike: this.state.like - 1,
                 user_liked: new_user_liked,
-                user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.loggedUser),
+                user_disliked: this.state.user_disliked.filter(user => user !== this.loggedUser),
                 total_likes: this.state.total_likes + 2,            
             })
-            return
         }
-
-        if (!this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){         // if I hadn't it voted
+        // NONE -> LIKE: 
+        else if (!this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){         // if I hadn't voted and i liked
             let new_user_liked = this.state.user_liked
             new_user_liked.push(this.loggedUser)
             this.setState({
@@ -41,25 +38,41 @@ class Post extends React.Component{
                 user_liked: new_user_liked,
                 total_likes: this.state.total_likes + 1,            
             })
-            return
         }
+
+        let resJson
+        const reqObject = {                                                                 // Feed request object
+            method: 'PATCH',
+            mode: 'cors',
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'post-id': this.state._id,
+                'username': this.loggedUser
+            }
+        }
+        try{
+            resJson = await MakeRequest(ROUTE_URL+"/feed/like", reqObject, this.props)                   // Making get feed request
+            if (!resJson.status)
+                throw "resJson is "+resJson
+        } catch(err){
+            return console.error("REACT LikeHandler - Couldnt make request to API! Error: "+err)
+        }
+        if (resJson.status !== 1)
+            console.error("REACT LikeHandler - Unsucessful liking post")
     }
     async dislikeHandler(event) {    
-        if (this.state.username === this.loggedUser)                                                                           // cant vote on own post
-            return
-    
-        // I hit dislike again, so remove dislike
-        if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){          // if already disliked, remove it
+        // DISLIKE -> UN-DISLIKE: I hit dislike again, so remove dislike
+        if (this.state.user_disliked.includes(this.loggedUser) && !this.state.user_liked.includes(this.loggedUser)){                // if already disliked, remove it
             this.setState({
                 dislike: this.state.dislike + 1,
                 total_likes: this.state.total_likes + 1,
                 user_disliked: this.state.user_disliked.filter(usrs => usrs !== this.loggedUser),
             })  
-            return
         }
-
-        // I liked it but now switching to dislike it
-        if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser) ){         // if I had it in like, removelike and add dislike
+        // LIKE -> DISLIKE: I liked it but now switching to dislike it
+        else if (this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser) ){         // if I had it in like, removelike and add dislike
             let new_user_disliked = this.state.user_disliked
             new_user_disliked.push(this.loggedUser)
             this.setState({
@@ -69,10 +82,9 @@ class Post extends React.Component{
                 user_liked: this.state.user_liked.filter(usrs => usrs !== this.loggedUser),
                 total_likes: this.state.total_likes - 2,            
             })
-            return
         }
-
-        if (!this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){         // if I hadn't it voted
+        // NONE -> DISLIKE:
+        else if (!this.state.user_liked.includes(this.loggedUser) && !this.state.user_disliked.includes(this.loggedUser)){         // if I hadn't voted and disliked
             let new_user_disliked = this.state.user_disliked
             new_user_disliked.push(this.loggedUser)
             this.setState({
@@ -80,14 +92,59 @@ class Post extends React.Component{
                 user_disliked: new_user_disliked,
                 total_likes: this.state.total_likes - 1,            
             })
-            return
+        }
+
+        let resJson
+        const reqObject = {                                                                 // Feed request object
+            method: 'PATCH',
+            mode: 'cors',
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'post-id': this.state._id,
+                'username': this.loggedUser
+            }
+        }
+        try{
+            resJson = await MakeRequest(ROUTE_URL+"/feed/dislike", reqObject, this.props)                   // Making get feed request
+            if (!resJson.status)
+                throw "resJson is "+resJson
+        } catch(err){
+            return console.error("REACT DeleteHandler - Couldnt make request to API! Error: "+err)
+        }
+        if (resJson.status !== 1)
+            console.error("REACT DeleteHandler - Unsucessful deleting post")
+        else{
+            console.log("deleted post id: "+resJson.message)
         }
     }
     editHandler(event) {
         console.log("edit")
     }
-    deleteHandler(event) {
-        this.props.deleteHandler(this.state.postId)
+    async deleteHandler(event) {
+        let resJson
+        const reqObject = {                                                                 // Feed request object
+            method: 'DELETE',
+            mode: 'cors',
+            credentials: 'include', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'post-id': this.state._id,
+            }
+        }
+        try{
+            resJson = await MakeRequest(ROUTE_URL+"/post", reqObject, this.props)                   // Making get feed request
+            if (!resJson.status)
+                throw "resJson is "+resJson
+        } catch(err){
+            return console.error("REACT DislikeHandler - Couldnt make request to API! Error: "+err)
+        }
+        if (resJson.status !== 1)
+            console.error("REACT DislikeHandler - Unsucessful disliking post")
+        else
+            this.props.refreshFeed()
     }
     commentHandler(event) {
         console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.loggedUser+"         indisliked?: "+this.state.user_disliked.includes(this.loggedUser))
