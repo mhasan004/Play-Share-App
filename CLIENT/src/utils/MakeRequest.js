@@ -1,12 +1,17 @@
 import SilentRefresh from "./SilentRefresh"
 import {Logout} from "./Auth"
 
-let performedRequest = false
-let performedRefresh = false
+let performedRequest, performedRefresh = false
 
 // This function will primarily be used to make requests to the server. It will refresh tokens if necessary. 
-// Returns: {status: -1, 1}    -1=failure, 1=success. Inside: if response.status = -3 -> detects fishy behavior, will logout user 
-var MakeRequest = async (ROUTE_URL, reqObject, props) => {         
+/* Usage:
+      const reqObject = {method: 'GET', mode: 'cors', credentials: 'include', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'username': localStorage.getItem("username") }}
+      try{ resJson = await MakeRequest(ROUTE_URL, reqObject, this.props)}....resJson.status == -1 or 1
+   Returns: {status: -1 or 1}    -1=failure, 1=success. Inside: if response.status = -3 -> detects fishy behavior, will logout user 
+*/
+var MakeRequest = async (ROUTE_URL, reqObject, props) => {  
+   if (!reqObject.headers.username)
+      reqObject.headers.username = localStorage.getItem("username")    
    let res, resJson
    try{
       res = await fetch(ROUTE_URL, reqObject)

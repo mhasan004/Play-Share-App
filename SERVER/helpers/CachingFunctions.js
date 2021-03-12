@@ -16,9 +16,9 @@ async function findUserFromCacheOrDB(username)                                  
             } catch(err){
                 console.error("     FindUserCacheDB - Failed to get user data to redis cache. Error: "+err)
             }     
-        } else{
+        } /* else{
             console.error("     FindUserCacheDB - Not in cache so will get from DB and will cache later") 
-        }
+        }*/
     } catch(err){
         console.error("     FindUserCacheDB - Failed to see if user exists in Redis. Error: "+err)
     }

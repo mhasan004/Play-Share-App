@@ -29,15 +29,13 @@ module.exports = {
         httpOnly: true,                                                                                 // to disable accessing cookie via client side js
         signed: true,                                                                                   // if you use the secret with cookieParser
         sameSite: "strict",                                                                             // cookies won't be sent if not the same domain (guard against CSRF)
-        // secure: true,                                                                                // only set cookies over https
-        // ephemeral: false                                                                             // true = cookie destroyed when browser closes
+        secure: true,                                                                                   // only set cookies over https
     },
     cookieConfigAccess: {                                                                               // Cookie expires in 5 min
         maxAge: 300000,                                                                 
         httpOnly: true,                                                                                
         signed: true,  
         sameSite: "strict",                                                                                                                                                             
-        // secure: true,                                                                               
-        // ephemeral: false                                                                            
+        secure: true,                                                                               
     },
 }

@@ -39,6 +39,7 @@
     "node-rsa": "^1.1.1",
     "nodemon": "^2.0.4",
     "redis": "^3.0.2",
-    "redis-server": "^1.2.2"
+    "redis-server": "^1.2.2",
+    "to-boolean": "^1.0.0"
   }
 }

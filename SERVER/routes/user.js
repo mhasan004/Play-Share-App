@@ -12,6 +12,7 @@ router.patch ('/post', userController.editAPost)
 router.delete('/post', userController.deleteAPost)    
 
 router.get('/feed', userController.getFeed)                                         // get posts sorted by latest upload                           
-router.patch('/feed', userController.likeFeedPost)                                  // LIKE POST: pass "like" or "dislike" into url with poost id to inc,dec liek count
+router.patch('/feed/like', userController.likeFeedPost)                                  // LIKE POST: 
+router.patch('/feed/dislike', userController.dislikeFeedPost)                                  // DISLIKE POST: 
 
 module.exports = router
