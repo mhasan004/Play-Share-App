@@ -6,7 +6,7 @@ const public_key = key.exportKey('public')                                      
 const private_key = key.exportKey('private')                                                                            // private key
 const RSA_private_key = new NodeRSA(private_key)
 
-const encrypted_headers = []                                                                                            // will decrypt these headers with symmetric key             
+const encrypted_headers = ["username", "post-id"]                                                                                            // will decrypt these headers with symmetric key             
 let SYMMETRIC_KEY_DICT = {}
 let MAX_CLIENT_CONNECTIONS = 10
 
@@ -20,16 +20,15 @@ function encryptPayload(JWTpayload){                                            
 }    
 
 function decryptPayload(JWTpayload){                                                                                    // used to decrypt the jwt payload with PAYLOAD_ENCRYPTION_KEY
-    let payload = {}
     if (JWTpayload.username){
         let bytes = CryptoJS.AES.decrypt(JWTpayload.username, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.username = bytes.toString(CryptoJS.enc.Utf8)   
+        JWTpayload.username = bytes.toString(CryptoJS.enc.Utf8)   
     }
     if (JWTpayload.id){
         let bytes = CryptoJS.AES.decrypt(JWTpayload.id, process.env.PAYLOAD_ENCRYPTION_KEY)    
-        payload.id = parseInt(bytes.toString(CryptoJS.enc.Utf8))
+        JWTpayload.id = parseInt(bytes.toString(CryptoJS.enc.Utf8))
     }
-    return payload                                                          
+    return JWTpayload                                                          
 }    
 
 function findEmptyKey()

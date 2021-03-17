@@ -1,6 +1,7 @@
 import React, {Component} from "react"
 import MakeRequest from '../../utils/MakeRequest';                                                                                  // This will be used to make requests to the server and handle silent refresh if needed
 import CONFIG from "../../config"
+import ReactDOM from "react-dom";
 import '../../css/post.css'
 const ROUTE_URL = CONFIG.API_BASE_URL + "/user"
 
@@ -114,13 +115,7 @@ class Post extends React.Component{
             return console.error("REACT DeleteHandler - Couldnt make request to API! Error: "+err)
         }
         if (resJson.status !== 1)
-            console.error("REACT DeleteHandler - Unsucessful deleting post")
-        else{
-            console.log("deleted post id: "+resJson.message)
-        }
-    }
-    editHandler(event) {
-        console.log("edit")
+            console.error("REACT DeleteHandler - Unsucessful deleting post")      
     }
     async deleteHandler(event) {
         let resJson
@@ -146,12 +141,25 @@ class Post extends React.Component{
         else
             this.props.refreshFeed()
     }
+    editHandler(event) {
+        console.log("edit")
+        // this.props.post.title+"1"
+        this.setState(prevState => {
+            let post =  { ...prevState };                           // 1) copying post {} state 
+            post.title = post.title+'1';                            // 2) update the title property, assign a new value    
+            return post ;                                           // 3) return new object jasper object
+        })
+        console.log(this.state)
+        const elem = ReactDOM.findDOMNode(this);                    // ***DEPREDIACTED*** get the post elem so that we can chnage the field
+        console.log(elem)
+        elem.classList.add("edit-mode")     
+    }
+
     commentHandler(event) {
         console.log("begin total: "+this.state.total_likes+"           liked: "+this.state.user_liked+"       disliked: "+this.state.user_disliked+"      user: "+this.loggedUser+"         indisliked?: "+this.state.user_disliked.includes(this.loggedUser))
+        
     }
-    likeChangeHandler(event){
-        console.log(event.target.value)
-    }
+   
     getLikeColor(){
         if (this.state.total_likes > 0) return "#2BB3FF"
         else if (this.state.total_likes < 0)  return "#FF4B2B"
@@ -180,7 +188,6 @@ class Post extends React.Component{
             show_actions = true
         }
 
-/*fill={svg_stroke_color}/>*/
         return(
             <div class="post-card-body-main center">
                 <div class="post-card-body">
@@ -220,7 +227,7 @@ class Post extends React.Component{
                                 <path class="up-arrow-elem" d="M11.7759 26.0033L32.7759 26.0033V52.0033H11.7759V26.0033Z" fill={svg_up_arrow_color}/>
                             </svg>
                             <div class="PCR-total-likes-text-div">
-                                <a class="PCR-total-likes-text"  onChange={e=>this.likeChangeHandler(e)} style={{color: this.getLikeColor()}} >{this.state.total_likes}</a>
+                                <a class="PCR-total-likes-text" style={{color: this.getLikeColor()}} >{this.state.total_likes}</a>
                             </div>
                             <svg class="PCR-arrow-down PCR-arrows icon" onClick={e=>this.dislikeHandler(e)} viewBox="0 0 44 53" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path class="down-arrow-elem" d="M22 52.0033L0 26.0033H44L22 52.0033Z" fill={svg_down_arrow_color}/>
@@ -250,18 +257,8 @@ class Post extends React.Component{
                     </svg>
                 </div> 
             </div> 
-
-            
         );
     }
 }
 
 export default Post;
-/* center-vertically */
-
-{/* <a class="post-arrow-up post-arrows" onClick={e=>this.like(e)}>      <i class="fas fa-arrow-up"></i></a> */}
-
-{/* <a class="post-total-likes-text">   {this.state.total_likes}  </a>
-<a class="post-arrow-down post-arrows" onClick={e=>this.dislike(e)}> <i class="fas fa-arrow-down"></i></a> */}
-
-/*style={{backgroundImage: `url(${this.state.content})`}}*/

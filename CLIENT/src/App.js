@@ -2,11 +2,11 @@ import React from "react";
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
 import SignInUpPage from "./pages/SignInUpPage/SignInUpPage";
 import GlobalFeed from "./pages/Feed/GlobalFeed";
-import MakePost from "./pages/MakePostComponents/MakePost.jsx";
+import MakePost from "./pages/MakePost/MakePost.jsx";
 import UserFeed from "./pages/Feed/UserFeed";
 import TestPost from "./pages/Components/Post";
 import CONFIG from "./config"
-import './App.css'
+import './css/App.css'
 
 class App extends React.Component{  
     render(){
@@ -49,14 +49,14 @@ class App extends React.Component{
                 dislikes: 0,
                 group: "None",
                 group_type: "None",
-                handle: "@hasan2",
+                handle: "@hasan",
                 isURL: true,
                 likes: 0,
                 title: "test1 title is me",
                 total_likes: 100,
                 user_disliked: [],
                 user_liked: [],
-                username: "hasan2",
+                username: "hasan",
                 _id: "5ffe4e2fac404632f4183c0b",
             }
 

@@ -4,6 +4,7 @@ const { registerValidation, loginValidationUsername } = require('../model/Valida
 const { doesUsernameEmailExist, comparePasswords } = require('../helpers/AuthFunctions')
 const { createJWT, createStoreRefreshToken, verifyToken, findToken, deleteToken } = require('../helpers/TokenFunctions')                                   // Getting access and refresh token creation funcions
 const { findUserFromCacheOrDB, cacheUser } = require('../helpers/CachingFunctions')
+const { DAY_RANGE_TO_REFRESH } = require('../config')
 
 function randomNum(min=0, max=1000000000000){                                                                                                               // Function to generate a random id so that we can store the refresh tokens in a key value database for O(1) access
     return (Math.random() * (max - min + 1) ) << 0
@@ -100,7 +101,7 @@ exports.logout = async (req,res,next) =>
     }
 }
 
-// Middleware to renew JWT and Refresh Token given valid old refresh token
+// Endpoint to renew JWT and Refresh Token given valid old refresh token
 exports.refresh = async (req,res,next) => {
     let verified_RF                                                                                                                                         
     const old_RF = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
@@ -131,11 +132,16 @@ exports.refresh = async (req,res,next) => {
     const payload = {username: verified_RF.username, id: randomNum()}   
     try{
         createJWT(res, payload, "access")
-        await createStoreRefreshToken(res, payload)   
+        if (Date.now() >= verified_RF.exp*1000-432000000)                                                                                                   // *** If the refresh token will expire within 5 days, refresh it
+            await createStoreRefreshToken(res, payload)   
     } catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err})
     }
     return res.status(201).json({status: 2, message: "Successfully refreshed JWT and refresh token"})
+}
+
+// Endpoint to reset password- send coded to email and you need to enter code in 30 minutes, after entering, code deleted, password changed 
+exports.passwordReset = async (req,res,next) => {    
 }
 
 

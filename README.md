@@ -4,9 +4,10 @@
 * This is a Reddit/Imgur-like app where gamers can share short clips of their gameplays. 
 * REST API server is built with Node, Express, MongoDB, Redis. Will migrate database to PostgreSQL in the future. Client is currently being built with React.
 * Hosted a clustered REST API server on DigitalOcean and used NGINX as a reverse Proxy. Enabled HTTPS. https://playshare.cloud/ (currently disabled) 
+* Will host client in AWS S3 bucket and server on AWS EC2 instance 
 
 # 💎 FEATURES:
-  * **Rate Limiting** to protect against basic DDOS attacks: blocking an IP for several minutes if they make too many requests. 
+  * **Rate Limiters** (API, Password Reset, and Account Creation Limiters) to protect against basic DDOS attacks: blocking an IP for several minutes to days if they make too many requests. 
   * **Session Persistence:** Keeping users logged in by silently refreshing tokens. **Combined benefits of token based and session based authentication** by using JWT access and refresh tokens and have a silent refresh scheme to persist sessions. 
   * **Client-side Protection:** Access and refresh tokens tokens are stored in HttpOnly cookies to prevent client from accessing them and can only be sent via HTTPS and same domain to guard against CSRF attacks.   
   * **Node Server Clustering and Task Threading** to increase performance of server. 
@@ -14,7 +15,7 @@
   * **Caching** using Redis for faster response times
   * **Clean URLS:** Query parameters are passed via headers so that attackers can't query requests easily using the url. 
   * **EXIF Metadata Stripping** from images (to be implemented).
-  * **Some Others:** Input validation, password hashing, saching data for frequently used endpoints, etc.
+  * **Some Others:** Input validation, password hashing, caching data for frequently used endpoints, etc.
 
 
 # DEMO:
@@ -49,7 +50,7 @@
 
 # 🚑 SERVER RESPONSE CODES:
   <p align="center">
-    <img src="./PicturesGifs/Basic_Response.PNG" width="70%">
+    <img src="./PicturesGifs/Basic_Response.PNG" width="60%">
   </p>
 
   <p align="center" style="font-style: italic">
@@ -62,14 +63,14 @@
   | -1                   | Request unsuccessful     |  Read the response message|     
   | -2                   | Need to refresh tokens       |  Needs make a request to the `/refresh` endpoint and supply refresh token
   | 2                    | Successfully refreshed tokens   | Need to make previous request again |
-  | 3                    | Request unsuccessful. Fishy behavior was detected and tokens are deleted from client | Neeed to login again     
+  | 3                    | Request unsuccessful. Fishy behavior was detected and tokens are deleted from client | Need to login again     
      
 
 
 # 🏠 RUN SERVER LOCALLY:
 1) Rename ***.env.example*** to ***.env***. Variables marked with a `*` must be changed to connect to MongoDB, Redis, and AWS cloud services.
     <details>      
-      <summary> Description of the enviornment variables </summary>
+      <summary> Description of the environment variables </summary>
     
       * `ADMIN_USERNAME` - Email address of the admin account.
       * `SALT_NUM = 10` - Can keep this as is. This is the salt number to hash the password and the JWT User Secret Key to store in the database. Can change this number every year to change 
@@ -108,7 +109,7 @@
         </details>
 
     </details>
-2) `redis-server` - download redis and start the redis server for REST API. Connect to the local Redis database by using the CLI: `redis-cli`. Connect to RedisLabs cloud database by running `redis-cli -h "<REDISLABS_URL>" -p <PORT> -a "<PASSWORD>"`
+2) `redis-server` - download redis and start the redis server for REST API. Connect to the local redis database by using the CLI: `redis-cli`. Connect to RedisLabs cloud database by running `redis-cli -h "<REDISLABS_URL>" -p <PORT> -a "<PASSWORD>"`
 3) `npm install` on the **CLIENT** & **SERVER** directories
 4) `npm start` on the **CLIENT** & **SERVER** directories to run the client and server 
 
@@ -149,11 +150,11 @@
     * **Refresh Tokens& HttpOnly Cookie** expiration time: 15 days
   </details> 
    
-  | Token Name             | Type        | Encryption Key (JWT)    | Payload Encryption Key (AES) | Expiration 
-  | -----------------      | ----------- | ----------------------- |  --------------------------- | ---------- 
-  | User Access Token JWT  | JWT         | `USER_SECRET_KEY`       | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min       
-  | Admin Access Token JWT | JWT         | `ADMIN_SECRET_KEY`      | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min
-  | Refresh Token JWT      | JWT         | `REFRESH_TOKEN_SECRET`  | `JWT_PAYLOAD_ENCRYPTION_KEY` | 15 min
+  | JWT Token Name         | Encryption Key (JWT)    | Payload Encryption Key (AES) | Expiration 
+  | -----------------      | ----------------------- |  --------------------------- | ---------- 
+  | User Access Token JWT  | `USER_SECRET_KEY`       | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min       
+  | Admin Access Token JWT | `ADMIN_SECRET_KEY`      | `JWT_PAYLOAD_ENCRYPTION_KEY` | 5 min
+  | Refresh Token JWT      | `REFRESH_TOKEN_SECRET`  | `JWT_PAYLOAD_ENCRYPTION_KEY` | 15 days
 
   | Cookie Name            | Cookie Signature | Flags                                         | Expiration | 
   | -----------------      | -----------      | --------------------------------------------- | -----------
@@ -177,7 +178,7 @@
   1) Validating access and refresh tokens. 
   2) Matching token payloads with username header to ensure that the correct user is using the token. 
   3) Checking if user is in the database
-  4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshign tokens, or when access token is invalid)
+  4) Checking if refresh token is in database (used request is trying to access admin routes, when refreshing tokens, or when access token is invalid)
 </details>
 
 

@@ -6,7 +6,9 @@ const rateLimit = require("express-rate-limit");                                
     Refresh Token cookie expire time:      15 days = 1296000000 ms
     Redis User Cache expire time:           1 day = 86400 s
     Redis Refresh Token Cache expire time:  1 day = 86400 s
-    Rate Limiter: 50 requests per 60000*10 ms or 10 minutes
+    API Rate Limiter: 50 requests per 10 minutes
+    Password Rate Limiter: 10 requests per 30 minutes
+    Account Creation Rate Limiter: 5 requests per day
 */
 module.exports = {
     JWT_ACCESS_EXP: 300,                                                                                // Expire time of access token (5min)
@@ -19,10 +21,20 @@ module.exports = {
         credentials: true,
         exposedHeaders: ['access-token-exp'],                                                           // Set it so that this header can be retrieved in client side
     },
-    rateLimiter: rateLimit({
-        max: 50,                                                                                        // limit each IP to 50 requests per 10 minutes (60000 * 10 ms)
-        windowMs: 60000 * 10,                                                                           // 10 minutes. will send a status 429 response if there is 50 requests made in 10 minutes
+    apiRateLimiter: rateLimit({
+        max: 50,                                                                                        // limit each IP to 50 requests per 10 minutes 
+        windowMs: 600000,                                                                               // 10 minutes (60000 * 10 min). will send a status 429 response if there is 50 requests made in 10 minutes
         message: "Your doing too much, please try again in 10 minutes"
+    }),
+    passwordRateLimiter: rateLimit({
+        max: 10,                                                                                        // limit each IP to 10 requests per 30 minutes 
+        windowMs: 18000000,                                                                             // 30 minutes (60000 * 30 min). will send a status 429 response if there is 10 requests made in 30 minutes
+        message: "You've made too many password resets. Please try again in 30 minutes"
+    }),
+    accountRateLimiter: rateLimit({
+        max: 5,                                                                                         // limit 5 account creation per day for each each IP
+        windowMs: 86400000,                                                                             // 1 day (60000 * 60 min * 24 hrs). will send a status 429 response if there is 10 requests made in 30 minutes
+        message: "You've made too many new accounts. Please try again in 1 day"
     }),
     cookieConfigRefresh: {
         maxAge: 1296000000,                                                                             // Cookie expires in 15 days 

@@ -59,6 +59,8 @@ async function comparePasswords(res, password, dbPassword){                     
     return true
 }
 
+async function resetPassword(res, password, dbPassword){    
+}
 module.exports = {
     doesUsernameEmailExist,
     comparePasswords,

@@ -59,7 +59,12 @@ class MakePost extends React.Component{
                     // group_type: ""
                 })
             }
-            await this.postToAPI(reqObject)       
+            try{ 
+                const postAdded = await this.postToAPI(reqObject) 
+                this.props.newPostAdded(postAdded)
+            } catch(err){
+                alert(err)
+            }       
         }
 
         else if (this.state.selectedTab === "tabFile") {                                                // send the title and file url to my api
@@ -80,7 +85,8 @@ class MakePost extends React.Component{
                 body: fileData
             }
             try{ 
-                await this.postToAPI(reqObject)     
+                const postAdded = await this.postToAPI(reqObject) 
+                this.props.newPostAdded(postAdded)
             } catch(err){
                 alert(err)
             }   
@@ -95,20 +101,22 @@ class MakePost extends React.Component{
             throw err
         }
         if (resJson.status === 1){
-            console.log("Posted!")
             this.setState({
                 title: "",
                 content: "",
             })
-            this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
-                pathname: CONFIG.PATHS.GlobalFeed,
-            });
+            this.props.setTrigger(false)
+            // this.props.history.push({                                               // getting history form the props react router passed down. redirecting to global feed
+            //     pathname: CONFIG.PATHS.GlobalFeed,
+            // });
+            return resJson.message
         }
         else if (resJson.status === -1){
             const errMesage = "Failed to Post! " + resJson.messag
             throw (errMesage)
         }
-       
+        else
+            throw "Didnt get proper mesage from API "
     }
 
     tabClicked(e){
@@ -147,7 +155,7 @@ class MakePost extends React.Component{
             
             <form id="makePost-form" onSubmit={e=>this.handleFormSubmit(e)}>
                 <h1 id="makePost-title" class="makePost-row">Create a post</h1>
-                <div class="makePost-row noselect">
+                <div class="makePost-row makePost-tab-row noselect">
                     <div id="makePost-tabs-div" >
                         <div class="tabText-div makePost-tab-div" onClick={e=>this.tabClicked(e)}> 
                             <p class="tabText makePost-tab" onClick={e=>this.tabClicked(e)}>Text</p>    
@@ -176,6 +184,7 @@ class MakePost extends React.Component{
                 {(this.state.selectedTab === "tabURL") ? 
                     (<input id="makePost-content-field" class="makePost-input-content-url makePost-row makePost-input" type="url" name="content" placeholder="URL" value={this.state.content} onChange={e=>this.handleInputChange(e)} ></input>) : null }
                 <button type="submit" id='postButton'>Post</button>  
+              
             </form> 
         );
     }
