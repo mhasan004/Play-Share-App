@@ -7,10 +7,6 @@ import CONFIG from "../../config"
 const ROUTE_URL = CONFIG.API_BASE_URL + "/user/feed/"
 
 class Posts extends React.Component{
-    state = {
-        posts: []
-    }
-   
     async componentDidMount() {
         await this.refreshFeed()
     }
@@ -36,10 +32,10 @@ class Posts extends React.Component{
         if (!resJson)
             return console.error("Improper Response!")
         if (resJson.status === 1){
-            this.setState({                                                                 // *** need to first clear it (reassigning new object) to force react to re-render. Then i can populate with the new data! Without clearing, react doesnt re-render!
+            this.props.setState({                                                                 // *** need to first clear it (reassigning new object) to force react to re-render. Then i can populate with the new data! Without clearing, react doesnt re-render!
                 posts: []
             })
-            this.setState({
+            this.props.setState({
                 posts: resJson.posts
             })
         }
@@ -54,7 +50,7 @@ class Posts extends React.Component{
     render(){
         return(
             <div class="posts-body">
-                {this.state.posts.map((post)=>
+                {this.props.posts.map((post)=>
                     <Post post={post} refreshFeed={p => this.refreshFeed(p)} /> 
                 )}
             </div>

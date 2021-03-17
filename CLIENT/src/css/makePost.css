@@ -1,21 +1,26 @@
 :root {
+    --tab-font-size: 1.6rem;
     --makePost-tab-padding: 0rem 2rem 0rem 2rem;
+
 }
 
-@media screen and (max-width: 540px) {
+@media screen and (max-width: 570px) {
     :root {
-        --makePost-tab-padding: 0rem 1rem 0rem 1rem;
+        --tab-font-size: 1.5rem;
+        --makePost-tab-padding: 0rem 1.3rem 0rem 1.3rem;
     }
 }
 @media screen and (max-width: 450px) {
     :root {
-        --makePost-tab-padding: 0rem .75rem 0rem .75rem;
+        --tab-font-size: 1.4rem;
+        --makePost-tab-padding: 0rem 1.2rem 0rem 1.2rem;
     }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 370px) {
     :root {
-        --makePost-tab-padding: 0rem .35rem 0rem .35rem;
+        --tab-font-size: 1.3rem;
+        --makePost-tab-padding: 0rem .5rem 0rem .5rem;
     }
 }
 
@@ -24,7 +29,7 @@
     font-style: normal;
     font-weight: normal;
     padding: .5rem .5rem .5rem .5rem;
-    /* min-width: 18.5rem; */
+    min-width: 20rem;
     max-width: 45rem;
 
     border-radius: 10px;
@@ -56,20 +61,24 @@
     flex-direction: row;
     flex-wrap: wrap;
 }
+.makePost-tab-row{
+    margin:  .5rem .5rem .5rem .5rem;
+}
+.tabText-div
+{
+    color:#ffffff;
+}
 .makePost-tab-div{
+    max-height: 60px;
     background: #F4F4F4;
 }
 .makePost-tab{
-    /* font-weight: bold; */
-    font-size: 2rem;
-    padding-top: .3rem;
+    font-size: var(--tab-font-size);
+    /* padding-top: .3rem; */
 }
 
-
-
-
 .tab-spacing{
-    width: 5px;
+    width: 1px;
 }
 .tabText-div{
     padding: var(--makePost-tab-padding);
@@ -100,7 +109,7 @@
     border:none;
     border-radius: 5px;
     background-color: #F4F4F4    ;
-    color: #a0a0a0;
+    color: #000000;
     
     padding: 10px 10px;                 /* size of inptu fields*/
     margin: 10px 10px;
@@ -119,7 +128,7 @@
     border:none;
     border-radius: 5px;
     background-color: #F4F4F4    ;
-    color: #a0a0a0;
+    color: #000000;
     height: 170px;
     
     padding: 10px 10px;                 /* size of inptu fields*/
@@ -136,13 +145,13 @@
     margin-right: 7%;
 }
 .makePost-input-content-url{
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     outline: none;
     border:none;
     border-radius: 5px;
     background-color: #F4F4F4    ;
-    color: #a0a0a0;
-    
+    color: #000000;
+
     padding: 10px 10px;        
     margin: 10px 10px;
     margin-left: 7%;                   /*side change as screen chnages*/
@@ -211,8 +220,8 @@
               user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome, Edge, Opera and Firefox */
   }
-
-  
-.makePost-input:focus{
-   
+#makePost-tabs-div .makePost-tab-div:hover{
+    background: #7bcfff;
+    color: #FFFFFF;
 }
+  

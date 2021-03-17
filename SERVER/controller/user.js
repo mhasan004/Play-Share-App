@@ -52,7 +52,7 @@ exports.makePost = async (req,res,next) =>
             isURL = true
         } catch(err){ 
             console.error("Error uploading to s3. Error: "+err)
-            return res.status(400).json({status:-1, mesage: err})
+            return res.status(400).json({status:-1, message: err})
         }
     }
 
@@ -77,7 +77,7 @@ exports.makePost = async (req,res,next) =>
 
     try{                                                                                                                        // 3) Save to DB:
         const added_post = await post.save()
-        return res.status(200).json({status: 1, mesage: added_post._id})
+        return res.status(200).json({status: 1, message: added_post})
     } catch(err){
         console.error("Dailed to make post for: "+ (new Date()).toLocaleDateString('en-US'))
         return res.status(400).json({status: -1, message: "Failed to post: "+err})

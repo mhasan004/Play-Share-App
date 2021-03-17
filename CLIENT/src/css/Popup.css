@@ -1,0 +1,31 @@
+.popup{                                         /* darken background of popup*/
+    position: fixed;                                            /*want it to stick*/
+    top: 0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-inner{                                       /*inside of popup it to stick*/
+    /* width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; */
+    /* position: relative; */
+    /* padding: 32px; */
+    /* width: 100%; */
+    /* max-width: 640px;                                   *** CHANGE THIS */
+    /* background-color: #ffff; */
+}
+
+.popup-inner .close-btn{                            /*close popup button thats inside popup*/
+    position: absolute;                                
+    top: 16px;                     
+    right: 16px; 
+}

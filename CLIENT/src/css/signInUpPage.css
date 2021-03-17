@@ -20,9 +20,6 @@
     --timing: 0.15s;
 }
 
-*{
-    box-sizing: border-box; 
-}
 body{
     background: var(--background-color);
     /* background: black; */
