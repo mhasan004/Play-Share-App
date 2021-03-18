@@ -18,10 +18,16 @@
   * **Some Others:** Input validation, password hashing, caching data for frequently used endpoints, etc.
 
 
-# DEMO:
-![App security demo (unfinished)](/PicturesGifs/App_demo_unfinished.gif)
+# DEMOs:
+![App Demo (UI in Development)](/PicturesGifs/Demos/App_Demo_3.gif)
 <p align="center" style="font-style: italic">
-    Fig 1: App security demo so far (App still in development)
+    Fig 1: App Demo (UI in Development)
+</p>
+
+
+![App Security Demo (unfinished)](/PicturesGifs/Demos/Security_Demo.gif)
+<p align="center" style="font-style: italic">
+    Fig 2: App Security Demo (Authentication)
 </p>
 
 <details>      
@@ -54,7 +60,7 @@
   </p>
 
   <p align="center" style="font-style: italic">
-    Fig 2: Responses of the API Server: 1, -1, -2, 2, -3
+    Fig 3: Responses of the API Server: 1, -1, -2, 2, -3
   </p>
 
   | Server Response Codes | Description             | Client Action | 
@@ -132,7 +138,7 @@
   ## 🍪 A) Authentication via JWT Access & Refresh Tokens + Silent Refresh to Persist Sessions:
   ![Silent Refresh](/PicturesGifs/Silent_Refresh.png)
   <p align="center" style="font-style: italic">
-    Fig 3: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. 
+    Fig 4: Silent Refresh Process to persist user session. Server will refresh access and refresh tokens if client pass all requirements. 
   </p>
 
   * After successful login, access token and refresh tokens are made and stored in a signed HttpOnly cookie so that they cannot be accessed in the client. Can silently refresh tokens to persist sessions with: (1) valid refresh token, and (2) corresponding username in the `username` header of the request. 
@@ -159,11 +165,11 @@
   | Cookie Name            | Cookie Signature | Flags                                         | Expiration | 
   | -----------------      | -----------      | --------------------------------------------- | -----------
   | Access Token Cookie    | `COOKIE_SECRET`  | `httpOnly`, `secure`, `sameSite`, `signed`    | 5 min
-  | Refresh Token Cookie   | `COOKIE_SECRET`  | `httpOnly`, `secure`, `sameSite`, `signed`    | 15 min
+  | Refresh Token Cookie   | `COOKIE_SECRET`  | `httpOnly`, `secure`, `sameSite`, `signed`    | 15 days
   <br>
 
   <details>   
-  <summary ><b>🤫 Silent Refresh Procedure to Persist Sessions</b> (Figure 3):  </summary>
+  <summary ><b>🤫 Silent Refresh Procedure to Persist Sessions</b> (Figure 4):  </summary>
 
   1) When a request has an invalid access token, the server will verify if the refresh token is valid. If it is valid, the server will respond with status code `-2`. 
   2) Client will send a GET request to the `/auth/refresh` endpoint. 
@@ -188,7 +194,7 @@
 ## 🤝 B) TLS handshake (optional, disabled by default since using https):
   ![TLS Handshake](/PicturesGifs/TLS_Handshake2.png)
   <p align="center" style="font-style: italic">
-    Fig 4: TLS Handshake I implemented on the server. Client in development.
+    Fig 5: TLS Handshake I implemented on the server. Client in development.
   </p>
 
   * TLS handshake can be performed but is not needed since server and client will communicate over https. Implemented basic version of TLS for fun
