@@ -16,9 +16,10 @@ app.use(morgan('dev'), cors(corsOptions))                                       
 app.set('trust proxy', 1);                                                                                                              // (for rate limiter) enable when behind a reverse proxy 
 app.use(apiRateLimiter, helmet());                                                                                                      // Rate limiter + helmet's 11 middlewares to provide basic protection
 app.use(cookieParser(process.env.COOKIE_SECRET))                                                                                        // To parse signed cookies
-app.use(express.json({limit: '50kb', extended: true}),                                                                                  // To parse request json body and set limit half of the default 100kb
-    express.urlencoded({limit: "50mb", extended: true, parameterLimit:50000})
-);                                                                      
+app.use(express.json())
+// app.use(express.json({limit: '50mb', extended: true}),                                                                                  // To parse request json body and set limit half of the default 100kb
+//     express.urlencoded({limit: "50mb", extended: true, parameterLimit:50000})
+// );                                                                      
 if (process.env.USE_TLS === "true")
     app.use('/', initiateCheckHandShake, decryptBody, decryptSelectedHeader)                                                            // (Can disable when using HTTPS) Initilize TLS handshake and get client's Symmetric key + decrypts body and some headers
 

@@ -103,7 +103,8 @@ exports.logout = async (req,res,next) =>
 
 // Endpoint to renew JWT and Refresh Token given valid old refresh token
 exports.refresh = async (req,res,next) => {
-    let verified_RF                                                                                                                                         
+    let verified_RF     
+    const dateNow = Date.now()                                                                                                                                    
     const old_RF = req.signedCookies.refreshToken;                                                                                                          // Get signed refreshToken cookie
     const username_in = req.headers['username']   
     if (!old_RF)
@@ -123,17 +124,19 @@ exports.refresh = async (req,res,next) => {
     }
     if (!await findToken("RT-"+verified_RF.username+'-'+verified_RF.id))                                                                                    // 2) RT exists so we will make a new one, check if it is in redis db and continue to delete         // set refresh token in redis cache as a key. no value. 
         return res.status(401).json({status:-1, message: "Refresh Token not in DB, need to login again"})
-    try{
-        await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                                    // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
-    } catch{
-        return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"})
-    }
+  
 
     const payload = {username: verified_RF.username, id: randomNum()}   
     try{
         createJWT(res, payload, "access")
-        if (Date.now() >= verified_RF.exp*1000-432000000)                                                                                                   // *** If the refresh token will expire within 5 days, refresh it
-            await createStoreRefreshToken(res, payload)   
+        if (Date.now() >= verified_RF.exp*1000-432000000){                                                                                                  // *** If the refresh token will expire within 5 days, refresh it
+            try{
+                await deleteToken("RT-"+verified_RF.username+'-'+verified_RF.id)                                                                            // 3) Delete old RT from redis, Make new jwt and RT from username and email stored in payload
+                await createStoreRefreshToken(res, payload)   
+            } catch{
+                return res.status(400).json({status:-1, message: "Failed to delete old RT from cache in refresh! Log in again!"})
+            }
+        }
     } catch(err){
         return res.status(400).json({status:-1, message: "Either failed to create JWT, create and store refresh token, or update login status of user! Error: "+err})
     }

@@ -22,7 +22,7 @@ module.exports = {
         exposedHeaders: ['access-token-exp'],                                                           // Set it so that this header can be retrieved in client side
     },
     apiRateLimiter: rateLimit({
-        max: 50,                                                                                        // limit each IP to 50 requests per 10 minutes 
+        max: 200,                                                                                        // limit each IP to 50 requests per 10 minutes 
         windowMs: 600000,                                                                               // 10 minutes (60000 * 10 min). will send a status 429 response if there is 50 requests made in 10 minutes
         message: "Your doing too much, please try again in 10 minutes"
     }),

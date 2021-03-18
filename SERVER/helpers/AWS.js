@@ -2,7 +2,7 @@ const AWS = require("aws-sdk")
 
 AWS.config.update({                                                                                         // Configure the keys for accessing AWS
     region: "us-east-2",                                                                                    // For DynamoDB
-    endpoint: "http://localhost:8000",                                                                      // For DynamoDB
+    //endpoint: "http://localhost:8080",                                                                      // For DynamoDB
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,                                                             // For S3
     secretAccessKey: process.env.AWS_SECRET_KEY,                                                            // For S3
 });

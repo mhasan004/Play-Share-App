@@ -15,7 +15,7 @@ exports.verifyUser = async (req,res,next) =>                                    
         req.role = "user"
     const recieved_access_token = req.signedCookies.accessToken;                                                                                    // AUTHORIZATION HEADER: const auth_header = req.headers['authorization']; const recieved_access_token = auth_header && auth_header.split(' ')[1]
     const recieved_RF = req.signedCookies.refreshToken;
-    // if(!recieved_RF) return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
+    //if(!recieved_RF) return res.status(401).json({status: -1, message: "Access Denied! No refresh token cookie!"}) 
  
     // 2) (a) Verify if access token is valid. If valid, move on to b. If invalid, check rf and tell client they need to refresh tokens (acess invalid, rf valid). (b) Check if the payload of access token matches the username in header. (c) for admin usernames, check also if rf payload match. 
     let verified_access, verified_rf
